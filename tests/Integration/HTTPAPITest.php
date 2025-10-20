@@ -2,6 +2,7 @@
 
 namespace Tests\Integration;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class HTTPAPITest extends TestCase
@@ -67,7 +68,7 @@ class HTTPAPITest extends TestCase
         curl_close($ch);
 
         if ($error) {
-            throw new \Exception("cURL Error: $error");
+            throw new Exception("cURL Error: $error");
         }
 
         return [
@@ -84,9 +85,13 @@ class HTTPAPITest extends TestCase
         $this->assertIsArray($result['body']);
         $this->assertArrayHasKey('message', $result['body']);
         $this->assertArrayHasKey('version', $result['body']);
+        #TODO nie znana metoda
         $this->assertStringContains('MCP Server', $result['body']['message']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testToolsEndpointReturnsListOfTools()
     {
         $result = $this->makeRequest('GET', '/api/tools');
@@ -103,6 +108,9 @@ class HTTPAPITest extends TestCase
         $this->assertContains('write_file', $toolNames);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testStatusEndpointReturnsServerStatus()
     {
         $result = $this->makeRequest('GET', '/api/status');
@@ -115,6 +123,9 @@ class HTTPAPITest extends TestCase
         $this->assertEquals('running', $result['body']['status']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testHelloToolViaAPI()
     {
         $result = $this->makeRequest('POST', '/api/tools/call', [
@@ -126,9 +137,13 @@ class HTTPAPITest extends TestCase
         $this->assertArrayHasKey('success', $result['body']);
         $this->assertTrue($result['body']['success']);
         $this->assertArrayHasKey('result', $result['body']);
+        #TODO nie znana metoda
         $this->assertStringContains('Test User', $result['body']['result']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetTimeToolViaAPI()
     {
         $result = $this->makeRequest('POST', '/api/tools/call', [
@@ -138,9 +153,13 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertTrue($result['body']['success']);
+        #TODO nie znana metoda
         $this->assertStringContains('Aktualny czas:', $result['body']['result']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCalculateToolViaAPI()
     {
         $result = $this->makeRequest('POST', '/api/tools/call', [
@@ -154,6 +173,7 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertTrue($result['body']['success']);
+        #TODO nie znana metoda
         $this->assertStringContains('Wynik: 22', $result['body']['result']);
     }
 
@@ -166,6 +186,8 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertTrue($result['body']['success']);
+        #TODO nie znana metoda
+        #TODO nie znana metoda
         $this->assertStringContains('Pliki w katalogu: .', $result['body']['result']);
         $this->assertStringContains('composer.json', $result['body']['result']);
         $this->assertStringContains('README.md', $result['body']['result']);
@@ -188,6 +210,7 @@ class HTTPAPITest extends TestCase
 
             $this->assertEquals(200, $writeResult['status']);
             $this->assertTrue($writeResult['body']['success']);
+            #TODO nie znana metoda
             $this->assertStringContains($testFile, $writeResult['body']['result']);
 
             // Read file back
@@ -198,6 +221,7 @@ class HTTPAPITest extends TestCase
 
             $this->assertEquals(200, $readResult['status']);
             $this->assertTrue($readResult['body']['success']);
+            #TODO nie znana metoda
             $this->assertStringContains($testContent, $readResult['body']['result']);
         } finally {
             // Cleanup
@@ -207,6 +231,9 @@ class HTTPAPITest extends TestCase
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSystemInfoToolViaAPI()
     {
         $result = $this->makeRequest('POST', '/api/tools/call', [
@@ -216,6 +243,7 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertTrue($result['body']['success']);
+        #TODO nie znana metoda
         $this->assertStringContains('=== INFORMACJE O SYSTEMIE ===', $result['body']['result']);
         $this->assertStringContains('Wersja PHP:', $result['body']['result']);
     }
