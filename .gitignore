@@ -1,0 +1,41 @@
+# Dependencies
+vendor/
+composer.lock
+
+# Logs
+logs/
+*.log
+server.log
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime
+.phpunit.result.cache
+.php_cs.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Backup files
+*.backup
+*~
+
+# Cache
+.cache/
+
+# MCP specific
+storage/
+*.pid
