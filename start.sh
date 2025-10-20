@@ -278,64 +278,128 @@ show_logs() {
     fi
 }
 
-# Główna funkcja menu
+# Funkcja startu z argumentem
+start_with_mode() {
+    local mode="$1"
+    # Usuń myślniki z początku argumentu
+    mode=$(echo "$mode" | sed 's/^-*//')
+
+    case $mode in
+        1|cli)
+            clear
+            show_header
+            start_cli
+            ;;
+        2|web)
+            clear
+            show_header
+            start_web
+            ;;
+        3|all)
+            clear
+            show_header
+            start_all
+            ;;
+        4|status)
+            clear
+            show_header
+            check_status
+            ;;
+        5|logs)
+            clear
+            show_header
+            show_logs
+            ;;
+        6|install)
+            clear
+            show_header
+            install_dependencies
+            ;;
+        *)
+            echo -e "${RED}❌ Nieprawidłowy wybór: '$1'${NC}"
+            echo -e "${YELLOW}Użycie: $0 [1|2|3|4|5|6|cli|web|all|status|logs|install]${NC}"
+            echo ""
+            show_menu
+            return 1
+            ;;
+    esac
+}
+
+# Główna funkcja menu (tylko jeśli uruchomiony bez argumentów)
 main_menu() {
-    while true; do
-        clear
+    # Sprawdź czy terminal jest interaktywny (lepsza detekcja dla WSL)
+    if ! [[ -t 0 && -t 1 ]]; then
         show_header
         show_menu
-        read -r choice
+        echo ""
+        echo -e "${YELLOW}Wybierz opcję poprzez argument:${NC}"
+        echo "  $0 1     - CLI Mode"
+        echo "  $0 2     - Web Mode"
+        echo "  $0 3     - All Modes"
+        echo "  $0 4     - Status"
+        echo "  $0 5     - Logs"
+        echo "  $0 6     - Install"
+        echo ""
+        echo -e "${GREEN}Przykład: ${CYAN}./start.sh 2${NC} (uruchomi Web Mode)"
+        echo ""
+        return 0
+    fi
 
+    # Pokaż interaktywne menu
+    show_header
+    show_menu
+
+    while true; do
+        read -r choice
         case $choice in
-            1)
-                clear
-                show_header
+            1|cli)
                 start_cli
+                break
                 ;;
-            2)
-                clear
-                show_header
+            2|web)
                 start_web
+                break
                 ;;
-            3)
-                clear
-                show_header
+            3|all)
                 start_all
+                break
                 ;;
-            4)
-                clear
-                show_header
+            4|status)
                 check_status
-                echo -ne "${CYAN}Naciśnij Enter aby wrócić do menu...${NC}"
-                read -r
+                break
                 ;;
-            5)
-                clear
-                show_header
+            5|logs)
                 show_logs
-                echo -ne "${CYAN}Naciśnij Enter aby wrócić do menu...${NC}"
-                read -r
+                break
                 ;;
-            6)
-                clear
-                show_header
+            6|install)
                 install_dependencies
-                echo -ne "${CYAN}Naciśnij Enter aby wrócić do menu...${NC}"
-                read -r
+                break
                 ;;
-            0|q|Q)
+            0|exit|quit)
                 echo -e "${GREEN}👋 Do widzenia!${NC}"
                 exit 0
                 ;;
             *)
-                echo -e "${RED}❌ Nieprawidłowy wybór! Wybierz 1-6 lub 0${NC}"
-                sleep 2
+                echo -e "${RED}❌ Nieprawidłowy wybór. Spróbuj ponownie [1-6,0]:${NC}"
                 ;;
         esac
     done
 }
 
-# Sprawdź czy skrypt jest uruchamiany bezpośrednio
+# Sprawdź czy skrypt jest uruchamiany bezpośrednio lub przez source
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main_menu
+    # Uruchomienie bezpośrednie
+    if [[ $# -gt 0 ]]; then
+        start_with_mode "$1"
+    else
+        main_menu
+    fi
+elif [[ "${BASH_SOURCE[0]}" == "start.sh" && -n "$PS1" ]]; then
+    # Uruchomienie przez source (.) w interaktywnym terminalu
+    if [[ $# -gt 0 ]]; then
+        start_with_mode "$1"
+    else
+        main_menu
+    fi
 fi

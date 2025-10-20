@@ -33,27 +33,70 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 
 ## 🎯 Quick Start
 
-### 🌐 Web Dashboard (Recommended)
-Start the web interface:
+### 🚀 Szybki start (zalecane)
 ```bash
-./web_dashboard
-```
-Then open http://127.0.0.1:8888 in your browser to access the dashboard where you can:
-- View available tools and their status
-- Test tools with dynamic forms
-- Monitor system status
-- View logs in real-time
-- Manage configuration
+# 1. Instalacja zależności
+./start.sh 6
 
-**Options:**
+# 2. Uruchom serwer web (interfejs przeglądarkowy)
+./start.sh 2
+```
+Otwórz http://localhost:8888 w przeglądarce aby uzyskać dostęp do API.
+
+### 🎮 Interaktywne menu
 ```bash
-./web_dashboard --host 0.0.0.0 --port 9999  # Custom host and port
-./web_dashboard --help                      # Show all options
+./start.sh
+```
+Pokaże kolorowe menu z opcjami do wyboru.
+
+### 🌐 Web API (dla przeglądarki)
+```bash
+./start.sh 2      # Uruchom serwer web na http://localhost:8888
 ```
 
-### 🖥️ CLI Mode
+### 📡 CLI Mode (dla MCP klientów)
 ```bash
-./start
+./start.sh 1      # Uruchom serwer MCP przez stdin/stdout
+```
+
+### 🔍 Zarządzanie serwerem
+```bash
+./start.sh 4      # Sprawdź status
+./start.sh 5      # Zobacz logi
+```
+
+### 🖥️ CLI Mode (Interactive Menu)
+```bash
+./start.sh
+```
+
+Jeśli terminal nie jest interaktywny, zostanie wyświetlone menu z opcjami:
+```bash
+./start.sh        # Pokaż menu z opcjami
+./start.sh 1      # CLI Mode - serwer MCP przez stdin/stdout
+./start.sh 2      # Web Mode - serwer HTTP z Slim Framework
+./start.sh 3      # All Modes - CLI + Web jednocześnie
+./start.sh 4      # Status - sprawdź status serwera
+./start.sh 5      # Logs - pokaż ostatnie logi
+./start.sh 6      # Install - zainstaluj zależności
+```
+
+### Przykłady użycia CLI
+```bash
+# Uruchom serwer w trybie interaktywnym (pokaże menu)
+./start.sh
+
+# Uruchom bezpośrednio w trybie CLI (dla MCP klientów)
+./start.sh 1
+
+# Uruchom serwer web (dla przeglądarki)
+./start.sh 2
+
+# Sprawdź status działających serwerów
+./start.sh 4
+
+# Zobacz ostatnie logi
+./start.sh 5
 ```
 
 ### Manual Start
@@ -128,6 +171,38 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"json_parse
 Fetches weather information for a specified city.
 ```bash
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_weather","arguments":{"city":"London"}}}' | php index.php
+```
+
+## 🌐 Web API (HTTP Mode)
+
+Gdy serwer jest uruchomiony w trybie Web (`./start.sh 2`), dostępne są następujące endpointy:
+
+### Podstawowe endpointy
+- `GET /` - Informacje o serwerze i dostępne endpointy
+- `GET /api/tools` - Lista dostępnych narzędzi
+- `GET /api/status` - Status serwera i metryki
+- `GET /api/logs` - Ostatnie logi
+- `GET /api/metrics` - System metrics
+
+### Wykonywanie narzędzi
+- `POST /api/tools/call` - Wykonaj narzędzie
+
+**Przykład wywołania narzędzia:**
+```bash
+# Powitanie
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "hello", "arguments": {"name": "Jan"}}'
+
+# Obliczenia
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "calculate", "arguments": {"operation": "add", "a": 10, "b": 5}}'
+
+# Lista plików
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "list_files", "arguments": {"path": "src"}}'
 ```
 
 ## 🔧 Configuration

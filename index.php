@@ -2,7 +2,7 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use App\{AppContainer, MCPServer, MCPServerHTTP};
+use App\{AppContainer, MCPServer, MCPServerHTTP, MonitoringService};
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -29,13 +29,34 @@ try {
         // Definiujemy trasy Slim
         $app->get('/', function ($request, $response, $args) use ($container) {
             $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to root endpoint");
+            $logger->info("HTTP request to root endpoint - serving dashboard");
 
+            // Sprawdzamy, czy prośba pochodzi z przeglądarki (nie API client)
+            $userAgent = $request->getHeaderLine('User-Agent');
+            $acceptHeader = $request->getHeaderLine('Accept');
+
+            // Jeśli to przeglądarka internetowa, serwujemy HTML dashboard
+            if (stripos($acceptHeader, 'text/html') !== false ||
+                stripos($userAgent, 'Mozilla') !== false ||
+                stripos($userAgent, 'Chrome') !== false ||
+                stripos($userAgent, 'Safari') !== false ||
+                stripos($userAgent, 'Firefox') !== false) {
+
+                $dashboardFile = __DIR__ . '/web_dashboard.html';
+                if (file_exists($dashboardFile)) {
+                    $html = file_get_contents($dashboardFile);
+                    $response->getBody()->write($html);
+                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
+                }
+            }
+
+            // W przeciwnym razie zwracamy informacje API w formacie JSON
             $data = [
                 'message' => 'MCP Server with Slim Framework',
                 'version' => $container->get('config')['server']['version'],
+                'dashboard' => 'Dostępny pod adresem URL w przeglądarce',
                 'endpoints' => [
-                    'GET /' => 'This information',
+                    'GET /' => 'Dashboard HTML (w przeglądarce) lub API info',
                     'GET /api/tools' => 'List available tools',
                     'GET /api/status' => 'Server status and metrics',
                     'POST /api/tools/call' => 'Execute a tool',

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="CLI Arguments" tests="27" assertions="72" errors="0" failures="0" skipped="0" time="1.138319">
+    <testsuite name="Tests\Unit\MCPServerHTTPTest" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" tests="27" assertions="72" errors="0" failures="0" skipped="0" time="1.138319">
+      <testcase name="testListFilesWithCurrentDirectory" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="112" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.007591"/>
+      <testcase name="testListFilesWithDefaultPath" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="130" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000320"/>
+      <testcase name="testReadFileWithValidFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="137" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.000271"/>
+      <testcase name="testWriteFileCreatesAndReadsFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="155" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="3" time="0.000499"/>
+      <testcase name="testSystemInfoReturnsValidInfo" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="177" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="5" time="0.000230"/>
+      <testcase name="testJsonParseWithInvalidJson" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="199" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000161"/>
+      <testcase name="testGetWeatherWithValidCity" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="207" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="8" time="0.000289"/>
+      <testcase name="testJsonParseWithValidJson" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="188" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.000205"/>
+      <testcase name="testGetTimeReturnsCurrentTime" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="59" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000275"/>
+      <testcase name="testListFilesWithSubdirectory" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="122" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000231"/>
+      <testcase name="testHttpRequestWithValidUrl" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="228" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="5" time="1.121916"/>
+      <testcase name="testReadFileWithNonExistentFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="147" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000849"/>
+      <testcase name="testHelloToolReturnsGreeting" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="47" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000396"/>
+      <testcase name="testHelloToolWithDefaultName" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="53" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000411"/>
+      <testcase name="testCalculateToolDivisionByZero" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="90" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000310"/>
+      <testcase name="testCalculateToolUnknownOperation" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="101" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000265"/>
+      <testcase name="testGetWeatherWithEmptyCity" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="221" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000188"/>
+      <testcase name="testHttpRequestWithEmptyUrl" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="243" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000167"/>
+      <testcase name="testExecuteUnknownToolThrowsException" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="250" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000217"/>
+      <testcase name="testFileOperationSecurityPreventsPathTraversal" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="258" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000422"/>
+      <testcase name="testToolExecutionFailureIsMonitored" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="280" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.001318"/>
+      <testcase name="testGetToolsReturnsAllRegisteredTools" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="27" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="13" time="0.001115"/>
+      <testcase name="testToolExecutionIsMonitored" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="267" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000142"/>
+      <testsuite name="Tests\Unit\MCPServerHTTPTest::testCalculateTool" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.000531">
+        <testcase name="testCalculateTool with data set #0" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000123"/>
+        <testcase name="testCalculateTool with data set #1" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000100"/>
+        <testcase name="testCalculateTool with data set #2" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000095"/>
+        <testcase name="testCalculateTool with data set #3" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000214"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

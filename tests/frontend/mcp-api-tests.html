@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP API - JavaScript Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .test-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .result.info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 5px;
+            display: inline-block;
+        }
+        .status.pass { background-color: #28a745; color: white; }
+        .status.fail { background-color: #dc3545; color: white; }
+        .status.pending { background-color: #ffc107; color: #212529; }
+        .port-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        .test-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            color: white;
+        }
+        .stat-card.total { background-color: #6c757d; }
+        .stat-card.passed { background-color: #28a745; }
+        .stat-card.failed { background-color: #dc3545; }
+        .stat-card.pending { background-color: #ffc107; color: #212529; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 MCP API JavaScript Tests</h1>
+
+        <div class="port-selector">
+            <label for="portSelect">Wybierz port serwera:</label>
+            <select id="portSelect">
+                <option value="8888">Port 8888</option>
+                <option value="8889">Port 8889</option>
+                <option value="8890">Port 8890</option>
+            </select>
+            <button onclick="checkServerConnection()">Sprawdź połączenie</button>
+            <button onclick="autoDetectPort()">Auto-detekcja portu</button>
+            <div id="connectionStatus" class="status pending">Sprawdzanie...</div>
+        </div>
+
+        <div class="test-stats">
+            <div class="stat-card total">
+                <div id="totalTests">0</div>
+                <div>Łącznie testów</div>
+            </div>
+            <div class="stat-card passed">
+                <div id="passedTests">0</div>
+                <div>Zaliczone</div>
+            </div>
+            <div class="stat-card failed">
+                <div id="failedTests">0</div>
+                <div>Nie zaliczone</div>
+            </div>
+            <div class="stat-card pending">
+                <div id="pendingTests">0</div>
+                <div>Oczekujące</div>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+            <button onclick="runAllTests()" id="runAllBtn">🚀 Uruchom wszystkie testy</button>
+            <button onclick="runFileOperationTests()">📁 Testy operacji plikowych</button>
+            <button onclick="runSecurityTests()">🔒 Testy bezpieczeństwa</button>
+            <button onclick="clearResults()">🗑️ Wyczyść wyniki</button>
+        </div>
+
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        class MCPAPITester {
+            constructor() {
+                this.baseUrl = 'http://localhost:8888';
+                this.testResults = [];
+                this.currentPort = 8888;
+            }
+
+            async detectPort() {
+                const ports = [8888, 8889, 8890];
+                for (const port of ports) {
+                    try {
+                        const response = await fetch(`http://localhost:${port}/api/status`, {
+                            timeout: 2000
+                        });
+                        if (response.ok) {
+                            this.currentPort = port;
+                            this.baseUrl = `http://localhost:${port}`;
+                            document.getElementById('portSelect').value = port;
+                            return port;
+                        }
+                    } catch (error) {
+                        // Port nie jest dostępny, próbuj następny
+                    }
+                }
+                throw new Error('Nie znaleziono działającego serwera MCP');
+            }
+
+            async makeRequest(method, endpoint, data = null) {
+                const url = `${this.baseUrl}${endpoint}`;
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(url, options);
+                const responseData = await response.json();
+
+                return {
+                    status: response.status,
+                    ok: response.ok,
+                    data: responseData
+                };
+            }
+
+            async runTest(testName, testFunction) {
+                const startTime = Date.now();
+                let result = {
+                    name: testName,
+                    status: 'pending',
+                    message: '',
+                    duration: 0,
+                    details: null
+                };
+
+                try {
+                    const testResult = await testFunction();
+                    result.status = 'pass';
+                    result.message = '✅ Test zaliczony';
+                    result.details = testResult;
+                } catch (error) {
+                    result.status = 'fail';
+                    result.message = `❌ Test nie zaliczony: ${error.message}`;
+                    result.details = error;
+                }
+
+                result.duration = Date.now() - startTime;
+                this.testResults.push(result);
+                this.updateStats();
+                return result;
+            }
+
+            updateStats() {
+                const total = this.testResults.length;
+                const passed = this.testResults.filter(t => t.status === 'pass').length;
+                const failed = this.testResults.filter(t => t.status === 'fail').length;
+                const pending = this.testResults.filter(t => t.status === 'pending').length;
+
+                document.getElementById('totalTests').textContent = total;
+                document.getElementById('passedTests').textContent = passed;
+                document.getElementById('failedTests').textContent = failed;
+                document.getElementById('pendingTests').textContent = pending;
+
+                const progress = total > 0 ? (passed / total) * 100 : 0;
+                document.getElementById('progressFill').style.width = `${progress}%`;
+            }
+
+            displayResult(result) {
+                const resultDiv = document.getElementById('testResults');
+                const testElement = document.createElement('div');
+                testElement.className = `test-section`;
+                testElement.innerHTML = `
+                    <div class="test-title">
+                        <span class="status ${result.status}">${result.status.toUpperCase()}</span>
+                        ${result.name} (${result.duration}ms)
+                    </div>
+                    <div class="result ${result.status === 'pass' ? 'success' : 'error'}">
+                        ${result.message}
+                        ${result.details ? '\n\nSzczegóły:\n' + JSON.stringify(result.details, null, 2) : ''}
+                    </div>
+                `;
+                resultDiv.appendChild(testElement);
+                testElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+
+            async runAllTests() {
+                document.getElementById('runAllBtn').disabled = true;
+                document.getElementById('testResults').innerHTML = '';
+                this.testResults = [];
+
+                const tests = [
+                    { name: 'Połączenie z serwerem', fn: () => this.testServerConnection() },
+                    { name: 'Pobranie listy narzędzi', fn: () => this.testGetTools() },
+                    { name: 'Status serwera', fn: () => this.testServerStatus() },
+                    { name: 'Narzędzie hello', fn: () => this.testHelloTool() },
+                    { name: 'Narzędzie get_time', fn: () => this.testGetTimeTool() },
+                    { name: 'Narzędzie calculate', fn: () => this.testCalculateTool() },
+                    { name: 'Narzędzie system_info', fn: () => this.testSystemInfoTool() },
+                    { name: 'Narzędzie json_parse', fn: () => this.testJsonParseTool() },
+                    { name: 'Narzędzie get_weather', fn: () => this.testWeatherTool() },
+                    { name: 'Listowanie plików', fn: () => this.testListFiles() },
+                    { name: 'Zapis i odczyt pliku', fn: () => this.testFileWriteRead() },
+                    { name: 'Zabezpieczenie przed path traversal', fn: () => this.testPathTraversalSecurity() },
+                    { name: 'Nieznane narzędzie', fn: () => this.testUnknownTool() },
+                    { name: 'Walidacja parametrów', fn: () => this.testParameterValidation() }
+                ];
+
+                for (const test of tests) {
+                    const result = await this.runTest(test.name, test.fn);
+                    this.displayResult(result);
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Mała przerwa między testami
+                }
+
+                document.getElementById('runAllBtn').disabled = false;
+            }
+
+            async testServerConnection() {
+                const result = await this.makeRequest('GET', '/');
+                if (!result.ok) {
+                    throw new Error(`Serwer zwrócił status: ${result.status}`);
+                }
+                return { status: result.status, message: result.data.message };
+            }
+
+            async testGetTools() {
+                const result = await this.makeRequest('GET', '/api/tools');
+                if (!result.ok) {
+                    throw new Error(`Błąd pobierania narzędzi: ${result.status}`);
+                }
+                if (!result.data.tools || result.data.tools.length !== 10) {
+                    throw new Error(`Nieprawidłowa liczba narzędzi: ${result.data.tools?.length || 0}`);
+                }
+                return { toolCount: result.data.tools.length, tools: result.data.tools.map(t => t.name) };
+            }
+
+            async testServerStatus() {
+                const result = await this.makeRequest('GET', '/api/status');
+                if (!result.ok) {
+                    throw new Error(`Błąd statusu: ${result.status}`);
+                }
+                if (result.data.status !== 'running') {
+                    throw new Error(`Serwer nie działa: ${result.data.status}`);
+                }
+                return { status: result.data.status, version: result.data.server.version };
+            }
+
+            async testHelloTool() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'hello',
+                    arguments: { name: 'JavaScript Test' }
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia hello: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('JavaScript Test')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia hello');
+                }
+                return { result: result.data.result };
+            }
+
+            async testGetTimeTool() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'get_time',
+                    arguments: {}
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia get_time: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('Aktualny czas:')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia get_time');
+                }
+                return { result: result.data.result };
+            }
+
+            async testCalculateTool() {
+                const tests = [
+                    { op: 'add', a: 5, b: 3, expected: 'Wynik: 8' },
+                    { op: 'subtract', a: 10, b: 4, expected: 'Wynik: 6' },
+                    { op: 'multiply', a: 6, b: 7, expected: 'Wynik: 42' }
+                ];
+
+                const results = [];
+                for (const test of tests) {
+                    const result = await this.makeRequest('POST', '/api/tools/call', {
+                        tool: 'calculate',
+                        arguments: { operation: test.op, a: test.a, b: test.b }
+                    });
+                    if (!result.ok || !result.data.success || !result.data.result.includes(test.expected)) {
+                        throw new Error(`Błąd calculate ${test.op}: ${result.data.error || result.data.result}`);
+                    }
+                    results.push({ operation: test.op, result: result.data.result });
+                }
+                return results;
+            }
+
+            async testSystemInfoTool() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'system_info',
+                    arguments: {}
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia system_info: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('=== INFORMACJE O SYSTEMIE ===')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia system_info');
+                }
+                return { result: result.data.result.substring(0, 100) + '...' };
+            }
+
+            async testJsonParseTool() {
+                const testData = '{"test": "value", "number": 42}';
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'json_parse',
+                    arguments: { json: testData }
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia json_parse: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('SPARSOWANY JSON')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia json_parse');
+                }
+                return { result: result.data.result.substring(0, 100) + '...' };
+            }
+
+            async testWeatherTool() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'get_weather',
+                    arguments: { city: 'Test City' }
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia get_weather: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('POGODA DLA MIASTA: TEST CITY')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia get_weather');
+                }
+                return { result: result.data.result.substring(0, 100) + '...' };
+            }
+
+            async testListFiles() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'list_files',
+                    arguments: { path: '.' }
+                });
+                if (!result.ok || !result.data.success) {
+                    throw new Error(`Błąd narzędzia list_files: ${result.data.error || 'unknown'}`);
+                }
+                if (!result.data.result.includes('Pliki w katalogu:')) {
+                    throw new Error('Nieprawidłowa odpowiedź narzędzia list_files');
+                }
+                return { result: result.data.result.substring(0, 200) + '...' };
+            }
+
+            async testFileWriteRead() {
+                const testContent = `Test content from JavaScript tests - ${new Date().toISOString()}`;
+                const testFile = 'js_test_file.txt';
+
+                try {
+                    // Write file
+                    const writeResult = await this.makeRequest('POST', '/api/tools/call', {
+                        tool: 'write_file',
+                        arguments: { path: testFile, content: testContent }
+                    });
+                    if (!writeResult.ok || !writeResult.data.success) {
+                        throw new Error(`Błąd zapisu pliku: ${writeResult.data.error}`);
+                    }
+
+                    // Read file
+                    const readResult = await this.makeRequest('POST', '/api/tools/call', {
+                        tool: 'read_file',
+                        arguments: { path: testFile }
+                    });
+                    if (!readResult.ok || !readResult.data.success) {
+                        throw new Error(`Błąd odczytu pliku: ${readResult.data.error}`);
+                    }
+                    if (!readResult.data.result.includes(testContent)) {
+                        throw new Error('Zawartość pliku nie zgadza się');
+                    }
+
+                    return { writeResult: writeResult.data.result, readResult: readResult.data.result.substring(0, 100) + '...' };
+                } finally {
+                    // Cleanup
+                    try {
+                        await this.makeRequest('POST', '/api/tools/call', {
+                            tool: 'write_file',
+                            arguments: { path: 'cleanup.js', content: '// cleanup' }
+                        });
+                    } catch (e) {
+                        // Ignore cleanup errors
+                    }
+                }
+            }
+
+            async testPathTraversalSecurity() {
+                const maliciousPaths = [
+                    '../../../etc/passwd',
+                    '/etc/passwd',
+                    '..\\..\\..\\windows\\system32\\config\\sam',
+                    '~/.ssh/id_rsa'
+                ];
+
+                const results = [];
+                for (const path of maliciousPaths) {
+                    const result = await this.makeRequest('POST', '/api/tools/call', {
+                        tool: 'read_file',
+                        arguments: { path: path }
+                    });
+                    if (result.ok && result.data.success) {
+                        throw new Error(`Ominięto zabezpieczenie dla ścieżki: ${path}`);
+                    }
+                    results.push({ path: path, blocked: true, error: result.data.error });
+                }
+                return results;
+            }
+
+            async testUnknownTool() {
+                const result = await this.makeRequest('POST', '/api/tools/call', {
+                    tool: 'nonexistent_tool_xyz',
+                    arguments: {}
+                });
+                if (result.ok && result.data.success) {
+                    throw new Error('Nieznane narzędzie powinno zwrócić błąd');
+                }
+                return { error: result.data.error };
+            }
+
+            async testParameterValidation() {
+                const tests = [
+                    { tool: 'calculate', args: { a: 5, b: 3 }, expectedError: 'Nieznana operacja' },
+                    { tool: 'read_file', args: { path: '' }, expectedError: 'wymagana' },
+                    { tool: 'get_weather', args: { city: '' }, expectedError: 'wymagana' }
+                ];
+
+                const results = [];
+                for (const test of tests) {
+                    const result = await this.makeRequest('POST', '/api/tools/call', {
+                        tool: test.tool,
+                        arguments: test.args
+                    });
+                    if (result.ok && result.data.success) {
+                        throw new Error(`Narzędzie ${test.tool} powinno zwrocic błąd dla pustych parametrów`);
+                    }
+                    if (!result.data.error.includes(test.expectedError)) {
+                        throw new Error(`Nieprawidłowy błąd dla ${test.tool}: ${result.data.error}`);
+                    }
+                    results.push({ tool: test.tool, error: result.data.error });
+                }
+                return results;
+            }
+
+            async runFileOperationTests() {
+                const fileTests = [
+                    { name: 'Listowanie plików', fn: () => this.testListFiles() },
+                    { name: 'Zapis i odczyt pliku', fn: () => this.testFileWriteRead() },
+                    { name: 'Zabezpieczenie przed path traversal', fn: () => this.testPathTraversalSecurity() }
+                ];
+
+                document.getElementById('testResults').innerHTML = '';
+                for (const test of fileTests) {
+                    const result = await this.runTest(test.name, test.fn);
+                    this.displayResult(result);
+                }
+            }
+
+            async runSecurityTests() {
+                const securityTests = [
+                    { name: 'Zabezpieczenie przed path traversal', fn: () => this.testPathTraversalSecurity() },
+                    { name: 'Nieznane narzędzie', fn: () => this.testUnknownTool() },
+                    { name: 'Walidacja parametrów', fn: () => this.testParameterValidation() }
+                ];
+
+                document.getElementById('testResults').innerHTML = '';
+                for (const test of securityTests) {
+                    const result = await this.runTest(test.name, test.fn);
+                    this.displayResult(result);
+                }
+            }
+        }
+
+        // Global functions
+        let tester;
+
+        window.onload = function() {
+            tester = new MCPAPITester();
+            autoDetectPort();
+        };
+
+        async function checkServerConnection() {
+            const port = document.getElementById('portSelect').value;
+            tester.baseUrl = `http://localhost:${port}`;
+            tester.currentPort = port;
+
+            const status = document.getElementById('connectionStatus');
+            status.className = 'status pending';
+            status.textContent = 'Sprawdzanie...';
+
+            try {
+                const result = await tester.makeRequest('GET', '/api/status');
+                if (result.ok) {
+                    status.className = 'status pass';
+                    status.textContent = `✅ Połączono z portem ${port}`;
+                } else {
+                    throw new Error(`Status: ${result.status}`);
+                }
+            } catch (error) {
+                status.className = 'status fail';
+                status.textContent = `❌ Błąd połączenia: ${error.message}`;
+            }
+        }
+
+        async function autoDetectPort() {
+            const status = document.getElementById('connectionStatus');
+            status.className = 'status pending';
+            status.textContent = 'Auto-detekcja portu...';
+
+            try {
+                const port = await tester.detectPort();
+                status.className = 'status pass';
+                status.textContent = `✅ Znaleziono serwer na porcie ${port}`;
+            } catch (error) {
+                status.className = 'status fail';
+                status.textContent = `❌ ${error.message}`;
+            }
+        }
+
+        function runAllTests() {
+            tester.runAllTests();
+        }
+
+        function runFileOperationTests() {
+            tester.runFileOperationTests();
+        }
+
+        function runSecurityTests() {
+            tester.runSecurityTests();
+        }
+
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            tester.testResults = [];
+            tester.updateStats();
+        }
+
+        // Port selector change handler
+        document.getElementById('portSelect').addEventListener('change', function() {
+            tester.baseUrl = `http://localhost:${this.value}`;
+            tester.currentPort = parseInt(this.value);
+            checkServerConnection();
+        });
+    </script>
+</body>
+</html>

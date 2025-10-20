@@ -92,17 +92,8 @@ class AppContainer {
             \Slim\App::class => factory(function (ContainerInterface $c) {
                 $config = $c->get('config');
 
-                // Konfiguracja Slim
-                $slimConfig = [
-                    'settings' => [
-                        'displayErrorDetails' => $config['debug'] ?? false,
-                        'logErrors' => true,
-                        'logErrorDetails' => true,
-                    ]
-                ];
-
                 // Tworzenie Slim App z kontenerem DI
-                $app = \Slim\Factory\AppFactory::create($c, $slimConfig);
+                $app = \Slim\Factory\AppFactory::createFromContainer($c);
 
                 // Dodaj middleware
                 $app->addBodyParsingMiddleware();

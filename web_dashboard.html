@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP PHP Server Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .tool-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .tool-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 15px;
+        }
+        .tool-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .loading {
+            display: none;
+            color: #666;
+            font-style: italic;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+        .status-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MCP PHP Server Dashboard</h1>
+
+        <div class="status-info" id="statusInfo">
+            <strong>Status:</strong> Ładowanie informacji o serwerze...
+        </div>
+
+        <div class="tools-grid" id="toolsContainer">
+            <!-- Narzędzia zostaną załadowane dynamicznie -->
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '';
+
+        // Funkcja do ładowania statusu serwera
+        async function loadServerStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/status`);
+                const data = await response.json();
+
+                const statusInfo = document.getElementById('statusInfo');
+                statusInfo.innerHTML = `
+                    <strong>Status:</strong> <span style="color: green;">✅ Online</span><br>
+                    <strong>Wersja:</strong> ${data.server.version}<br>
+                    <strong>Nazwa:</strong> ${data.server.name}<br>
+                    <strong>Uruchomiony:</strong> ${new Date().toLocaleString()}
+                `;
+            } catch (error) {
+                document.getElementById('statusInfo').innerHTML =
+                    `<strong>Status:</strong> <span style="color: red;">❌ Błąd połączenia</span><br>
+                    <small>Sprawdź, czy serwer działa na porcie 8888</small>`;
+            }
+        }
+
+        // Funkcja do ładowania narzędzi
+        async function loadTools() {
+            try {
+                const response = await fetch(`${API_BASE}/api/tools`);
+                const data = await response.json();
+
+                const container = document.getElementById('toolsContainer');
+                container.innerHTML = '';
+
+                data.tools.forEach(tool => {
+                    container.appendChild(createToolElement(tool));
+                });
+            } catch (error) {
+                document.getElementById('toolsContainer').innerHTML =
+                    '<div class="result error">Błąd ładowania narzędzi: ' + error.message + '</div>';
+            }
+        }
+
+        // Funkcja do tworzenia elementu narzędzia
+        function createToolElement(tool) {
+            const section = document.createElement('div');
+            section.className = 'tool-section';
+
+            let fields = '';
+            const properties = tool.inputSchema.properties || {};
+
+            if (Object.keys(properties).length === 0) {
+                fields = '<p><em>To narzędzie nie wymaga parametrów</em></p>';
+            } else {
+                for (const [name, prop] of Object.entries(properties)) {
+                    const required = tool.inputSchema.required?.includes(name);
+                    const requiredMark = required ? ' *' : '';
+
+                    if (name === 'operation' && tool.name === 'calculate') {
+                        fields += `
+                            <div class="form-group">
+                                <label for="${tool.name}_${name}">${prop.description}${requiredMark}:</label>
+                                <select id="${tool.name}_${name}" name="${name}">
+                                    <option value="">Wybierz operację</option>
+                                    <option value="add">Dodawanie (+)</option>
+                                    <option value="subtract">Odejmowanie (-)</option>
+                                    <option value="multiply">Mnożenie (×)</option>
+                                    <option value="divide">Dzielenie (÷)</option>
+                                </select>
+                            </div>
+                        `;
+                    } else if (name === 'content' || (name === 'json' && tool.name === 'json_parse')) {
+                        fields += `
+                            <div class="form-group">
+                                <label for="${tool.name}_${name}">${prop.description}${requiredMark}:</label>
+                                <textarea id="${tool.name}_${name}" name="${name}" placeholder="${prop.description}" ${required ? 'required' : ''}></textarea>
+                            </div>
+                        `;
+                    } else {
+                        const inputType = prop.type === 'number' ? 'number' : 'text';
+                        fields += `
+                            <div class="form-group">
+                                <label for="${tool.name}_${name}">${prop.description}${requiredMark}:</label>
+                                <input type="${inputType}" id="${tool.name}_${name}" name="${name}" placeholder="${prop.description}" ${required ? 'required' : ''}>
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            section.innerHTML = `
+                <div class="tool-title">${tool.name}</div>
+                <div class="tool-description">${tool.description}</div>
+                <form onsubmit="executeTool(event, '${tool.name}')">
+                    ${fields}
+                    <button type="submit">🔧 Wykonaj narzędzie</button>
+                    <div class="loading" id="loading_${tool.name}">⏳ Wykonywanie...</div>
+                    <div class="result" id="result_${tool.name}" style="display: none;"></div>
+                </form>
+            `;
+
+            return section;
+        }
+
+        // Funkcja do wykonywania narzędzia
+        async function executeTool(event, toolName) {
+            event.preventDefault();
+
+            const form = event.target;
+            const loading = document.getElementById(`loading_${toolName}`);
+            const resultDiv = document.getElementById(`result_${toolName}`);
+
+            loading.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            // Zbieranie danych z formularza
+            const formData = new FormData(form);
+            const arguments = {};
+
+            for (const [key, value] of formData.entries()) {
+                if (value.trim() !== '') {
+                    if (key === 'a' || key === 'b') {
+                        arguments[key] = parseFloat(value);
+                    } else {
+                        arguments[key] = value.trim();
+                    }
+                }
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/tools/call`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        tool: toolName,
+                        arguments: arguments
+                    })
+                });
+
+                const data = await response.json();
+
+                loading.style.display = 'none';
+                resultDiv.style.display = 'block';
+
+                if (data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = data.result;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = 'Błąd: ' + data.error;
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Błąd sieci: ' + error.message;
+            }
+        }
+
+        // Inicjalizacja
+        document.addEventListener('DOMContentLoaded', function() {
+            loadServerStatus();
+            loadTools();
+
+            // Odświeżanie statusu co 30 sekund
+            setInterval(loadServerStatus, 30000);
+        });
+    </script>
+</body>
+</html>
