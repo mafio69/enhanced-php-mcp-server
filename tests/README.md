@@ -1,207 +1,207 @@
-# Testy MCP PHP Servera
+# MCP PHP Server Tests
 
-Kompleksowy zestaw testów dla MCP PHP Server v2.1.0, pokrywający różne warstwy aplikacji i rodzaje testowania.
+Comprehensive test suite for MCP PHP Server v2.1.0, covering different application layers and testing types.
 
-## 📁 Struktura testów
+## 📁 Test Structure
 
 ```
 tests/
-├── README.md                    # Ten plik
-├── phpunit.xml                  # Konfiguracja PHPUnit
-├── run_comprehensive_tests.sh   # Główny skrypt testowy
+├── README.md                    # This file
+├── phpunit.xml                  # PHPUnit configuration
+├── run_comprehensive_tests.sh   # Main test script
 │
-├── Unit/                        # Testy jednostkowe
-│   └── MCPServerHTTPTest.php    # Testy klasy MCPServerHTTP
+├── Unit/                        # Unit tests
+│   └── MCPServerHTTPTest.php    # MCPServerHTTP class tests
 │
-├── Integration/                 # Testy integracyjne
-│   └── HTTPAPITest.php          # Testy HTTP API
+├── Integration/                 # Integration tests
+│   └── HTTPAPITest.php          # HTTP API tests
 │
-└── frontend/                    # Testy frontendowe
-    └── mcp-api-tests.html       # Interaktywne testy JavaScript
+└── frontend/                    # Frontend tests
+    └── mcp-api-tests.html       # Interactive JavaScript tests
 ```
 
-## 🚀 Szybki start
+## 🚀 Quick Start
 
-### 1. Uruchomienie głównego skryptu testowego
+### 1. Run Main Test Script
 
 ```bash
-# Uruchom kompleksowy zestaw testów
+# Run comprehensive test suite
 ./tests/run_comprehensive_tests.sh
 ```
 
-Skrypt automatycznie:
-- Wykryje działający port serwera (8888, 8889, 8890)
-- Przeprowadzi 10 testów integracyjnych HTTP
-- Wyświetli szczegółowe wyniki
-- Zaoferuje opcje dodatkowych testów
+The script automatically:
+- Detects running server port (8888, 8889, 8890)
+- Runs 10 HTTP integration tests
+- Displays detailed results
+- Offers additional test options
 
-### 2. Testy jednostkowe PHP (PHPUnit)
+### 2. PHP Unit Tests (PHPUnit)
 
 ```bash
-# Uruchom testy jednostkowe
+# Run unit tests
 composer test
 
-# Lub bezpośrednio
+# Or directly
 ./vendor/bin/phpunit --configuration=tests/phpunit.xml tests/Unit
 ```
 
-### 3. Testy frontendowe (JavaScript)
+### 3. Frontend Tests (JavaScript)
 
 ```bash
-# Otwórz testy w przeglądarce
+# Open tests in browser
 open tests/frontend/mcp-api-tests.html
 
-# Lub użyj głównego skryptu i wybierz opcję 2
+# Or use main script and select option 2
 ./tests/run_comprehensive_tests.sh
 ```
 
-## 📊 Rodzaje testów
+## 📊 Test Types
 
-### 1. Testy jednostkowe (PHPUnit)
+### 1. Unit Tests (PHPUnit)
 
-**Lokalizacja:** `tests/Unit/MCPServerHTTPTest.php`
+**Location:** `tests/Unit/MCPServerHTTPTest.php`
 
-**Cel:** Testowanie pojedynczych komponentów w izolacji
+**Purpose:** Testing individual components in isolation
 
-**Pokrycie:**
-- ✅ Rejestracja narzędzi
-- ✅ Logika biznesowa każdego narzędzia
-- ✅ Walidacja parametrów
-- ✅ Obsługa błędów
-- ✅ Monitoring i logowanie
-- ✅ Bezpieczeństwo operacji plikowych
+**Coverage:**
+- ✅ Tool registration
+- ✅ Business logic for each tool
+- ✅ Parameter validation
+- ✅ Error handling
+- ✅ Monitoring and logging
+- ✅ File operation security
 
-**Przykład użycia:**
+**Usage Example:**
 ```bash
 ./vendor/bin/phpunit --filter testHelloTool
 ./vendor/bin/phpunit --filter testFileOperations
 ./vendor/bin/phpunit --coverage-html coverage-html
 ```
 
-### 2. Testy integracyjne (HTTP API)
+### 2. Integration Tests (HTTP API)
 
-**Lokalizacja:** `tests/Integration/HTTPAPITest.php`
+**Location:** `tests/Integration/HTTPAPITest.php`
 
-**Cel:** Testowanie całego przepływu HTTP przez API
+**Purpose:** Testing complete HTTP flow through API
 
-**Funkcjonalności:**
-- ✅ Dynamiczne wykrywanie portu serwera
-- ✅ Komunikacja z rzeczywistym API
-- ✅ Testy wszystkich endpointów
-- ✅ Walidacja odpowiedzi HTTP
-- ✅ Testy współbieżności
-- ✅ Obsługa błędów sieciowych
+**Features:**
+- ✅ Dynamic server port detection
+- ✅ Communication with real API
+- ✅ All endpoint testing
+- ✅ HTTP response validation
+- ✅ Concurrency tests
+- ✅ Network error handling
 
-**Uruchomienie:**
+**Execution:**
 ```bash
-# Wymaga działającego serwera
-./start.sh 2  # Uruchom serwer na porcie 8888/8889
+# Requires running server
+./start.sh 2  # Start server on port 8888/8889
 ./vendor/bin/phpunit tests/Integration/HTTPAPITest.php
 ```
 
-### 3. Testy frontendowe (JavaScript)
+### 3. Frontend Tests (JavaScript)
 
-**Lokalizacja:** `tests/frontend/mcp-api-tests.html`
+**Location:** `tests/frontend/mcp-api-tests.html`
 
-**Cel:** Testowanie interfejsu użytkownika i API z poziomu przeglądarki
+**Purpose:** Testing user interface and API from browser
 
-**Funkcjonalności:**
-- ✅ Interaktywny interfejs testowy
-- ✅ Auto-detekcja portu
-- ✅ Testy w czasie rzeczywistym
-- ✅ Wizualizacja wyników
-- ✅ Testy operacji plikowych
-- ✅ Testy bezpieczeństwa
+**Features:**
+- ✅ Interactive test interface
+- ✅ Auto-port detection
+- ✅ Real-time testing
+- ✅ Result visualization
+- ✅ File operation tests
+- ✅ Security tests
 
-**Użycie:**
-1. Otwórz plik w przeglądarce
-2. System automatycznie wykryje port serwera
-3. Kliknij "Uruchom wszystkie testy"
-4. Obserwuj wyniki w czasie rzeczywistym
+**Usage:**
+1. Open file in browser
+2. System automatically detects server port
+3. Click "Run all tests"
+4. Observe results in real-time
 
-### 4. Testy powłoki (Bash)
+### 4. Shell Tests (Bash)
 
-**Lokalizacja:** `tests/run_comprehensive_tests.sh`
+**Location:** `tests/run_comprehensive_tests.sh`
 
-**Cel:** Kompleksowe testy z linii komend
+**Purpose:** Comprehensive command-line tests
 
-**Funkcjonalności:**
-- ✅ Auto-detekcja portu serwera
-- ✅ 10 testów integracyjnych
-- ✅ Kolorowe wyniki
-- ✅ Statystyki i podsumowanie
-- ✅ Integracja z innymi testami
+**Features:**
+- ✅ Auto server port detection
+- ✅ 10 integration tests
+- ✅ Colored results
+- ✅ Statistics and summary
+- ✅ Integration with other tests
 
-## 🧪 Scenariusze testowe
+## 🧪 Test Scenarios
 
-### Testy funkcjonalne
+### Functional Tests
 
-1. **Narzędzia podstawowe**
-   - `hello` - Powitanie użytkownika
-   - `get_time` - Aktualny czas
-   - `calculate` - Operacje matematyczne
-   - `system_info` - Informacje o systemie
+1. **Basic Tools**
+   - `hello` - User greeting
+   - `get_time` - Current time
+   - `calculate` - Mathematical operations
+   - `system_info` - System information
 
-2. **Operacje na plikach**
-   - `list_files` - Listowanie katalogów
-   - `read_file` - Odczyt plików
-   - `write_file` - Zapis plików
-   - `json_parse` - Parsowanie JSON
+2. **File Operations**
+   - `list_files` - Directory listing
+   - `read_file` - File reading
+   - `write_file` - File writing
+   - `json_parse` - JSON parsing
 
-3. **Narzędzia zaawansowane**
-   - `http_request` - Zapytania HTTP
-   - `get_weather` - Informacje pogodowe
+3. **Advanced Tools**
+   - `http_request` - HTTP requests
+   - `get_weather` - Weather information
 
-### Testy bezpieczeństwa
+### Security Tests
 
 1. **Path Traversal Protection**
-   - Blokada dostępu do `../../../etc/passwd`
-   - Ograniczenie do katalogu projektu
-   - Walidacja ścieżek względnych i absolutnych
+   - Blocks access to `../../../etc/passwd`
+   - Limits to project directory
+   - Validates relative and absolute paths
 
 2. **Input Validation**
-   - Walidacja wymaganych parametrów
-   - Obsługa pustych wartości
-   - Ochrona przed złośliwym inputem
+   - Validates required parameters
+   - Handles empty values
+   - Protection against malicious input
 
 3. **Error Handling**
-   - Poprawne kody HTTP
-   - Bezpieczne komunikaty błędów
-   - Nieujawnianie danych wrażliwych
+   - Correct HTTP codes
+   - Secure error messages
+   - No sensitive data exposure
 
-### Testy wydajności
+### Performance Tests
 
-1. **Czas odpowiedzi**
-   - Pomiar czasu wykonania każdego narzędzia
-   - Identyfikacja wolnych operacji
-   - Monitorowanie w czasie
+1. **Response Time**
+   - Tool execution time measurement
+   - Slow operation identification
+   - Time monitoring
 
-2. **Współbieżność**
-   - Testy równoległych zapytań
-   - Obsługa wielu klientów
-   - Stabilność pod obciążeniem
+2. **Concurrency**
+   - Parallel request tests
+   - Multi-client handling
+   - Load stability
 
-## 📈 Pokrycie kodu
+## 📈 Code Coverage
 
-### Aktualne pokrycie
-- **Testy jednostkowe:** ~95% logiki biznesowej
-- **Testy integracyjne:** ~90% endpointów API
-- **Testy bezpieczeństwa:** 100% ścieżek ataku
+### Current Coverage
+- **Unit Tests:** ~95% business logic
+- **Integration Tests:** ~90% API endpoints
+- **Security Tests:** 100% attack paths
 
-### Generowanie raportów pokrycia
+### Generating Coverage Reports
 
 ```bash
-# HTML raport
+# HTML report
 ./vendor/bin/phpunit --coverage-html coverage-html tests/Unit
 
-# Text raport
+# Text report
 ./vendor/bin/phpunit --coverage-text tests/Unit
 
-# Clover XML (dla CI/CD)
+# Clover XML (for CI/CD)
 ./vendor/bin/phpunit --coverage-clover coverage.xml tests/Unit
 ```
 
-## 🔧 Konfiguracja
+## 🔧 Configuration
 
 ### PHPUnit (`tests/phpunit.xml`)
 
@@ -225,7 +225,7 @@ open tests/frontend/mcp-api-tests.html
 </phpunit>
 ```
 
-### Zmienne środowiskowe
+### Environment Variables
 
 ```bash
 # Debug mode
@@ -234,7 +234,7 @@ export MCP_TEST_DEBUG=1
 # Custom port
 export MCP_TEST_PORT=8889
 
-# Timeout dla testów sieciowych
+# Timeout for network tests
 export MCP_TEST_TIMEOUT=10
 ```
 
@@ -244,23 +244,23 @@ export MCP_TEST_TIMEOUT=10
 
 1. **Server not running**
    ```bash
-   ./start.sh 2  # Uruchom serwer web
+   ./start.sh 2  # Start web server
    ./tests/run_comprehensive_tests.sh
    ```
 
 2. **Port conflicts**
    ```bash
-   # Sprawdź zajęte porty
+   # Check occupied ports
    lsof -i :8888
    lsof -i :8889
 
-   # Użyj auto-detekcji
+   # Use auto-detection
    ./tests/run_comprehensive_tests.sh
    ```
 
 3. **Missing dependencies**
    ```bash
-   composer install  # PHPUnit i inne zależności
+   composer install  # PHPUnit and other dependencies
    ```
 
 4. **Permission issues**
@@ -269,80 +269,80 @@ export MCP_TEST_TIMEOUT=10
    chmod +x start.sh
    ```
 
-### Debug mode
+### Debug Mode
 
 ```bash
-# Włącz szczegółowe logowanie
+# Enable detailed logging
 export MCP_TEST_DEBUG=1
 ./tests/run_comprehensive_tests.sh
 
-# Dla PHPUnit
+# For PHPUnit
 ./vendor/bin/phpunit --verbose tests/Unit
 
-# Dla testów JavaScript
-# Otwórz narzędzia deweloperskie w przeglądarce
+# For JavaScript tests
+# Open developer tools in browser
 ```
 
-## 📝 Przykłady użycia
+## 📝 Usage Examples
 
-### Szybki test rozwojowy
+### Quick Development Test
 
 ```bash
-# Test pojedynczej funkcjonalności
+# Test single functionality
 ./vendor/bin/phpunit --filter testHelloTool tests/Unit
 
-# Testy operacji plikowych
-./tests/run_comprehensive_tests.sh | grep -A5 "Operacje na plikach"
+# File operation tests
+./tests/run_comprehensive_tests.sh | grep -A5 "File Operations"
 ```
 
-### Testy CI/CD
+### CI/CD Tests
 
 ```bash
-# Pełny zestaw testów dla pipeline
+# Full test suite for pipeline
 composer test                           # PHPUnit
 ./tests/run_comprehensive_tests.sh       # Integration tests
 ```
 
-### Testy manualne
+### Manual Tests
 
 ```bash
-# Interaktywne testy frontendowe
+# Interactive frontend tests
 open tests/frontend/mcp-api-tests.html
 
-# Testy konkretnych narzędzi
+# Specific tool tests
 curl -X POST http://localhost:8888/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "hello", "arguments": {"name": "Test"}}'
 ```
 
-## 🎯 Najlepsze praktyki
+## 🎯 Best Practices
 
-1. **Przed commitem:**
-   - Uruchom `composer test`
-   - Sprawdź pokrycie kodu
-   - Uruchom testy bezpieczeństwa
+1. **Before commit:**
+   - Run `composer test`
+   - Check code coverage
+   - Run security tests
 
-2. **Przed deployem:**
-   - Pełny zestaw testów integracyjnych
-   - Testy na różnych portach
-   - Testy obciążeniowe
+2. **Before deploy:**
+   - Full integration test suite
+   - Tests on different ports
+   - Load tests
 
-3. **Rozwój:**
-   - Testuj jedną funkcjonalność na raz
-   - Używaj trybu debugowania
-   - Sprawdzaj logi serwera
+3. **Development:**
+   - Test one functionality at a time
+   - Use debug mode
+   - Check server logs
 
-## 📞 Wsparcie
+## 📞 Support
 
-Jeśli napotkasz problemy z testami:
+If you encounter test issues:
 
-1. Sprawdź logi: `tail -f logs/server.log`
-2. Uruchom serwer: `./start.sh 2`
-3. Sprawdź zależności: `composer install`
-4. Użyj debug mode: `export MCP_TEST_DEBUG=1`
+1. Check logs: `tail -f logs/server.log`
+2. Start server: `./start.sh 2`
+3. Check dependencies: `composer install`
+4. Use debug mode: `export MCP_TEST_DEBUG=1`
 
 ---
 
-**Autor:** Claude Code Assistant
-**Wersja:** 1.0
-**Ostatnia aktualizacja:** $(date)
+**Author:** Claude Code Assistant
+**Version:** 1.0
+**Last updated:** $(date)

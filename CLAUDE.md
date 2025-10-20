@@ -164,7 +164,7 @@ vendor/                   # Composer dependencies
 - PSR-12 coding standards
 - PHP 8.1+ features used throughout
 - PHP CS Fixer configuration in `composer.json`
-- English comments and documentation (mixed Polish/English in legacy code)
+- English comments and documentation
 
 ## Performance and Monitoring
 

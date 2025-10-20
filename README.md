@@ -4,13 +4,14 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 
 ## 🚀 Features
 
-- **9 Built-in Tools**: Hello, Time, Calculator, File Operations, System Info, JSON Parsing, Weather
+- **10 Built-in Tools**: Hello, Time, Calculator, File Operations, System Info, JSON Parsing, Weather, HTTP Request
 - **Web Dashboard**: Modern web interface for tool management, testing, and monitoring
 - **Security**: Path restrictions, file size limits, input validation
 - **Configuration**: Centralized config system with environment support
 - **Logging**: Comprehensive logging with configurable levels
 - **CLI & HTTP**: Dual mode operation support
 - **Modern PHP**: Requires PHP 8.1+ with proper autoloading
+- **Comprehensive Testing**: Unit tests, integration tests, performance tests
 
 ## 📋 Requirements
 
@@ -27,42 +28,41 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
    ```
 3. Make the start script executable:
    ```bash
-   chmod +x start
-   chmod +x web_dashboard
+   chmod +x start.sh
    ```
 
 ## 🎯 Quick Start
 
-### 🚀 Szybki start (zalecane)
+### 🚀 Quick Start (Recommended)
 ```bash
-# 1. Instalacja zależności
+# 1. Install dependencies
 ./start.sh 6
 
-# 2. Uruchom serwer web (interfejs przeglądarkowy)
+# 2. Run web server (browser interface)
 ./start.sh 2
 ```
-Otwórz http://localhost:8888 w przeglądarce aby uzyskać dostęp do API.
+Open http://localhost:8888 in your browser to access the API.
 
-### 🎮 Interaktywne menu
+### 🎮 Interactive Menu
 ```bash
 ./start.sh
 ```
-Pokaże kolorowe menu z opcjami do wyboru.
+This will show a colorful menu with options to choose from.
 
-### 🌐 Web API (dla przeglądarki)
+### 🌐 Web API (for Browser)
 ```bash
-./start.sh 2      # Uruchom serwer web na http://localhost:8888
+./start.sh 2      # Run web server on http://localhost:8888
 ```
 
-### 📡 CLI Mode (dla MCP klientów)
+### 📡 CLI Mode (for MCP Clients)
 ```bash
-./start.sh 1      # Uruchom serwer MCP przez stdin/stdout
+./start.sh 1      # Run MCP server via stdin/stdout
 ```
 
-### 🔍 Zarządzanie serwerem
+### 🔍 Server Management
 ```bash
-./start.sh 4      # Sprawdź status
-./start.sh 5      # Zobacz logi
+./start.sh 4      # Check status
+./start.sh 5      # View logs
 ```
 
 ### 🖥️ CLI Mode (Interactive Menu)
@@ -70,32 +70,32 @@ Pokaże kolorowe menu z opcjami do wyboru.
 ./start.sh
 ```
 
-Jeśli terminal nie jest interaktywny, zostanie wyświetlone menu z opcjami:
+If terminal is not interactive, it will show menu with options:
 ```bash
-./start.sh        # Pokaż menu z opcjami
-./start.sh 1      # CLI Mode - serwer MCP przez stdin/stdout
-./start.sh 2      # Web Mode - serwer HTTP z Slim Framework
-./start.sh 3      # All Modes - CLI + Web jednocześnie
-./start.sh 4      # Status - sprawdź status serwera
-./start.sh 5      # Logs - pokaż ostatnie logi
-./start.sh 6      # Install - zainstaluj zależności
+./start.sh        # Show menu with options
+./start.sh 1      # CLI Mode - MCP server via stdin/stdout
+./start.sh 2      # Web Mode - HTTP server with Slim Framework
+./start.sh 3      # All Modes - CLI + Web simultaneously
+./start.sh 4      # Status - check server status
+./start.sh 5      # Logs - show recent logs
+./start.sh 6      # Install - install dependencies
 ```
 
-### Przykłady użycia CLI
+### CLI Usage Examples
 ```bash
-# Uruchom serwer w trybie interaktywnym (pokaże menu)
+# Run server in interactive mode (shows menu)
 ./start.sh
 
-# Uruchom bezpośrednio w trybie CLI (dla MCP klientów)
+# Run directly in CLI mode (for MCP clients)
 ./start.sh 1
 
-# Uruchom serwer web (dla przeglądarki)
+# Run web server (for browser)
 ./start.sh 2
 
-# Sprawdź status działających serwerów
+# Check status of running servers
 ./start.sh 4
 
-# Zobacz ostatnie logi
+# View recent logs
 ./start.sh 5
 ```
 
@@ -175,31 +175,31 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_weathe
 
 ## 🌐 Web API (HTTP Mode)
 
-Gdy serwer jest uruchomiony w trybie Web (`./start.sh 2`), dostępne są następujące endpointy:
+When server is running in Web mode (`./start.sh 2`), the following endpoints are available:
 
-### Podstawowe endpointy
-- `GET /` - Informacje o serwerze i dostępne endpointy
-- `GET /api/tools` - Lista dostępnych narzędzi
-- `GET /api/status` - Status serwera i metryki
-- `GET /api/logs` - Ostatnie logi
+### Basic Endpoints
+- `GET /` - Server information and available endpoints
+- `GET /api/tools` - List of available tools
+- `GET /api/status` - Server status and metrics
+- `GET /api/logs` - Recent logs
 - `GET /api/metrics` - System metrics
 
-### Wykonywanie narzędzi
-- `POST /api/tools/call` - Wykonaj narzędzie
+### Tool Execution
+- `POST /api/tools/call` - Execute a tool
 
-**Przykład wywołania narzędzia:**
+**Tool Call Example:**
 ```bash
-# Powitanie
+# Greeting
 curl -X POST http://localhost:8888/api/tools/call \
   -H "Content-Type: application/json" \
-  -d '{"tool": "hello", "arguments": {"name": "Jan"}}'
+  -d '{"tool": "hello", "arguments": {"name": "John"}}'
 
-# Obliczenia
+# Calculation
 curl -X POST http://localhost:8888/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "calculate", "arguments": {"operation": "add", "a": 10, "b": 5}}'
 
-# Lista plików
+# File listing
 curl -X POST http://localhost:8888/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "list_files", "arguments": {"path": "src"}}'
@@ -213,7 +213,7 @@ Server configuration is managed through `config/server.php`:
 return [
     'server' => [
         'name' => 'enhanced-php-mcp-server',
-        'version' => '2.0.0',
+        'version' => '2.1.0',
     ],
     'logging' => [
         'enabled' => true,
@@ -231,16 +231,16 @@ return [
 ## 📁 Project Structure
 
 ```
-mcp-php-server/
+enhanced-php-mcp-server/
 ├── config/           # Configuration files
 ├── src/             # Source code
+├── tests/           # Test files (Unit, Integration, Performance)
 ├── tools/           # Tool implementations (future)
 ├── logs/            # Log files
 ├── storage/         # Temporary storage
 ├── vendor/          # Composer dependencies
 ├── index.php        # Main entry point
-├── server.php       # Complete server implementation
-├── start            # Start script
+├── start.sh         # Start script
 ├── composer.json    # Dependencies and autoloading
 └── README.md        # This file
 ```
@@ -251,6 +251,41 @@ mcp-php-server/
 - **File Size Limits**: Configurable maximum file size for operations
 - **Input Validation**: All inputs are validated and sanitized
 - **Error Handling**: Comprehensive error handling without exposing sensitive information
+- **Path Traversal Protection**: Prevents access to files outside project directory
+
+## 🧪 Testing
+
+The project includes comprehensive testing suite:
+
+### Quick Test
+```bash
+# Simple bash tests
+./tests/simple_test.sh
+```
+
+### PHPUnit Tests
+```bash
+# Run all unit tests
+composer test
+
+# Run specific test
+./vendor/bin/phpunit --filter testHelloTool
+
+# Generate coverage report
+./vendor/bin/phpunit --coverage-html coverage-html
+```
+
+### Integration Tests
+```bash
+# Full HTTP API tests
+./tests/run_comprehensive_tests.sh
+```
+
+### Performance Tests
+```bash
+# Performance testing plan
+./tests/PERFORMANCE_TESTS_PLAN.md
+```
 
 ## 📝 Development
 
@@ -262,7 +297,7 @@ composer cs-fix      # Fix code style issues
 
 ### Testing
 ```bash
-composer test        # Run tests
+composer test        # Run all tests
 ```
 
 ### Dependencies
@@ -304,14 +339,25 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file"
 
 ### Common Issues
 
-1. **Permission Denied**: Ensure the `start` script is executable (`chmod +x start`)
+1. **Permission Denied**: Ensure the `start.sh` script is executable (`chmod +x start.sh`)
 2. **Dependencies Missing**: Run `composer install`
 3. **Extensions Missing**: Install required PHP extensions (`php-json`, `php-curl`)
 4. **File Access**: Check file permissions in project directory
+5. **Port Conflicts**: Server auto-detects ports 8888, 8889, 8890
 
 ### Debug Mode
 
 Enable detailed logging by setting log level to `debug` in `config/server.php`.
+
+## 📊 Performance Metrics
+
+The server includes built-in monitoring:
+- Response time tracking
+- Memory usage monitoring
+- Tool execution statistics
+- System metrics collection
+
+Access via `/api/status` or `/api/metrics` endpoints.
 
 ## 📄 License
 
@@ -331,3 +377,4 @@ For issues and questions:
 - Check the logs in `logs/server.log`
 - Review the configuration in `config/server.php`
 - Ensure all requirements are met
+- Run the test suite to diagnose issues
