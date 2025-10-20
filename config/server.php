@@ -4,7 +4,7 @@ return [
     'server' => [
         'name' => 'enhanced-php-mcp-server',
         'version' => '2.1.0',
-        'description' => 'Advanced PHP MCP Server with multiple tools and Slim Framework',
+        'description' => 'Professional PHP MCP Server with multiple tools and Slim Framework',
     ],
 
     'debug' => false,
