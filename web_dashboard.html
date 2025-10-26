@@ -59,8 +59,9 @@
             box-sizing: border-box;
         }
         textarea {
-            height: 100px;
+            height: 150px;
             resize: vertical;
+            font-family: 'Courier New', monospace;
         }
         button {
             background-color: #007bff;
@@ -121,6 +122,15 @@
             <strong>Status:</strong> Ładowanie informacji o serwerze...
         </div>
 
+        <div class="tool-section" style="text-align: center;">
+            <h3>🔐 Panel Administratora</h3>
+            <p style="color: #666; margin-bottom: 20px;">Zarządzaj sekretami i serwerami MCP w bezpiecznym panelu administracyjnym</p>
+            <a href="/admin/login" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: 500;">
+                Przejdź do panelu admina
+            </a>
+        </div>
+
+  
         <div class="tools-grid" id="toolsContainer">
             <!-- Narzędzia zostaną załadowane dynamicznie -->
         </div>
@@ -144,8 +154,7 @@
                 `;
             } catch (error) {
                 document.getElementById('statusInfo').innerHTML =
-                    `<strong>Status:</strong> <span style="color: red;">❌ Błąd połączenia</span><br>
-                    <small>Sprawdź, czy serwer działa na porcie 8888</small>`;
+                    `<strong>Status:</strong> <span style="color: red;">❌ Błąd połączenia</span>`;
             }
         }
 
@@ -239,16 +248,18 @@
             loading.style.display = 'block';
             resultDiv.style.display = 'none';
 
-            // Zbieranie danych z formularza
             const formData = new FormData(form);
             const arguments = {};
 
             for (const [key, value] of formData.entries()) {
                 if (value.trim() !== '') {
-                    if (key === 'a' || key === 'b') {
+                    // Sprawdzamy, czy pole jest typu number w schemacie narzędzia
+                    const toolSchema = data.tools.find(t => t.name === toolName);
+                    const propType = toolSchema?.inputSchema?.properties[key]?.type;
+                    if (propType === 'number') {
                         arguments[key] = parseFloat(value);
                     } else {
-                        arguments[key] = value.trim();
+                        arguments[key] = value;
                     }
                 }
             }
@@ -285,11 +296,63 @@
             }
         }
 
+        // Funkcja do dodawania serwera
+        async function addServer(event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const loading = document.getElementById('loading_add_server');
+            const resultDiv = document.getElementById('result_add_server');
+
+            loading.style.display = 'block';
+            resultDiv.style.display = 'none';
+
+            const formData = new FormData(form);
+            const serverData = {};
+            for (const [key, value] of formData.entries()) {
+                serverData[key] = value;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/api/servers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(serverData)
+                });
+
+                const data = await response.json();
+
+                loading.style.display = 'none';
+                resultDiv.style.display = 'block';
+
+                if (response.ok && data.success) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `Serwer '${data.data.name}' został zapisany pomyślnie.`;
+                    form.reset();
+                } else {
+                    resultDiv.className = 'result error';
+                    let errorMessage = data.error?.message || 'Nieznany błąd.';
+                    if (data.error?.details) {
+                        errorMessage += '\nSzczegóły: ' + JSON.stringify(data.error.details, null, 2);
+                    }
+                    resultDiv.textContent = errorMessage;
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Błąd sieci: ' + error.message;
+            }
+        }
+
         // Inicjalizacja
         document.addEventListener('DOMContentLoaded', function() {
             loadServerStatus();
             loadTools();
 
+      
             // Odświeżanie statusu co 30 sekund
             setInterval(loadServerStatus, 30000);
         });

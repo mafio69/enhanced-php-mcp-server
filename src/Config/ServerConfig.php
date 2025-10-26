@@ -5,10 +5,30 @@ namespace App\Config;
 class ServerConfig
 {
     private array $config;
+    private string $configFile;
 
     public function __construct(?array $config = null)
     {
-        $this->config = $config ?? require __DIR__ . '/../../config/server.php';
+        $this->configFile = __DIR__ . '/../../config/server.php';
+        $this->config = $config ?? require $this->configFile;
+    }
+
+    public function addMcpServer(string $name, array $serverConfig): void
+    {
+        if (!isset($this->config['mcpServers'])) {
+            $this->config['mcpServers'] = [];
+        }
+        $this->config['mcpServers'][$name] = $serverConfig;
+        $this->saveConfig();
+    }
+
+    private function saveConfig(): void
+    {
+        $configAsString = "<?php\n\nreturn " . var_export($this->config, true) . ";\n";
+        file_put_contents($this->configFile, $configAsString);
+        if (function_exists('opcache_invalidate')) {
+            opcache_invalidate($this->configFile, true);
+        }
     }
 
     public function getName(): string
@@ -108,6 +128,11 @@ class ServerConfig
     public function isToolRestricted(string $toolName): bool
     {
         return in_array($toolName, $this->getRestrictedTools());
+    }
+
+    public function getMcpServers(): array
+    {
+        return $this->config['mcpServers'] ?? [];
     }
 
     public function getFullConfig(): array

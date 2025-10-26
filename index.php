@@ -2,9 +2,11 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use App\{AppContainer, MCPServer, MCPServerHTTP, MonitoringService};
-use Psr\Container\ContainerInterface;
+use App\{AppContainer, MCPServer};
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
+use Slim\App;
 
 try {
     // Budujemy kontener DI
@@ -23,161 +25,27 @@ try {
     } else {
         $logger->info("Starting MCP Server in HTTP mode");
 
-        /** @var \Slim\App $app */
-        $app = $container->get(\Slim\App::class);
-
-        // Definiujemy trasy Slim
-        $app->get('/', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to root endpoint - serving dashboard");
-
-            // Sprawdzamy, czy prośba pochodzi z przeglądarki (nie API client)
-            $userAgent = $request->getHeaderLine('User-Agent');
-            $acceptHeader = $request->getHeaderLine('Accept');
-
-            // Jeśli to przeglądarka internetowa, serwujemy HTML dashboard
-            if (stripos($acceptHeader, 'text/html') !== false ||
-                stripos($userAgent, 'Mozilla') !== false ||
-                stripos($userAgent, 'Chrome') !== false ||
-                stripos($userAgent, 'Safari') !== false ||
-                stripos($userAgent, 'Firefox') !== false) {
-
-                $dashboardFile = __DIR__ . '/web_dashboard.html';
-                if (file_exists($dashboardFile)) {
-                    $html = file_get_contents($dashboardFile);
-                    $response->getBody()->write($html);
-                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
-                }
-            }
-
-            // W przeciwnym razie zwracamy informacje API w formacie JSON
-            $data = [
-                'message' => 'MCP Server with Slim Framework',
-                'version' => $container->get('config')['server']['version'],
-                'dashboard' => 'Dostępny pod adresem URL w przeglądarce',
-                'endpoints' => [
-                    'GET /' => 'Dashboard HTML (w przeglądarce) lub API info',
-                    'GET /api/tools' => 'List available tools',
-                    'GET /api/status' => 'Server status and metrics',
-                    'POST /api/tools/call' => 'Execute a tool',
-                    'GET /api/logs' => 'Recent log entries',
-                    'GET /api/metrics' => 'System metrics'
-                ]
-            ];
-
-            $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
-
-        $app->get('/api/tools', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to tools endpoint");
-
-            /** @var MCPServerHTTP $httpServer */
-            $httpServer = $container->get(MCPServerHTTP::class);
-            $tools = $httpServer->getTools();
-
-            $response->getBody()->write(json_encode($tools, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
-
-        $app->get('/api/status', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to status endpoint");
-
-            /** @var MonitoringService $monitoring */
-            $monitoring = $container->get(MonitoringService::class);
-            $metrics = $monitoring->getMetrics();
-
-            $data = [
-                'status' => 'running',
-                'server' => $container->get('config')['server'],
-                'metrics' => $metrics
-            ];
-
-            $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
-
-        $app->post('/api/tools/call', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $startTime = microtime(true);
-
-            $data = json_decode($request->getBody()->getContents(), true);
-            $tool = $data['tool'] ?? '';
-            $arguments = $data['arguments'] ?? [];
-
-            $logger->info("HTTP tool execution request", ['tool' => $tool, 'arguments' => $arguments]);
-
-            try {
-                /** @var MCPServerHTTP $httpServer */
-                $httpServer = $container->get(MCPServerHTTP::class);
-                $result = $httpServer->executeTool($tool, $arguments);
-
-                $duration = microtime(true) - $startTime;
-                /** @var MonitoringService $monitoring */
-                $monitoring = $container->get(MonitoringService::class);
-                $monitoring->recordToolExecution($tool, $duration, true);
-
-                $responseData = ['success' => true, 'result' => $result];
-            } catch (\Exception $e) {
-                $duration = microtime(true) - $startTime;
-                /** @var MonitoringService $monitoring */
-                $monitoring = $container->get(MonitoringService::class);
-                $monitoring->recordToolExecution($tool, $duration, false);
-
-                $logger->error("Tool execution failed", ['tool' => $tool, 'error' => $e->getMessage()]);
-                $responseData = ['success' => false, 'error' => $e->getMessage()];
-            }
-
-            $response->getBody()->write(json_encode($responseData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
-
-        $app->get('/api/logs', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to logs endpoint");
-
-            $config = $container->get('config');
-            $logFile = $config['logging']['file'];
-
-            if (file_exists($logFile)) {
-                $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-                $recentLines = array_slice($lines, -50); // Ostatnie 50 linii
-                $data = ['logs' => $recentLines];
-            } else {
-                $data = ['logs' => [], 'message' => 'Log file not found'];
-            }
-
-            $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
-
-        $app->get('/api/metrics', function ($request, $response, $args) use ($container) {
-            $logger = $container->get(LoggerInterface::class);
-            $logger->info("HTTP request to metrics endpoint");
-
-            /** @var MonitoringService $monitoring */
-            $monitoring = $container->get(MonitoringService::class);
-            $metrics = $monitoring->getMetrics();
-
-            $response->getBody()->write(json_encode($metrics, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-            return $response->withHeader('Content-Type', 'application/json');
-        });
+        /** @var App $app */
+        $app = $container->get(App::class);
 
         // Uruchamiamy aplikację Slim
         $app->run();
     }
 
-} catch (\Exception $e) {
+} catch (Exception $e) {
     // Logujemy błąd krytyczny
-    error_log("Critical error: " . $e->getMessage());
+    $logMessage = "Critical error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine();
+    error_log($logMessage);
 
     if (php_sapi_name() === 'cli') {
         fwrite(STDERR, "Błąd krytyczny serwera: " . $e->getMessage() . "\n");
         exit(1);
     } else {
         http_response_code(500);
-        echo json_encode(['error' => 'Internal Server Error']);
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Internal Server Error', 'message' => $e->getMessage()]);
     }
+} catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+    $logMessage = "Critical error: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine();
+    error_log($logMessage);
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Services; // Poprawiona przestrzeń nazw
 
 use Psr\Log\LoggerInterface;
 

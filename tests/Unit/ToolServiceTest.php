@@ -111,9 +111,9 @@ class ToolServiceTest extends TestCase
         $result = $this->toolService->executeTool('list_files', ['path' => '.']);
 
         $this->assertStringContainsString('Files in directory: .', $result);
-        $this->assertStringContainsString('[FILE] composer.json', $result);
-        $this->assertStringContainsString('[FILE] README.md', $result);
-        $this->assertStringContainsString('[DIR] src', $result);
+        $this->assertStringContainsString('[FILE]     composer.json', $result);
+        $this->assertStringContainsString('[FILE]     README.md', $result);
+        $this->assertStringContainsString('[DIR]      src', $result);
     }
 
     public function testReadFileWithValidFile()
@@ -252,16 +252,16 @@ class ToolServiceTest extends TestCase
     public function testToolExecutionFailureIsLogged()
     {
         try {
-            $this->toolService->executeTool('unknown_tool', []);
+            $this->toolService->executeTool('read_file', ['path' => '']);
         } catch (\Exception $e) {
-            // Expected exception
+            // Expected exception - File path is required
         }
 
         $records = $this->testHandler->getRecords();
 
         // Check that execution start and failure logs were created
         $this->assertGreaterThanOrEqual(1, count($records));
-        $this->assertEquals('Executing tool: unknown_tool', $records[0]['message']);
+        $this->assertEquals('Executing tool: read_file', $records[0]['message']);
         if (count($records) > 1) {
             $this->assertEquals('Tool execution failed', $records[1]['message']);
             $this->assertArrayHasKey('error', $records[1]['context']);

@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\MCPServerHTTP;
-use App\MonitoringService;
+use App\Services\MonitoringService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;

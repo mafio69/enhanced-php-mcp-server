@@ -7,9 +7,9 @@ use Psr\Log\LoggerInterface;
 class MCPServerHTTP {
     private array $tools = [];
     private LoggerInterface $logger;
-    private MonitoringService $monitoring;
+    private Services\MonitoringService $monitoring;
 
-    public function __construct(LoggerInterface $logger, MonitoringService $monitoring) {
+    public function __construct(LoggerInterface $logger, Services\MonitoringService $monitoring) {
         $this->logger = $logger;
         $this->monitoring = $monitoring;
 
@@ -427,7 +427,7 @@ class MCPServerHTTP {
         return ['error' => 'Nieobsługiwana metoda HTTP'];
     }
 
-    public function getTools() {
+    public function getTools(): array {
         return ['tools' => array_values($this->tools)];
     }
 }

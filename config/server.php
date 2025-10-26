@@ -1,51 +1,78 @@
 <?php
 
-return [
-    'server' => [
-        'name' => 'enhanced-php-mcp-server',
-        'version' => '2.1.0',
-        'description' => 'Professional PHP MCP Server with multiple tools and Slim Framework',
-    ],
-
-    'debug' => false,
-
-    'logging' => [
-        'enabled' => true,
-        'file' => __DIR__ . '/../logs/server.log',
-        'level' => 'info',
-        'max_files' => 5,
-    ],
-
-    'security' => [
-        'allowed_paths' => [
-            __DIR__ . '/..',
-            __DIR__ . '/../storage',
-        ],
-        'max_file_size' => 10 * 1024 * 1024, // 10MB
-    ],
-
-    'http' => [
-        'timeout' => 10,
-        'user_agent' => 'PHP-MCP-Server/2.0',
-        'allow_redirects' => true,
-    ],
-
-    'tools' => [
-        'enabled' => [
-            'hello',
-            'get_time',
-            'calculate',
-            'read_file',
-            'write_file',
-            'list_files',
-            'system_info',
-            'http_request',
-            'json_parse',
-            'get_weather',
-        ],
-        'restricted' => [
-            'write_file',
-            'http_request',
-        ],
-    ],
-];
+return array (
+  'server' => 
+  array (
+    'name' => 'enhanced-php-mcp-server',
+    'version' => '2.1.0',
+    'description' => 'Professional PHP MCP Server with multiple tools and Slim Framework',
+  ),
+  'debug' => false,
+  'logging' => 
+  array (
+    'enabled' => true,
+    'file' => '/home/mariusz/mcp-php-server/config/../logs/server.log',
+    'level' => 'info',
+    'max_files' => 5,
+  ),
+  'security' => 
+  array (
+    'allowed_paths' => 
+    array (
+      0 => '/home/mariusz/mcp-php-server/config/..',
+      1 => '/home/mariusz/mcp-php-server/config/../storage',
+    ),
+    'max_file_size' => 10485760,
+  ),
+  'http' => 
+  array (
+    'timeout' => 10,
+    'user_agent' => 'PHP-MCP-Server/2.0',
+    'allow_redirects' => true,
+  ),
+  'tools' => 
+  array (
+    'enabled' => 
+    array (
+      0 => 'hello',
+      1 => 'get_time',
+      2 => 'calculate',
+      3 => 'read_file',
+      4 => 'write_file',
+      5 => 'list_files',
+      6 => 'system_info',
+      7 => 'http_request',
+      8 => 'json_parse',
+      9 => 'get_weather',
+    ),
+    'restricted' => 
+    array (
+      0 => 'write_file',
+      1 => 'http_request',
+    ),
+  ),
+  'mcpServers' => 
+  array (
+    'Brave-search' => 
+    array (
+      'mcpServers' => 
+      array (
+        'brave-search' => 
+        array (
+          'command' => 'npx',
+          'args' => 
+          array (
+            0 => '-y',
+            1 => '@brave/brave-search-mcp-server',
+            2 => '--transport',
+            3 => 'http',
+          ),
+          'env' =>
+          array (
+            'BRAVE_API_KEY' => '${BRAVE_API_KEY}',
+          ),
+        ),
+      ),
+    ),
+  ),
+);
