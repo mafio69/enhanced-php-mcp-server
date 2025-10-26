@@ -30,9 +30,9 @@ return array (
     'user_agent' => 'PHP-MCP-Server/2.0',
     'allow_redirects' => true,
   ),
-  'tools' => 
+  'tools' =>
   array (
-    'enabled' => 
+    'enabled' =>
     array (
       0 => 'hello',
       1 => 'get_time',
@@ -44,11 +44,13 @@ return array (
       7 => 'http_request',
       8 => 'json_parse',
       9 => 'get_weather',
+      10 => 'brave_search',
     ),
-    'restricted' => 
+    'restricted' =>
     array (
       0 => 'write_file',
       1 => 'http_request',
+      2 => 'brave_search',
     ),
   ),
   'mcpServers' => 

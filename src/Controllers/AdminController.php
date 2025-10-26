@@ -6,6 +6,7 @@ use App\Config\ServerConfig;
 use App\DTO\ErrorResponse;
 use App\Interfaces\TemplateRendererInterface;
 use App\Services\AdminAuthService;
+use App\Services\AdminDashboardService;
 use App\Services\SystemInfoCollector;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -16,18 +17,21 @@ class AdminController extends BaseController
     private AdminAuthService $authService;
     private TemplateRendererInterface $templateRenderer;
     private SystemInfoCollector $systemInfoCollector;
+    private AdminDashboardService $dashboardService;
 
     public function __construct(
         ServerConfig $config,
         LoggerInterface $logger,
         AdminAuthService $authService,
         TemplateRendererInterface $templateRenderer,
-        SystemInfoCollector $systemInfoCollector
+        SystemInfoCollector $systemInfoCollector,
+        AdminDashboardService $dashboardService
     ) {
         parent::__construct($config, $logger);
         $this->authService = $authService;
         $this->templateRenderer = $templateRenderer;
         $this->systemInfoCollector = $systemInfoCollector;
+        $this->dashboardService = $dashboardService;
     }
 
     /**
@@ -247,6 +251,46 @@ class AdminController extends BaseController
     {
         $templatePath = __DIR__ . '/../../templates/views/admin/dashboard.php';
         return $this->templateRenderer->render($templatePath, ['user' => $user]);
+    }
+
+    /**
+     * Get dashboard data for API
+     */
+    public function getDashboardData(Request $request, Response $response): Response
+    {
+        if (!$this->authService->isAuthenticated()) {
+            return $this->errorResponse($response, new ErrorResponse('Not authenticated', 401));
+        }
+
+        try {
+            $data = $this->dashboardService->getDashboardData();
+            return $this->jsonResponse($response, [
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($response, 'Failed to get dashboard data', 500);
+        }
+    }
+
+    /**
+     * Get health check for dashboard
+     */
+    public function getHealthCheck(Request $request, Response $response): Response
+    {
+        if (!$this->authService->isAuthenticated()) {
+            return $this->errorResponse($response, new ErrorResponse('Not authenticated', 401));
+        }
+
+        try {
+            $health = $this->dashboardService->performHealthCheck();
+            return $this->jsonResponse($response, [
+                'success' => true,
+                'data' => $health,
+            ]);
+        } catch (Exception $e) {
+            return $this->errorResponse($response, 'Health check failed', 500);
+        }
     }
 
     /**

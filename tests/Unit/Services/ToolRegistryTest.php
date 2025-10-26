@@ -17,15 +17,15 @@ class ToolRegistryTest extends TestCase
     public function testGetTools(): void
     {
         $tools = $this->registry->getTools();
-        $this->assertArrayHasKey('tools', $tools);
-        $this->assertIsArray($tools['tools']);
-        $this->assertCount(10, $tools['tools']);
+        $this->assertIsArray($tools);
+        $this->assertCount(11, $tools);
     }
 
     public function testHasTool(): void
     {
         $this->assertTrue($this->registry->hasTool('hello'));
         $this->assertTrue($this->registry->hasTool('calculate'));
+        $this->assertTrue($this->registry->hasTool('brave_search'));
         $this->assertFalse($this->registry->hasTool('nonexistent'));
     }
 
@@ -57,7 +57,7 @@ class ToolRegistryTest extends TestCase
     public function testGetToolsContainsRequiredFields(): void
     {
         $tools = $this->registry->getTools();
-        $firstTool = $tools['tools'][0];
+        $firstTool = $tools[0];
 
         $this->assertArrayHasKey('name', $firstTool);
         $this->assertArrayHasKey('description', $firstTool);

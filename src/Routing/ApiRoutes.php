@@ -56,6 +56,10 @@ class ApiRoutes
 
         // Admin routes (all routes)
         $app->group('/admin', function (RouteCollectorProxy $group) {
+            // Admin main page - redirect to dashboard
+            $group->get('', function (Request $request, Response $response) {
+                return $response->withHeader('Location', '/admin/dashboard')->withStatus(302);
+            });
             $group->get('/login', [AdminController::class, 'loginPage']);
             $group->post('/login', [AdminController::class, 'login']);
             $group->get('/dashboard', [AdminController::class, 'dashboard']);
@@ -67,6 +71,8 @@ class ApiRoutes
 
             // Admin API routes
             $group->group('/api', function (RouteCollectorProxy $apiGroup) {
+                $apiGroup->get('/dashboard', [AdminController::class, 'getDashboardData']);
+                $apiGroup->get('/health', [AdminController::class, 'getHealthCheck']);
                 // Secret management
                 $apiGroup->get('/secrets', [SecretController::class, 'listSecrets']);
                 $apiGroup->post('/secrets', [SecretController::class, 'storeSecret']);
@@ -80,6 +86,36 @@ class ApiRoutes
                 // Server management
                 $apiGroup->post('/servers', [ServerController::class, 'addServer']);
             });
+        });
+
+        // Static assets serving
+        $app->get('/assets/{path:.+}', function (Request $request, Response $response, array $args) {
+            $path = $args['path'];
+            $assetPath = __DIR__ . '/../../public/assets/' . $path;
+
+            if (!file_exists($assetPath) || !is_readable($assetPath)) {
+                return $response->withStatus(404);
+            }
+
+            // Determine content type based on file extension
+            $extension = strtolower(pathinfo($assetPath, PATHINFO_EXTENSION));
+            $contentTypes = [
+                'css' => 'text/css',
+                'js' => 'application/javascript',
+                'png' => 'image/png',
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'svg' => 'image/svg+xml',
+                'ico' => 'image/x-icon'
+            ];
+
+            $contentType = $contentTypes[$extension] ?? 'application/octet-stream';
+
+            $response = $response->withHeader('Content-Type', $contentType);
+            $response->getBody()->write(file_get_contents($assetPath));
+
+            return $response;
         });
 
         // Catch-all dla nieznalezionych tras API

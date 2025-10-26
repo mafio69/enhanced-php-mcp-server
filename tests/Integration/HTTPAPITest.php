@@ -97,14 +97,14 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
-        $this->assertArrayHasKey('tools', $result['body']);
-        $this->assertCount(10, $result['body']['tools']);
+        $this->assertCount(11, $result['body']);
 
-        $toolNames = array_column($result['body']['tools'], 'name');
+        $toolNames = array_column($result['body'], 'name');
         $this->assertContains('hello', $toolNames);
         $this->assertContains('list_files', $toolNames);
         $this->assertContains('read_file', $toolNames);
         $this->assertContains('write_file', $toolNames);
+        $this->assertContains('brave_search', $toolNames);
     }
 
     /**

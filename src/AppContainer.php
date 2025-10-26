@@ -10,11 +10,14 @@ use App\Interfaces\TemplateRendererInterface;
 use App\Interfaces\ToolExecutorInterface;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
+use App\Services\AdminDashboardService;
 use App\Services\SecretManagerService;
+use App\Services\SecretService;
 use App\Services\ServerService;
 use App\Services\SystemInfoCollector;
 use App\Services\TemplateRenderer;
 use App\Services\ToolRegistry;
+use App\Services\ToolsService;
 use DI\ContainerBuilder;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
@@ -78,7 +81,7 @@ class AppContainer
                 ->constructor(get(LoggerInterface::class)),
 
             SecretController::class => create(SecretController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(SecretManagerService::class)),
+                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(SecretService::class)),
 
             AdminAuthService::class => create(AdminAuthService::class)
                 ->constructor(get(LoggerInterface::class)),
@@ -89,13 +92,29 @@ class AppContainer
 
             ToolExecutorInterface::class => create(ToolRegistry::class),
 
+            // New services
+            SecretService::class => create(SecretService::class)
+                ->constructor(get(LoggerInterface::class)),
+
+            ToolsService::class => create(ToolsService::class)
+                ->constructor(get(ToolExecutorInterface::class), get(LoggerInterface::class)),
+
+            AdminDashboardService::class => create(AdminDashboardService::class)
+                ->constructor(
+                    get(SecretService::class),
+                    get(ToolsService::class),
+                    get(LoggerInterface::class),
+                    get('config')
+                ),
+
             AdminController::class => create(AdminController::class)
                 ->constructor(
                     get(ServerConfig::class),
                     get(LoggerInterface::class),
                     get(AdminAuthService::class),
                     get(TemplateRendererInterface::class),
-                    get(SystemInfoCollector::class)
+                    get(SystemInfoCollector::class),
+                    get(AdminDashboardService::class)
                 ),
 
             App::class => factory(function (ContainerInterface $c) {

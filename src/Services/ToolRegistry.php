@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\ToolInterface;
 use App\Interfaces\ToolExecutorInterface;
+use App\Tools\BraveSearchTool;
 use App\Tools\CalculateTool;
 use App\Tools\GetTimeTool;
 use App\Tools\GetWeatherTool;
@@ -37,6 +38,7 @@ class ToolRegistry implements ToolExecutorInterface
         $this->registerTool(new HttpRequestTool());
         $this->registerTool(new JsonParseTool());
         $this->registerTool(new GetWeatherTool());
+        $this->registerTool(new BraveSearchTool());
     }
 
     public function registerTool(ToolInterface $tool): void
@@ -75,6 +77,6 @@ class ToolRegistry implements ToolExecutorInterface
                 ];
             }
         }
-        return ['tools' => $toolsData];
+        return $toolsData;
     }
 }
