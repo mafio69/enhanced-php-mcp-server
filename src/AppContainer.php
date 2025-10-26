@@ -6,10 +6,15 @@ use App\Config\ServerConfig;
 use App\Controllers\AdminController;
 use App\Controllers\SecretController;
 use App\Controllers\ToolsController;
+use App\Interfaces\TemplateRendererInterface;
+use App\Interfaces\ToolExecutorInterface;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
 use App\Services\SecretManagerService;
 use App\Services\ServerService;
+use App\Services\SystemInfoCollector;
+use App\Services\TemplateRenderer;
+use App\Services\ToolRegistry;
 use DI\ContainerBuilder;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
@@ -67,7 +72,7 @@ class AppContainer
                 ->constructor(get(ServerConfig::class)),
 
             ToolsController::class => create(ToolsController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(MCPServerHTTP::class)),
+                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(ToolExecutorInterface::class)),
 
             SecretManagerService::class => create(SecretManagerService::class)
                 ->constructor(get(LoggerInterface::class)),
@@ -78,8 +83,20 @@ class AppContainer
             AdminAuthService::class => create(AdminAuthService::class)
                 ->constructor(get(LoggerInterface::class)),
 
+            TemplateRendererInterface::class => create(TemplateRenderer::class),
+
+            SystemInfoCollector::class => create(SystemInfoCollector::class),
+
+            ToolExecutorInterface::class => create(ToolRegistry::class),
+
             AdminController::class => create(AdminController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(AdminAuthService::class)),
+                ->constructor(
+                    get(ServerConfig::class),
+                    get(LoggerInterface::class),
+                    get(AdminAuthService::class),
+                    get(TemplateRendererInterface::class),
+                    get(SystemInfoCollector::class)
+                ),
 
             App::class => factory(function (ContainerInterface $c) {
                 $app = AppFactory::createFromContainer($c);

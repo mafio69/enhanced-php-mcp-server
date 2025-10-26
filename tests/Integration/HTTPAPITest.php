@@ -98,9 +98,9 @@ class HTTPAPITest extends TestCase
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
         $this->assertArrayHasKey('tools', $result['body']);
-        $this->assertCount(10, $result['body']['tools']['tools']);
+        $this->assertCount(10, $result['body']['tools']);
 
-        $toolNames = array_column($result['body']['tools']['tools'], 'name');
+        $toolNames = array_column($result['body']['tools'], 'name');
         $this->assertContains('hello', $toolNames);
         $this->assertContains('list_files', $toolNames);
         $this->assertContains('read_file', $toolNames);
@@ -289,7 +289,7 @@ class HTTPAPITest extends TestCase
 
         $this->assertContains($result['status'], [200, 500]); // Accept both 200 and 500 for security errors
         $this->assertFalse($result['body']['success']);
-        $this->assertStringContainsString('Dostęp do pliku zabroniony', $result['body']['details']['details']);
+        $this->assertStringContainsString('Nieprawidłowa ścieżka', $result['body']['details']['details']);
     }
 
     public function testMetricsEndpointReturnsData()
@@ -322,17 +322,10 @@ class HTTPAPITest extends TestCase
             'arguments' => $arguments
         ]);
 
-        // For calculate and get_weather with missing required params, API returns success=true with error message in data
-        if (in_array($tool, ['calculate', 'get_weather'])) {
-            $this->assertEquals(200, $result['status']);
-            $this->assertTrue($result['body']['success']);
-            $this->assertStringContainsString($expectedError, $result['body']['data']);
-        } else {
-            // For file operations, API returns success=false with HTTP 500
-            $this->assertContains($result['status'], [200, 500]);
-            $this->assertFalse($result['body']['success']);
-            $this->assertStringContainsString($expectedError, $result['body']['details']['details']);
-        }
+        // For all validation errors, API returns success=false with HTTP 500
+        $this->assertContains($result['status'], [200, 500]);
+        $this->assertFalse($result['body']['success']);
+        $this->assertStringContainsString($expectedError, $result['body']['details']['details']);
     }
 
     public static function toolParameterValidationProvider()
@@ -341,7 +334,7 @@ class HTTPAPITest extends TestCase
             'calculate missing operation' => [
                 'calculate',
                 ['a' => 5, 'b' => 3],
-                'Nieznana operacja'
+                'Operacja jest wymagana'
             ],
             'read file empty path' => [
                 'read_file',
