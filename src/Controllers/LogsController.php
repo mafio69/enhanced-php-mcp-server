@@ -2,10 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Config\ServerConfig;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Log\LoggerInterface;
 
 class LogsController extends BaseController
 {
@@ -19,6 +17,7 @@ class LogsController extends BaseController
         } else {
             $data = ['logs' => [], 'message' => 'Log file not found'];
         }
+
         return $this->jsonResponse($response, $data);
     }
 

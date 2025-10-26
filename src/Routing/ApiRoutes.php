@@ -8,9 +8,9 @@ use App\Controllers\SecretController;
 use App\Controllers\ServerController;
 use App\Controllers\StatusController;
 use App\Controllers\ToolsController;
-use App\Middleware\AdminAuthMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Routing\RouteCollectorProxy;
 
@@ -18,23 +18,22 @@ class ApiRoutes
 {
     public static function register(App $app): void
     {
-        // Główny endpoint serwujący dashboard lub informacje API
+        // Główny endpoint serwujący landing page lub informacje API
         $app->get('/', function (Request $request, Response $response) use ($app) {
             $container = $app->getContainer();
-            $logger = $container->get(\Psr\Log\LoggerInterface::class);
+            $logger = $container->get(LoggerInterface::class);
             $logger->info("HTTP request to root endpoint");
 
             $acceptHeader = $request->getHeaderLine('Accept');
             if (str_contains($acceptHeader, 'text/html')) {
-                $dashboardFile = __DIR__ . '/../../web_dashboard.html';
-                if (file_exists($dashboardFile)) {
-                    $response->getBody()->write(file_get_contents($dashboardFile));
-                    return $response->withHeader('Content-Type', 'text/html; charset=utf-8');
-                }
+                // Use AdminController to render the landing page
+                $adminController = $container->get(AdminController::class);
+                return $adminController->landingPage($request, $response);
             }
 
             $data = ['message' => 'MCP Server API is running'];
             $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT));
+
             return $response->withHeader('Content-Type', 'application/json');
         });
 
@@ -53,7 +52,7 @@ class ApiRoutes
             $group->get('/logs/download', [LogsController::class, 'downloadLogs']);
             $group->get('/logs/stats', [LogsController::class, 'getLogStats']);
 
-          });
+        });
 
         // Admin routes (all routes)
         $app->group('/admin', function (RouteCollectorProxy $group) {
@@ -84,10 +83,13 @@ class ApiRoutes
         });
 
         // Catch-all dla nieznalezionych tras API
-        $app->map(['GET', 'POST', 'PUT', 'DELETE'], '/api/{routes:.+}', function (Request $request, Response $response) {
-            $data = ['error' => 'Not Found', 'message' => 'The requested API endpoint does not exist.'];
-            $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT));
-            return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-        });
+        $app->map(['GET', 'POST', 'PUT', 'DELETE'],
+            '/api/{routes:.+}',
+            function (Request $request, Response $response) {
+                $data = ['error' => 'Not Found', 'message' => 'The requested API endpoint does not exist.'];
+                $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT));
+
+                return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
+            });
     }
 }

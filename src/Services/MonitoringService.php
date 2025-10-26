@@ -1,32 +1,38 @@
 <?php
 
-namespace App\Services; // Poprawiona przestrzeń nazw
+namespace App\Services;
+
+// Poprawiona przestrzeń nazw
 
 use Psr\Log\LoggerInterface;
 
-class MonitoringService {
+class MonitoringService
+{
     private LoggerInterface $logger;
     private array $metrics = [];
     private float $startTime;
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger)
+    {
         $this->logger = $logger;
         $this->startTime = microtime(true);
     }
 
-    public function incrementCounter(string $name, array $tags = []): void {
+    public function incrementCounter(string $name, array $tags = []): void
+    {
         $key = $this->buildKey($name, $tags);
         $this->metrics[$key] = ($this->metrics[$key] ?? 0) + 1;
 
         $this->logger->debug("Counter incremented", [
             'metric' => $name,
             'value' => $this->metrics[$key],
-            'tags' => $tags
+            'tags' => $tags,
         ]);
     }
 
-    public function recordTiming(string $name, float $duration, array $tags = []): void {
-        $key = $this->buildKey($name . '_timing', $tags);
+    public function recordTiming(string $name, float $duration, array $tags = []): void
+    {
+        $key = $this->buildKey($name.'_timing', $tags);
 
         if (!isset($this->metrics[$key])) {
             $this->metrics[$key] = [];
@@ -37,22 +43,24 @@ class MonitoringService {
         $this->logger->debug("Timing recorded", [
             'metric' => $name,
             'duration' => $duration,
-            'tags' => $tags
+            'tags' => $tags,
         ]);
     }
 
-    public function recordGauge(string $name, float $value, array $tags = []): void {
+    public function recordGauge(string $name, float $value, array $tags = []): void
+    {
         $key = $this->buildKey($name, $tags);
         $this->metrics[$key] = $value;
 
         $this->logger->debug("Gauge recorded", [
             'metric' => $name,
             'value' => $value,
-            'tags' => $tags
+            'tags' => $tags,
         ]);
     }
 
-    public function recordToolExecution(string $toolName, float $duration, bool $success = true): void {
+    public function recordToolExecution(string $toolName, float $duration, bool $success = true): void
+    {
         $this->incrementCounter('tool_executions', ['tool' => $toolName, 'success' => $success ? 'true' : 'false']);
         $this->recordTiming('tool_execution_time', $duration, ['tool' => $toolName]);
 
@@ -63,31 +71,33 @@ class MonitoringService {
         $this->logger->info("Tool executed", [
             'tool' => $toolName,
             'duration' => $duration,
-            'success' => $success
+            'success' => $success,
         ]);
     }
 
-    public function recordHttpRequest(string $method, string $endpoint, int $statusCode, float $duration): void {
+    public function recordHttpRequest(string $method, string $endpoint, int $statusCode, float $duration): void
+    {
         $this->incrementCounter('http_requests', [
             'method' => $method,
             'endpoint' => $endpoint,
-            'status_code' => (string)$statusCode
+            'status_code' => (string)$statusCode,
         ]);
 
         $this->recordTiming('http_request_duration', $duration, [
             'method' => $method,
-            'endpoint' => $endpoint
+            'endpoint' => $endpoint,
         ]);
 
         $this->logger->info("HTTP request recorded", [
             'method' => $method,
             'endpoint' => $endpoint,
             'status_code' => $statusCode,
-            'duration' => $duration
+            'duration' => $duration,
         ]);
     }
 
-    public function getSystemMetrics(): array {
+    public function getSystemMetrics(): array
+    {
         $memoryUsage = memory_get_usage(true);
         $memoryPeak = memory_get_peak_usage(true);
         $uptime = microtime(true) - $this->startTime;
@@ -100,11 +110,12 @@ class MonitoringService {
             'memory_usage' => $this->formatBytes($memoryUsage),
             'memory_peak' => $this->formatBytes($memoryPeak),
             'uptime' => $this->formatDuration($uptime),
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
-    public function getMetrics(): array {
+    public function getMetrics(): array
+    {
         $result = [];
 
         foreach ($this->metrics as $key => $value) {
@@ -115,7 +126,7 @@ class MonitoringService {
                     'sum' => array_sum($value),
                     'avg' => array_sum($value) / count($value),
                     'min' => min($value),
-                    'max' => max($value)
+                    'max' => max($value),
                 ];
             } else {
                 // Counter and gauge metrics
@@ -126,27 +137,33 @@ class MonitoringService {
         return array_merge($result, $this->getSystemMetrics());
     }
 
-    public function resetMetrics(): void {
+    public function resetMetrics(): void
+    {
         $this->metrics = [];
         $this->logger->info("Metrics reset");
     }
 
-    private function buildKey(string $name, array $tags): string {
+    private function buildKey(string $name, array $tags): string
+    {
         if (empty($tags)) {
             return $name;
         }
 
         ksort($tags);
-        $tagString = implode(',', array_map(
-            fn($k, $v) => "$k=$v",
-            array_keys($tags),
-            $tags
-        ));
+        $tagString = implode(
+            ',',
+            array_map(
+                fn($k, $v) => "$k=$v",
+                array_keys($tags),
+                $tags
+            )
+        );
 
-        return $name . '[' . $tagString . ']';
+        return $name.'['.$tagString.']';
     }
 
-    private function formatBytes(int $bytes): string {
+    private function formatBytes(int $bytes): string
+    {
         $units = ['B', 'KB', 'MB', 'GB'];
         $unitIndex = 0;
 
@@ -155,20 +172,23 @@ class MonitoringService {
             $unitIndex++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$unitIndex];
+        return round($bytes, 2).' '.$units[$unitIndex];
     }
 
-    private function formatDuration(float $seconds): string {
+    private function formatDuration(float $seconds): string
+    {
         if ($seconds < 60) {
-            return round($seconds, 2) . 's';
+            return round($seconds, 2).'s';
         } elseif ($seconds < 3600) {
             $minutes = floor($seconds / 60);
             $remainingSeconds = $seconds % 60;
-            return $minutes . 'm ' . round($remainingSeconds, 2) . 's';
+
+            return $minutes.'m '.round($remainingSeconds, 2).'s';
         } else {
             $hours = floor($seconds / 3600);
             $remainingMinutes = floor(($seconds % 3600) / 60);
-            return $hours . 'h ' . $remainingMinutes . 'm';
+
+            return $hours.'h '.$remainingMinutes.'m';
         }
     }
 }

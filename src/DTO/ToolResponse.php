@@ -80,7 +80,7 @@ class ToolResponse
             'success' => $this->success,
             'tool' => $this->tool,
             'timestamp' => $this->timestamp,
-            'execution_time' => round($this->executionTime, 3)
+            'execution_time' => round($this->executionTime, 3),
         ];
 
         if ($this->success) {

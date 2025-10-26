@@ -27,18 +27,20 @@ class AdminAuthMiddleware
         if (!$sessionId) {
             $this->logger->warning('Admin access attempt without session', [
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                'path' => $request->getUri()->getPath()
+                'path' => $request->getUri()->getPath(),
             ]);
+
             return $this->createUnauthorizedResponse($request);
         }
 
         $sessionData = $this->authService->validateSession($sessionId);
         if (!$sessionData) {
             $this->logger->warning('Admin access attempt with invalid session', [
-                'session_id' => substr($sessionId, 0, 8) . '...',
+                'session_id' => substr($sessionId, 0, 8).'...',
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-                'path' => $request->getUri()->getPath()
+                'path' => $request->getUri()->getPath(),
             ]);
+
             return $this->createUnauthorizedResponse($request);
         }
 
@@ -59,6 +61,7 @@ class AdminAuthMiddleware
 
         // Try cookie
         $cookies = $request->getCookieParams();
+
         return $cookies['admin_session'] ?? null;
     }
 
@@ -76,9 +79,10 @@ class AdminAuthMiddleware
                 'success' => false,
                 'error' => [
                     'message' => 'Authentication required',
-                    'code' => 'AUTH_REQUIRED'
-                ]
+                    'code' => 'AUTH_REQUIRED',
+                ],
             ]));
+
             return $response
                 ->withStatus(401)
                 ->withHeader('Content-Type', 'application/json');
@@ -87,6 +91,7 @@ class AdminAuthMiddleware
         // Redirect to login for web requests
         $response = new \Slim\Psr7\Response();
         $response = $response->withHeader('Location', '/admin/login')->withStatus(302);
+
         return $response;
     }
 }

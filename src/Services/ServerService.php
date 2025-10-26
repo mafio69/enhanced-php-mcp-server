@@ -22,7 +22,7 @@ class ServerService
 
         return [
             'name' => $serverName,
-            'config' => $serverConfig
+            'config' => $serverConfig,
         ];
     }
 }

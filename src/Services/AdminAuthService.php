@@ -17,7 +17,7 @@ class AdminAuthService
         $this->logger = $logger;
         $this->adminUsername = $adminUsername ?? $_ENV['ADMIN_USERNAME'] ?? 'admin';
         $this->adminPasswordHash = $this->getAdminPasswordHash($adminPassword);
-        $this->sessionPath = __DIR__ . '/../../storage/sessions';
+        $this->sessionPath = __DIR__.'/../../storage/sessions';
 
         $this->initializeSessions();
     }
@@ -61,15 +61,18 @@ class AdminAuthService
     {
         if ($username !== $this->adminUsername) {
             $this->logger->warning('Admin login attempt with invalid username', ['username' => $username]);
+
             return false;
         }
 
         if (!password_verify($password, $this->adminPasswordHash)) {
             $this->logger->warning('Admin login attempt with invalid password', ['username' => $username]);
+
             return false;
         }
 
         $this->logger->info('Admin login successful', ['username' => $username]);
+
         return true;
     }
 
@@ -84,16 +87,16 @@ class AdminAuthService
             'created_at' => time(),
             'expires_at' => time() + (8 * 60 * 60), // 8 hours
             'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
-            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
         ];
 
-        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
+        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
         if (file_put_contents($sessionFile, json_encode($sessionData)) === false) {
             throw new RuntimeException("Failed to create session file");
         }
 
         chmod($sessionFile, 0600);
-        $this->logger->info('Admin session created', ['session_id' => substr($sessionId, 0, 8) . '...']);
+        $this->logger->info('Admin session created', ['session_id' => substr($sessionId, 0, 8).'...']);
 
         return $sessionId;
     }
@@ -103,7 +106,7 @@ class AdminAuthService
      */
     public function validateSession(string $sessionId): ?array
     {
-        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
+        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
 
         if (!file_exists($sessionFile)) {
             return null;
@@ -112,12 +115,14 @@ class AdminAuthService
         $sessionData = json_decode(file_get_contents($sessionFile), true);
         if (!$sessionData) {
             $this->deleteSession($sessionId);
+
             return null;
         }
 
         // Check expiration
         if (time() > $sessionData['expires_at']) {
             $this->deleteSession($sessionId);
+
             return null;
         }
 
@@ -133,10 +138,10 @@ class AdminAuthService
      */
     public function deleteSession(string $sessionId): void
     {
-        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
+        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
         if (file_exists($sessionFile)) {
             unlink($sessionFile);
-            $this->logger->info('Admin session deleted', ['session_id' => substr($sessionId, 0, 8) . '...']);
+            $this->logger->info('Admin session deleted', ['session_id' => substr($sessionId, 0, 8).'...']);
         }
     }
 
@@ -148,7 +153,7 @@ class AdminAuthService
         $count = 0;
         $currentTime = time();
 
-        foreach (glob($this->sessionPath . '/*.sess') as $sessionFile) {
+        foreach (glob($this->sessionPath.'/*.sess') as $sessionFile) {
             $sessionData = json_decode(file_get_contents($sessionFile), true);
             if ($sessionData && $currentTime > $sessionData['expires_at']) {
                 unlink($sessionFile);

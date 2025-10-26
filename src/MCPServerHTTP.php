@@ -2,23 +2,28 @@
 
 namespace App;
 
+use Exception;
+use JsonException;
 use Psr\Log\LoggerInterface;
 
-class MCPServerHTTP {
+class MCPServerHTTP
+{
     private array $tools = [];
     private LoggerInterface $logger;
     private Services\MonitoringService $monitoring;
 
-    public function __construct(LoggerInterface $logger, Services\MonitoringService $monitoring) {
+    public function __construct(LoggerInterface $logger, Services\MonitoringService $monitoring)
+    {
         $this->logger = $logger;
         $this->monitoring = $monitoring;
 
         $this->registerTools();
     }
 
-    private function registerTools(): void {
+    private function registerTools(): void
+    {
         $this->registerTool('hello', 'Zwraca powitanie', [
-            'name' => ['type' => 'string', 'description' => 'Imię do powitania']
+            'name' => ['type' => 'string', 'description' => 'Imię do powitania'],
         ]);
 
         $this->registerTool('get_time', 'Zwraca aktualny czas', []);
@@ -26,43 +31,44 @@ class MCPServerHTTP {
         $this->registerTool('calculate', 'Wykonuje proste obliczenia', [
             'operation' => ['type' => 'string', 'description' => 'Operacja: add, subtract, multiply, divide'],
             'a' => ['type' => 'number', 'description' => 'Pierwsza liczba'],
-            'b' => ['type' => 'number', 'description' => 'Druga liczba']
+            'b' => ['type' => 'number', 'description' => 'Druga liczba'],
         ]);
 
         $this->registerTool('list_files', 'Wyświetla listę plików w katalogu', [
-            'path' => ['type' => 'string', 'description' => 'Ścieżka do katalogu (opcjonalne)']
+            'path' => ['type' => 'string', 'description' => 'Ścieżka do katalogu (opcjonalne)'],
         ]);
 
         $this->registerTool('read_file', 'Odczytuje zawartość pliku', [
-            'path' => ['type' => 'string', 'description' => 'Ścieżka do pliku']
+            'path' => ['type' => 'string', 'description' => 'Ścieżka do pliku'],
         ]);
 
         $this->registerTool('write_file', 'Zapisuje zawartość do pliku', [
             'path' => ['type' => 'string', 'description' => 'Ścieżka do pliku'],
-            'content' => ['type' => 'string', 'description' => 'Zawartość do zapisania']
+            'content' => ['type' => 'string', 'description' => 'Zawartość do zapisania'],
         ]);
 
         $this->registerTool('system_info', 'Zwraca informacje o systemie', []);
 
         $this->registerTool('json_parse', 'Parsuje i formatuje JSON', [
-            'json' => ['type' => 'string', 'description' => 'Tekst JSON do sparsowania']
+            'json' => ['type' => 'string', 'description' => 'Tekst JSON do sparsowania'],
         ]);
 
         $this->registerTool('http_request', 'Wykonuje zapytanie HTTP do zewnętrznego API', [
             'url' => ['type' => 'string', 'description' => 'URL do wywołania'],
             'method' => ['type' => 'string', 'description' => 'Metoda HTTP (GET, POST, PUT, DELETE) - domyślnie GET'],
             'headers' => ['type' => 'string', 'description' => 'Nagłówki w formacie JSON (opcjonalne)'],
-            'body' => ['type' => 'string', 'description' => 'Treść zapytania (opcjonalne)']
+            'body' => ['type' => 'string', 'description' => 'Treść zapytania (opcjonalne)'],
         ]);
 
         $this->registerTool('get_weather', 'Pobiera informacje o pogodzie dla miasta', [
-            'city' => ['type' => 'string', 'description' => 'Nazwa miasta']
+            'city' => ['type' => 'string', 'description' => 'Nazwa miasta'],
         ]);
 
         $this->logger->info("HTTP Server tools registered", ['count' => count($this->tools)]);
     }
 
-    private function registerTool($name, $description, $parameters) {
+    private function registerTool($name, $description, $parameters)
+    {
         // Określ, które parametry są opcjonalne na podstawie nazwy narzędzia
         $optionalParams = [];
         if ($name === 'list_files') {
@@ -79,12 +85,13 @@ class MCPServerHTTP {
             'inputSchema' => [
                 'type' => 'object',
                 'properties' => $parameters,
-                'required' => array_values($requiredParams)
-            ]
+                'required' => array_values($requiredParams),
+            ],
         ];
     }
 
-    public function executeTool($name, $arguments) {
+    public function executeTool($name, $arguments)
+    {
         $startTime = microtime(true);
 
         try {
@@ -96,11 +103,11 @@ class MCPServerHTTP {
             $this->logger->info("Tool executed successfully", [
                 'tool' => $name,
                 'duration' => $duration,
-                'arguments' => $arguments
+                'arguments' => $arguments,
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $duration = microtime(true) - $startTime;
             $this->monitoring->recordToolExecution($name, $duration, false);
 
@@ -108,21 +115,23 @@ class MCPServerHTTP {
                 'tool' => $name,
                 'duration' => $duration,
                 'error' => $e->getMessage(),
-                'arguments' => $arguments
+                'arguments' => $arguments,
             ]);
 
             throw $e;
         }
     }
 
-    private function executeToolLogic($name, $arguments) {
+    private function executeToolLogic($name, $arguments)
+    {
         switch ($name) {
             case 'hello':
                 $userName = $arguments['name'] ?? 'Nieznajomy';
+
                 return "Cześć, $userName! Miło Cię poznać.";
 
             case 'get_time':
-                return "Aktualny czas: " . date('Y-m-d H:i:s');
+                return "Aktualny czas: ".date('Y-m-d H:i:s');
 
             case 'calculate':
                 $a = floatval($arguments['a'] ?? 0);
@@ -131,14 +140,17 @@ class MCPServerHTTP {
 
                 switch ($op) {
                     case 'add':
-                        return "Wynik: " . ($a + $b);
+                        return "Wynik: ".($a + $b);
                     case 'subtract':
-                        return "Wynik: " . ($a - $b);
+                        return "Wynik: ".($a - $b);
                     case 'multiply':
-                        return "Wynik: " . ($a * $b);
+                        return "Wynik: ".($a * $b);
                     case 'divide':
-                        if ($b == 0) return "Błąd: Dzielenie przez zero";
-                        return "Wynik: " . ($a / $b);
+                        if ($b == 0) {
+                            return "Błąd: Dzielenie przez zero";
+                        }
+
+                        return "Wynik: ".($a / $b);
                     default:
                         return "Nieznana operacja: $op";
                 }
@@ -150,43 +162,45 @@ class MCPServerHTTP {
                 // Obsługa ścieżek z ~ (home directory)
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath . substr($path, 1);
+                    $fullPath = $homePath.substr($path, 1);
                 } elseif (realpath($path)) {
                     // Ścieżka absolutna - użyj bezpośrednio
                     $fullPath = realpath($path);
                 } else {
                     // Ścieżka względna - połącz z basePath
-                    $fullPath = realpath($basePath . '/' . ltrim($path, './'));
+                    $fullPath = realpath($basePath.'/'.ltrim($path, './'));
                 }
 
                 // Debug info
                 $this->logger->debug("list_files path resolution", [
                     'input_path' => $arguments['path'] ?? '.',
                     'base_path' => $basePath,
-                    'full_path' => $fullPath
+                    'full_path' => $fullPath,
                 ]);
 
                 if (!$fullPath || !str_starts_with($fullPath, $basePath)) {
-                    throw new \Exception('Dostęp do katalogu zabroniony! Ścieżka wykracza poza dozwolony katalog.');
+                    throw new Exception('Dostęp do katalogu zabroniony! Ścieżka wykracza poza dozwolony katalog.');
                 }
 
                 if (!is_dir($fullPath)) {
-                    throw new \Exception("To nie jest katalog: $path");
+                    throw new Exception("To nie jest katalog: $path");
                 }
 
                 $files = scandir($fullPath);
                 $result = "Pliki w katalogu: $path\n\n";
 
                 foreach ($files as $file) {
-                    if ($file === '.' || $file === '..') continue;
+                    if ($file === '.' || $file === '..') {
+                        continue;
+                    }
 
-                    $filePath = $fullPath . '/' . $file;
+                    $filePath = $fullPath.'/'.$file;
                     $type = is_dir($filePath) ? '[DIR]' : '[FILE]';
                     $size = is_file($filePath) ? filesize($filePath) : 0;
 
                     $result .= "$type $file";
                     if (is_file($filePath)) {
-                        $result .= " (" . number_format($size) . " bajtów)";
+                        $result .= " (".number_format($size)." bajtów)";
                     }
                     $result .= "\n";
                 }
@@ -198,33 +212,33 @@ class MCPServerHTTP {
                 $basePath = dirname(__DIR__);
 
                 if (empty($path)) {
-                    throw new \Exception('Ścieżka do pliku jest wymagana');
+                    throw new Exception('Ścieżka do pliku jest wymagana');
                 }
 
                 // Obsługa ścieżek z ~
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath . substr($path, 1);
+                    $fullPath = $homePath.substr($path, 1);
                 } elseif (realpath($path)) {
                     // Ścieżka absolutna - użyj bezpośrednio
                     $fullPath = realpath($path);
                 } else {
                     // Ścieżka względna - połącz z basePath
-                    $fullPath = realpath($basePath . '/' . ltrim($path, './'));
+                    $fullPath = realpath($basePath.'/'.ltrim($path, './'));
                 }
 
                 if (!$fullPath || !str_starts_with($fullPath, $basePath)) {
-                    throw new \Exception('Dostęp do pliku zabroniony! Ścieżka wykracza poza dozwolony katalog.');
+                    throw new Exception('Dostęp do pliku zabroniony! Ścieżka wykracza poza dozwolony katalog.');
                 }
 
                 if (!file_exists($fullPath)) {
-                    throw new \Exception("Plik nie istnieje: $path");
+                    throw new Exception("Plik nie istnieje: $path");
                 }
 
                 $content = file_get_contents($fullPath);
                 $size = filesize($fullPath);
 
-                return "Plik: $path\nRozmiar: $size bajtów\nZawartość:\n---\n" . $content;
+                return "Plik: $path\nRozmiar: $size bajtów\nZawartość:\n---\n".$content;
 
             case 'write_file':
                 $path = $arguments['path'] ?? '';
@@ -232,16 +246,16 @@ class MCPServerHTTP {
                 $basePath = dirname(__DIR__);
 
                 if (empty($path)) {
-                    throw new \Exception('Ścieżka do pliku jest wymagana');
+                    throw new Exception('Ścieżka do pliku jest wymagana');
                 }
 
                 // Obsługa ścieżek z ~
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath . substr($path, 1);
+                    $fullPath = $homePath.substr($path, 1);
                 } else {
                     // Ścieżka względna lub absolutna
-                    $fullPath = $basePath . '/' . ltrim($path, './');
+                    $fullPath = $basePath.'/'.ltrim($path, './');
                 }
 
                 // Normalizuj ścieżkę i sprawdź bezpieczeństwo
@@ -249,7 +263,7 @@ class MCPServerHTTP {
                 $dirPath = dirname($fullPath);
 
                 if (!str_starts_with(realpath($dirPath), $basePath)) {
-                    throw new \Exception('Dostęp do katalogu zabroniony! Ścieżka wykracza poza dozwolony katalog.');
+                    throw new Exception('Dostęp do katalogu zabroniony! Ścieżka wykracza poza dozwolony katalog.');
                 }
 
                 $dir = dirname($fullPath);
@@ -258,18 +272,19 @@ class MCPServerHTTP {
                 }
 
                 $bytes = file_put_contents($fullPath, $content);
+
                 return "Zapisano plik: $path\nZapisano bajtów: $bytes";
 
             case 'system_info':
-                return "=== INFORMACJE O SYSTEMIE ===\n\n" .
-                    "System operacyjny: " . PHP_OS . "\n" .
-                    "Wersja PHP: " . PHP_VERSION . "\n" .
-                    "Architektura: " . php_uname('m') . "\n" .
-                    "Hostname: " . gethostname() . "\n" .
-                    "Pamięć limit: " . ini_get('memory_limit') . "\n" .
-                    "Maksymalny czas wykonania: " . ini_get('max_execution_time') . "s\n" .
-                    "Katalog roboczy: " . getcwd() . "\n" .
-                    "Załadowane rozszerzenia: " . implode(', ', get_loaded_extensions());
+                return "=== INFORMACJE O SYSTEMIE ===\n\n".
+                    "System operacyjny: ".PHP_OS."\n".
+                    "Wersja PHP: ".PHP_VERSION."\n".
+                    "Architektura: ".php_uname('m')."\n".
+                    "Hostname: ".gethostname()."\n".
+                    "Pamięć limit: ".ini_get('memory_limit')."\n".
+                    "Maksymalny czas wykonania: ".ini_get('max_execution_time')."s\n".
+                    "Katalog roboczy: ".getcwd()."\n".
+                    "Załadowane rozszerzenia: ".implode(', ', get_loaded_extensions());
 
             case 'json_parse':
                 try {
@@ -277,13 +292,13 @@ class MCPServerHTTP {
                     $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
                     $pretty = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-                    return "=== SPARSOWANY JSON ===\n\n" .
-                        "Typ główny: " . gettype($data) . "\n" .
-                        (is_array($data) ? "Liczba elementów: " . count($data) . "\n" : "") .
-                        "\nSformatowany JSON:\n---\n" .
+                    return "=== SPARSOWANY JSON ===\n\n".
+                        "Typ główny: ".gettype($data)."\n".
+                        (is_array($data) ? "Liczba elementów: ".count($data)."\n" : "").
+                        "\nSformatowany JSON:\n---\n".
                         $pretty;
-                } catch (\JsonException $e) {
-                    return "Błąd parsowania JSON:\n" . $e->getMessage();
+                } catch (JsonException $e) {
+                    return "Błąd parsowania JSON:\n".$e->getMessage();
                 }
 
             case 'http_request':
@@ -308,8 +323,8 @@ class MCPServerHTTP {
                         'timeout' => 10,
                         'allow_redirects' => true,
                         'headers' => array_merge([
-                            'User-Agent' => 'PHP-MCP-Server/2.1'
-                        ], $headersArray)
+                            'User-Agent' => 'PHP-MCP-Server/2.1',
+                        ], $headersArray),
                     ];
 
                     if (!empty($body) && in_array($method, ['POST', 'PUT', 'PATCH'])) {
@@ -346,15 +361,15 @@ class MCPServerHTTP {
                         return "Błąd HTTP: $error";
                     }
 
-                    return "=== ODPOWIEDŹ HTTP ===\n\n" .
-                        "URL: $url\n" .
-                        "Metoda: $method\n" .
-                        "Status: $httpCode\n" .
-                        "Rozmiar odpowiedzi: " . strlen($response) . " bajtów\n\n" .
-                        "Treść odpowiedzi:\n---\n" .
-                        substr($response, 0, 5000) . (strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
-                } catch (\Exception $e) {
-                    return "Błąd wykonania zapytania HTTP: " . $e->getMessage();
+                    return "=== ODPOWIEDŹ HTTP ===\n\n".
+                        "URL: $url\n".
+                        "Metoda: $method\n".
+                        "Status: $httpCode\n".
+                        "Rozmiar odpowiedzi: ".strlen($response)." bajtów\n\n".
+                        "Treść odpowiedzi:\n---\n".
+                        substr($response, 0, 5000).(strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
+                } catch (Exception $e) {
+                    return "Błąd wykonania zapytania HTTP: ".$e->getMessage();
                 }
 
             case 'get_weather':
@@ -370,20 +385,21 @@ class MCPServerHTTP {
                 $humidity = rand(30, 90);
                 $windSpeed = rand(0, 30);
 
-                return "=== POGODA DLA MIASTA: " . strtoupper($city) . " ===\n\n" .
-                    "Stan pogody: $condition\n" .
-                    "Temperatura: {$temp}°C\n" .
-                    "Wilgotność: {$humidity}%\n" .
-                    "Prędkość wiatru: {$windSpeed} km/h\n" .
-                    "Data aktualizacji: " . date('Y-m-d H:i:s') . "\n\n" .
+                return "=== POGODA DLA MIASTA: ".strtoupper($city)." ===\n\n".
+                    "Stan pogody: $condition\n".
+                    "Temperatura: {$temp}°C\n".
+                    "Wilgotność: {$humidity}%\n".
+                    "Prędkość wiatru: {$windSpeed} km/h\n".
+                    "Data aktualizacji: ".date('Y-m-d H:i:s')."\n\n".
                     "*Uwaga: Dane symulowane - w prawdziwej implementacji użyto by zewnętrznego API pogodowego";
 
             default:
-                throw new \Exception("Nieznane narzędzie: $name");
+                throw new Exception("Nieznane narzędzie: $name");
         }
     }
 
-    public function handleHTTP() {
+    public function handleHTTP()
+    {
         // Obsługa GET - pokazuje dostępne endpointy
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             return [
@@ -391,16 +407,16 @@ class MCPServerHTTP {
                 'endpoints' => [
                     'GET /' => 'Ta informacja',
                     'GET /tools' => 'Lista dostępnych narzędzi',
-                    'POST /call' => 'Wywołanie narzędzia (JSON: {"tool": "nazwa", "arguments": {}})'
+                    'POST /call' => 'Wywołanie narzędzia (JSON: {"tool": "nazwa", "arguments": {}})',
                 ],
                 'example' => [
                     'url' => '/call',
                     'method' => 'POST',
                     'body' => [
                         'tool' => 'hello',
-                        'arguments' => ['name' => 'Jan']
-                    ]
-                ]
+                        'arguments' => ['name' => 'Jan'],
+                    ],
+                ],
             ];
         }
 
@@ -421,13 +437,15 @@ class MCPServerHTTP {
             }
 
             $result = $this->executeTool($tool, $arguments);
+
             return ['result' => $result];
         }
 
         return ['error' => 'Nieobsługiwana metoda HTTP'];
     }
 
-    public function getTools(): array {
+    public function getTools(): array
+    {
         return ['tools' => array_values($this->tools)];
     }
 }

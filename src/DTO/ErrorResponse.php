@@ -48,7 +48,7 @@ class ErrorResponse
     {
         return new self("Tool '$tool' failed: $error", 500, [
             'tool' => $tool,
-            'arguments' => $arguments
+            'arguments' => $arguments,
         ]);
     }
 
@@ -79,7 +79,7 @@ class ErrorResponse
             'error' => $this->error,
             'code' => $this->code,
             'timestamp' => $this->timestamp,
-            'details' => $this->details
+            'details' => $this->details,
         ];
     }
 

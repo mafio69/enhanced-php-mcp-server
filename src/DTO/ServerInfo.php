@@ -52,6 +52,7 @@ class ServerInfo
     public function setDetail(string $key, $value): self
     {
         $this->details[$key] = $value;
+
         return $this;
     }
 
@@ -62,7 +63,7 @@ class ServerInfo
             'version' => $this->version,
             'description' => $this->description,
             'status' => $this->status,
-            'details' => $this->details
+            'details' => $this->details,
         ];
     }
 }

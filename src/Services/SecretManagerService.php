@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -14,7 +15,7 @@ class SecretManagerService
     public function __construct(LoggerInterface $logger, ?string $secretsPath = null, ?string $encryptionKey = null)
     {
         $this->logger = $logger;
-        $this->secretsPath = $secretsPath ?? __DIR__ . '/../../storage/secrets';
+        $this->secretsPath = $secretsPath ?? __DIR__.'/../../storage/secrets';
         $this->encryptionKey = $encryptionKey ?? $this->getEncryptionKey();
 
         $this->initializeStorage();
@@ -46,15 +47,17 @@ class SecretManagerService
 
         if ($key) {
             $this->logger->debug("Using encryption key from environment");
+
             return $key;
         }
 
         // Try to load from key file
-        $keyFile = __DIR__ . '/../../storage/.secret_key';
+        $keyFile = __DIR__.'/../../storage/.secret_key';
         if (file_exists($keyFile)) {
             $key = file_get_contents($keyFile);
             if ($key !== false) {
                 $this->logger->debug("Using encryption key from file");
+
                 return trim($key);
             }
         }
@@ -80,7 +83,7 @@ class SecretManagerService
      */
     private function saveEncryptionKey(string $key): void
     {
-        $keyFile = __DIR__ . '/../../storage/.secret_key';
+        $keyFile = __DIR__.'/../../storage/.secret_key';
         $keyDir = dirname($keyFile);
 
         if (!is_dir($keyDir)) {
@@ -108,7 +111,7 @@ class SecretManagerService
             throw new RuntimeException("Failed to encrypt data");
         }
 
-        return base64_encode($iv . $encrypted);
+        return base64_encode($iv.$encrypted);
     }
 
     /**
@@ -139,7 +142,7 @@ class SecretManagerService
     public function storeSecret(string $key, string $value): void
     {
         $encryptedValue = $this->encrypt($value);
-        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
+        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
 
         if (file_put_contents($filePath, $encryptedValue) === false) {
             throw new RuntimeException("Failed to store secret: {$key}");
@@ -154,7 +157,7 @@ class SecretManagerService
      */
     public function getSecret(string $key): ?string
     {
-        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
+        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
 
         if (!file_exists($filePath)) {
             return null;
@@ -168,8 +171,9 @@ class SecretManagerService
         try {
             $decryptedValue = $this->decrypt($encryptedValue);
             $this->logger->debug("Secret retrieved", ['key' => $key]);
+
             return $decryptedValue;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error("Failed to decrypt secret", ['key' => $key, 'error' => $e->getMessage()]);
             throw new RuntimeException("Failed to decrypt secret: {$key}");
         }
@@ -180,11 +184,12 @@ class SecretManagerService
      */
     public function deleteSecret(string $key): bool
     {
-        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
+        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
 
         if (file_exists($filePath)) {
             if (unlink($filePath)) {
                 $this->logger->info("Secret deleted", ['key' => $key]);
+
                 return true;
             }
         }
@@ -198,7 +203,7 @@ class SecretManagerService
     public function listSecrets(): array
     {
         $secrets = [];
-        $files = glob($this->secretsPath . '/*.sec');
+        $files = glob($this->secretsPath.'/*.sec');
 
         if ($files !== false) {
             foreach ($files as $file) {
@@ -208,6 +213,7 @@ class SecretManagerService
         }
 
         sort($secrets);
+
         return $secrets;
     }
 
@@ -216,7 +222,8 @@ class SecretManagerService
      */
     public function secretExists(string $key): bool
     {
-        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
+        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
+
         return file_exists($filePath);
     }
 
@@ -266,7 +273,7 @@ class SecretManagerService
             } elseif (is_string($value) && $this->isEncrypted($value)) {
                 try {
                     $value = $this->decrypt($value);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->logger->warning("Failed to decrypt configuration value", ['error' => $e->getMessage()]);
                     // Keep original value if decryption fails
                 }

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Config\ServerConfig;
 use App\Services\SecretManagerService;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -29,10 +30,11 @@ class SecretController extends BaseController
             return $this->jsonResponse($response, [
                 'success' => true,
                 'data' => $secrets,
-                'count' => count($secrets)
+                'count' => count($secrets),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to list secrets', ['error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to list secrets', 500);
         }
     }
@@ -60,11 +62,12 @@ class SecretController extends BaseController
                 'data' => [
                     'key' => $key,
                     'value' => $value,
-                    'exists' => true
-                ]
+                    'exists' => true,
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to get secret', ['key' => $key, 'error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to retrieve secret', 500);
         }
     }
@@ -97,11 +100,12 @@ class SecretController extends BaseController
                 'message' => 'Secret stored successfully',
                 'data' => [
                     'key' => $key,
-                    'stored' => true
-                ]
+                    'stored' => true,
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to store secret', ['key' => $key, 'error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to store secret', 500);
         }
     }
@@ -134,14 +138,15 @@ class SecretController extends BaseController
                     'message' => 'Secret deleted successfully',
                     'data' => [
                         'key' => $key,
-                        'deleted' => true
-                    ]
+                        'deleted' => true,
+                    ],
                 ]);
             } else {
                 return $this->errorResponse($response, 'Failed to delete secret', 500);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to delete secret', ['key' => $key, 'error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to delete secret', 500);
         }
     }
@@ -164,11 +169,12 @@ class SecretController extends BaseController
                 'success' => true,
                 'data' => [
                     'key' => $key,
-                    'exists' => $exists
-                ]
+                    'exists' => $exists,
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to check secret', ['key' => $key, 'error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to check secret', 500);
         }
     }
@@ -197,11 +203,12 @@ class SecretController extends BaseController
                 'success' => true,
                 'data' => [
                     'original' => $value,
-                    'encrypted' => $encrypted
-                ]
+                    'encrypted' => $encrypted,
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to encrypt value', ['error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to encrypt value', 500);
         }
     }
@@ -230,12 +237,17 @@ class SecretController extends BaseController
                 'success' => true,
                 'data' => [
                     'encrypted' => $encrypted,
-                    'decrypted' => $decrypted
-                ]
+                    'decrypted' => $decrypted,
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to decrypt value', ['error' => $e->getMessage()]);
-            return $this->errorResponse($response, 'Failed to decrypt value. The value may not be properly encrypted.', 500);
+
+            return $this->errorResponse(
+                $response,
+                'Failed to decrypt value. The value may not be properly encrypted.',
+                500
+            );
         }
     }
 
@@ -249,7 +261,7 @@ class SecretController extends BaseController
             $errors = [];
 
             // Get current server configuration
-            $configPath = __DIR__ . '/../../config/server.php';
+            $configPath = __DIR__.'/../../config/server.php';
             $serverConfig = require $configPath;
 
             // Process MCP servers configuration
@@ -265,8 +277,8 @@ class SecretController extends BaseController
                                         try {
                                             $this->secretManager->storeSecret($secretKey, $envValue);
                                             $migrated[] = $secretKey;
-                                        } catch (\Exception $e) {
-                                            $errors[] = "Failed to migrate {$secretKey}: " . $e->getMessage();
+                                        } catch (Exception $e) {
+                                            $errors[] = "Failed to migrate {$secretKey}: ".$e->getMessage();
                                         }
                                     }
                                 }
@@ -278,7 +290,7 @@ class SecretController extends BaseController
 
             $this->logger->info('Secret migration completed', [
                 'migrated_count' => count($migrated),
-                'error_count' => count($errors)
+                'error_count' => count($errors),
             ]);
 
             return $this->jsonResponse($response, [
@@ -288,11 +300,12 @@ class SecretController extends BaseController
                     'migrated' => $migrated,
                     'migrated_count' => count($migrated),
                     'errors' => $errors,
-                    'error_count' => count($errors)
-                ]
+                    'error_count' => count($errors),
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to migrate secrets', ['error' => $e->getMessage()]);
+
             return $this->errorResponse($response, 'Failed to migrate secrets', 500);
         }
     }

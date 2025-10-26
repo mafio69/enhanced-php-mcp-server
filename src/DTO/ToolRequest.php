@@ -36,6 +36,7 @@ class ToolRequest
     public function setArgument(string $key, $value): self
     {
         $this->arguments[$key] = $value;
+
         return $this;
     }
 
@@ -43,7 +44,7 @@ class ToolRequest
     {
         return [
             'tool' => $this->tool,
-            'arguments' => $this->arguments
+            'arguments' => $this->arguments,
         ];
     }
 

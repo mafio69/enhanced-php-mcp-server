@@ -27,11 +27,14 @@ class ServerController extends BaseController
         $errors = $dto->validate();
 
         if (!empty($errors)) {
-            return $this->errorResponse($response, new ErrorResponse(
-                'Invalid input',
-                400,
-                $errors
-            ));
+            return $this->errorResponse(
+                $response,
+                new ErrorResponse(
+                    'Invalid input',
+                    400,
+                    $errors
+                )
+            );
         }
 
         $server = $this->serverService->addServer($dto->toArray());

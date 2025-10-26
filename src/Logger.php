@@ -5,19 +5,21 @@ namespace App;
 use Psr\Log\LogLevel;
 use Stringable;
 
-class Logger {
+class Logger
+{
     private string $logFile;
     private string $level;
     private array $config;
 
-    public function __construct(array $config = []) {
+    public function __construct(array $config = [])
+    {
         $this->config = array_merge([
-            'file' => __DIR__ . '/../logs/server.log',
+            'file' => __DIR__.'/../logs/server.log',
             'level' => 'info',
             'max_size' => 10 * 1024 * 1024, // 10MB
             'backup_count' => 5,
             'date_format' => 'Y-m-d H:i:s',
-            'log_format' => '[{date}] {level}: {message} {context}'
+            'log_format' => '[{date}] {level}: {message} {context}',
         ], $config);
 
         $this->logFile = $this->config['file'];
@@ -33,39 +35,48 @@ class Logger {
         $this->rotateIfNeeded();
     }
 
-    public function emergency(string|Stringable $message, array $context = []): void {
+    public function emergency(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::EMERGENCY, $message, $context);
     }
 
-    public function alert(string|Stringable $message, array $context = []): void {
+    public function alert(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::ALERT, $message, $context);
     }
 
-    public function critical(string|Stringable $message, array $context = []): void {
+    public function critical(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::CRITICAL, $message, $context);
     }
 
-    public function error(string|Stringable $message, array $context = []): void {
+    public function error(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::ERROR, $message, $context);
     }
 
-    public function warning(string|Stringable $message, array $context = []): void {
+    public function warning(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::WARNING, $message, $context);
     }
 
-    public function notice(string|Stringable $message, array $context = []): void {
+    public function notice(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::NOTICE, $message, $context);
     }
 
-    public function info(string|Stringable $message, array $context = []): void {
+    public function info(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::INFO, $message, $context);
     }
 
-    public function debug(string|Stringable $message, array $context = []): void {
+    public function debug(string|Stringable $message, array $context = []): void
+    {
         $this->log(LogLevel::DEBUG, $message, $context);
     }
 
-    public function log(string $level, string|Stringable $message, array $context = []): void {
+    public function log(string $level, string|Stringable $message, array $context = []): void
+    {
         if (!$this->shouldLog($level)) {
             return;
         }
@@ -82,7 +93,8 @@ class Logger {
         $this->writeToFile($logMessage);
     }
 
-    private function shouldLog(string $level): bool {
+    private function shouldLog(string $level): bool
+    {
         $levels = [
             LogLevel::DEBUG => 0,
             LogLevel::INFO => 1,
@@ -100,11 +112,13 @@ class Logger {
         return $messageLevel >= $currentLevel;
     }
 
-    private function writeToFile(string $message): void {
-        file_put_contents($this->logFile, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
+    private function writeToFile(string $message): void
+    {
+        file_put_contents($this->logFile, $message.PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
-    private function rotateIfNeeded(): void {
+    private function rotateIfNeeded(): void
+    {
         if (!file_exists($this->logFile)) {
             return;
         }
@@ -115,8 +129,8 @@ class Logger {
 
         // Usuń najstarsze logi
         for ($i = $this->config['backup_count']; $i > 0; $i--) {
-            $oldFile = $this->logFile . '.' . $i;
-            $newFile = $this->logFile . '.' . ($i + 1);
+            $oldFile = $this->logFile.'.'.$i;
+            $newFile = $this->logFile.'.'.($i + 1);
 
             if (file_exists($oldFile)) {
                 if ($i === $this->config['backup_count']) {
@@ -128,14 +142,16 @@ class Logger {
         }
 
         // Przesuń obecny log
-        rename($this->logFile, $this->logFile . '.1');
+        rename($this->logFile, $this->logFile.'.1');
     }
 
-    public function getLogPath(): string {
+    public function getLogPath(): string
+    {
         return $this->logFile;
     }
 
-    public static function createFromConfig(array $config): self {
+    public static function createFromConfig(array $config): self
+    {
         return new self($config['logging'] ?? []);
     }
 }

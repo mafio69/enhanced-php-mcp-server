@@ -31,6 +31,7 @@ class ServerStatusResponse
     public static function stopped(string $reason = ''): self
     {
         $server = new ServerInfo('stopped', '0.0.0', 'Stopped', $reason);
+
         return new self('stopped', $server);
     }
 
@@ -66,7 +67,7 @@ class ServerStatusResponse
             'server' => $this->server->toArray(),
             'metrics' => $this->metrics,
             'tools' => $this->tools,
-            'timestamp' => $this->timestamp
+            'timestamp' => $this->timestamp,
         ];
     }
 

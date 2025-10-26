@@ -26,8 +26,9 @@ class StatusController extends BaseController
                 'name' => $this->config->getName(),
                 'version' => $this->config->getVersion(),
             ],
-            'metrics' => $this->monitoring->getMetrics()
+            'metrics' => $this->monitoring->getMetrics(),
         ];
+
         return $this->jsonResponse($response, $data);
     }
 
@@ -40,6 +41,7 @@ class StatusController extends BaseController
     {
         // Prosta implementacja, można rozbudować
         $data = ['status' => 'healthy'];
+
         return $this->jsonResponse($response, $data);
     }
 }

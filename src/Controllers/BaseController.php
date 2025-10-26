@@ -33,7 +33,7 @@ abstract class BaseController
         $this->logger->error('API Error', [
             'error' => $error->getError(),
             'code' => $error->getCode(),
-            'details' => $error->getDetails()
+            'details' => $error->getDetails(),
         ]);
 
         return $this->jsonResponse($response, $error->toArray(), $error->getCode());
@@ -43,7 +43,7 @@ abstract class BaseController
     {
         $responseData = [
             'success' => true,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
 
         if ($data !== null) {
@@ -58,7 +58,7 @@ abstract class BaseController
         $contentType = $request->getHeaderLine('Content-Type');
 
         if (strpos($contentType, 'application/json') !== false) {
-            return (array) json_decode($request->getBody()->getContents(), true) ?: [];
+            return (array)json_decode($request->getBody()->getContents(), true) ?: [];
         }
 
         return [];

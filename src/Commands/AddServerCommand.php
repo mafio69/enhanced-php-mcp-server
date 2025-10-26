@@ -38,7 +38,7 @@ class AddServerCommand extends Command
         $serverData = [
             'name' => $name,
             'ipAddress' => $ipAddress,
-            'port' => $port
+            'port' => $port,
         ];
 
         $this->serverService->addServer($serverData);

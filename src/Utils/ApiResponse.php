@@ -9,7 +9,7 @@ class ApiResponse
         $response = [
             'success' => true,
             'data' => $data,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
 
         if ($message) {
@@ -25,7 +25,7 @@ class ApiResponse
             'success' => false,
             'error' => $message,
             'code' => $code,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
 
         if ($data) {
@@ -42,7 +42,7 @@ class ApiResponse
             'tool' => $toolName,
             'result' => $result,
             'arguments' => $arguments,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -53,7 +53,7 @@ class ApiResponse
             'tool' => $toolName,
             'error' => $error,
             'arguments' => $arguments,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -62,7 +62,7 @@ class ApiResponse
         return [
             'success' => true,
             'server' => $serverData,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -71,7 +71,7 @@ class ApiResponse
         return [
             'success' => true,
             'status' => $statusData,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -81,7 +81,7 @@ class ApiResponse
             'success' => true,
             'logs' => $logs,
             'count' => count($logs),
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -90,7 +90,7 @@ class ApiResponse
         return [
             'success' => true,
             'metrics' => $metrics,
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -100,7 +100,7 @@ class ApiResponse
             'success' => true,
             'tools' => $tools,
             'count' => count($tools),
-            'timestamp' => date('Y-m-d H:i:s')
+            'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
 }

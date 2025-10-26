@@ -8,7 +8,6 @@ use App\Controllers\SecretController;
 use App\Controllers\ToolsController;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
-use App\Services\MonitoringService; // Upewniamy się, że import jest poprawny
 use App\Services\SecretManagerService;
 use App\Services\ServerService;
 use DI\ContainerBuilder;
@@ -17,9 +16,13 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Slim\App;
+use Slim\Factory\AppFactory;
 use function DI\create;
-use function DI\get;
 use function DI\factory;
+use function DI\get;
+
+// Upewniamy się, że import jest poprawny
 
 class AppContainer
 {
@@ -29,7 +32,7 @@ class AppContainer
         $builder->useAutowiring(true);
         $builder->useAttributes(true);
 
-        $config = require __DIR__ . '/../config/server.php';
+        $config = require __DIR__.'/../config/server.php';
 
         $definitions = [
             'config' => $config,
@@ -49,6 +52,7 @@ class AppContainer
                 );
                 $fileHandler->setFormatter($formatter);
                 $logger->pushHandler($fileHandler);
+
                 return $logger;
             }),
 
@@ -77,17 +81,19 @@ class AppContainer
             AdminController::class => create(AdminController::class)
                 ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(AdminAuthService::class)),
 
-            \Slim\App::class => factory(function (ContainerInterface $c) {
-                $app = \Slim\Factory\AppFactory::createFromContainer($c);
+            App::class => factory(function (ContainerInterface $c) {
+                $app = AppFactory::createFromContainer($c);
                 ApiRoutes::register($app);
                 $app->addBodyParsingMiddleware();
                 $app->addRoutingMiddleware();
                 $app->addErrorMiddleware(true, true, true, $c->get(LoggerInterface::class));
+
                 return $app;
             }),
         ];
 
         $builder->addDefinitions($definitions);
+
         return $builder->build();
     }
 }

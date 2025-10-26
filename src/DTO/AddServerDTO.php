@@ -33,7 +33,7 @@ class AddServerDTO
     {
         return [
             'name' => $this->name,
-            'config' => $this->config
+            'config' => $this->config,
         ];
     }
 }
