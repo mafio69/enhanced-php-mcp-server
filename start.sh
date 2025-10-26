@@ -105,7 +105,7 @@ start_cli() {
     echo ""
 
     if check_dependencies; then
-        php index.php
+        php public/index.php
     else
         echo -e "${RED}❌ Cannot start server - check dependencies${NC}"
     fi
@@ -132,7 +132,7 @@ start_web() {
         echo ""
 
         # Start PHP server in background and show logs
-        php -S localhost:"$PORT" index.php
+        php -S localhost:"$PORT" public/index.php
     else
         echo -e "${RED}❌ Cannot start server - check dependencies${NC}"
     fi
@@ -157,7 +157,7 @@ start_all() {
     fi
 
     # Start web server in background
-    php -S localhost:"$PORT" index.php > logs/web_server.log 2>&1 &
+    php -S localhost:"$PORT" public/index.php > logs/web_server.log 2>&1 &
     WEB_PID=$!
 
     echo -e "${GREEN}✅ Web server started (PID: $WEB_PID) at http://localhost:$PORT${NC}"
@@ -207,9 +207,9 @@ check_status() {
     echo ""
 
     # Check processes
-    if pgrep -f "php index.php" > /dev/null; then
+    if pgrep -f "php public/index.php" > /dev/null; then
         echo -e "${GREEN}✅ CLI Server is running${NC}"
-        CLI_PIDS=$(pgrep -f "php index.php")
+        CLI_PIDS=$(pgrep -f "php public/index.php")
         echo -e "${CYAN}   PIDs: $CLI_PIDS${NC}"
     else
         echo -e "${RED}❌ CLI Server is not running${NC}"

@@ -35,7 +35,7 @@
         }
     },
     "scripts": {
-        "start": "php index.php",
+        "start": "php public/index.php",
         "test": "phpunit -c tests/phpunit.xml",
         "cs-fix": "php-cs-fixer fix",
         "cs-check": "php-cs-fixer fix --dry-run --diff"

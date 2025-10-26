@@ -9,7 +9,7 @@ use function PHPUnit\Framework\assertStringContainsStringString;
 class HTTPAPITest extends TestCase
 {
     private string $baseUrl;
-    private int $serverPort;
+    private ?int $serverPort;
 
     protected function setUp(): void
     {
