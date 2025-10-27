@@ -4,7 +4,7 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 
 ## 🚀 Features
 
-- **10 Built-in Tools**: Hello, Time, Calculator, File Operations, System Info, JSON Parsing, Weather, HTTP Request
+- **12 Built-in Tools**: Hello, Time, Calculator, File Operations, System Info, JSON Parsing, Weather, HTTP Request, Brave Search, Playwright
 - **Web Dashboard**: Modern web interface for tool management, testing, and monitoring
 - **Security**: Path restrictions, file size limits, input validation
 - **Configuration**: Centralized config system with environment support
@@ -109,9 +109,74 @@ php index.php
 composer start
 ```
 
+## 🔗 **POŁĄCZENIE Z CLAUDE CODE**
+
+### **Krok po Kroku: Jak Podłączyć Serwer do Claude**
+
+#### **1. Uruchom Serwer w Trybie Web**
+```bash
+# Przejdź do katalogu projektu
+cd /home/mariusz/mcp-php-server
+
+# Uruchom serwer w trybie web (HTTP API)
+./start.sh 2
+```
+Serwer uruchomi się na `http://localhost:8889` (lub 8888 jeśli wolny).
+
+#### **2. Sprawdź Status Serwera**
+Otwórz w przeglądarce: http://localhost:8889/api/status
+
+Lub sprawdź przez curl:
+```bash
+curl http://localhost:8889/api/status
+```
+
+#### **3. Dostępne Narzędzia**
+Zobacz listę 12 narzędzi:
+```bash
+curl http://localhost:8889/api/tools
+```
+
+#### **4. Przykładowe Wywołania API**
+```bash
+# Test narzędzia system_info
+curl -X POST http://localhost:8889/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "system_info", "arguments": {}}'
+
+# Test Playwright
+curl -X POST http://localhost:8889/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "playwright", "arguments": {"action": "info"}}'
+
+# Obliczenia
+curl -X POST http://localhost:8889/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "calculate", "arguments": {"operation": "add", "a": 10, "b": 5}}'
+```
+
+#### **5. Integracja z Claude**
+Gdy serwer działa, Claude może:
+- 📡 Wywoływać wszystkie 12 narzędzi przez HTTP API
+- 🌐 Używać Playwright do automatyzacji przeglądarek
+- 📊 Wykonywać operacje na plikach
+- 🔧 Zarządzać systemem operacyjnym
+- 🌍 Pobierać dane z zewnętrznych API
+
+#### **6. Weryfikacja Połączenia**
+Claude potwierdzi połączenie komunikatem:
+```
+✅ PODŁĄCZONO DO SERWERA MCP
+🌐 Adres: http://localhost:8889
+📊 Status: Działa poprawnie
+🔧 Dostępne narzędzia: 12 sztuk
+```
+
+---
+
 ## 📚 Available Tools
 
-The server provides 10 powerful tools:
+The server provides 12 powerful tools:
 
 ### 1. **hello**
 Greets a person by name.
@@ -173,6 +238,37 @@ Fetches weather information for a specified city.
 echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_weather","arguments":{"city":"London"}}}' | php index.php
 ```
 
+### 11. **brave_search**
+Searches the web using Brave Search API (requires API key).
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"brave_search","arguments":{"query":"PHP programming","count": 5}}}' | php index.php
+```
+
+### 12. **playwright** ⭐ **NOWOŚĆ**
+Real browser automation with Playwright (WSL-Windows integration).
+```bash
+echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"playwright","arguments":{"action":"info"}}}' | php index.php
+```
+
+### 📋 **Podsumowanie Narzędzi**
+
+| Nazwa | Opis | Status |
+|-------|------|--------|
+| `hello` | Powitania | ✅ Działa |
+| `get_time` | Data i czas | ✅ Działa |
+| `calculate` | Kalkulator | ✅ Działa |
+| `list_files` | Lista plików | ✅ Działa |
+| `read_file` | Odczyt plików | ✅ Działa |
+| `write_file` | Zapis plików | ✅ Działa |
+| `system_info` | Info systemu | ✅ Działa |
+| `http_request` | Zapytania HTTP | ✅ Działa |
+| `json_parse` | Parsowanie JSON | ✅ Działa |
+| `get_weather` | Pogoda | ✅ Działa |
+| `brave_search` | Wyszukiwarka | 🔑 Wymaga API |
+| `playwright` | Automatyzacja WWW | 🌐 WSL-Windows |
+
+**Łącznie: 12 narzędzi (10 gotowych do użycia, 1 wymaga klucza API, 1 z integracją WSL-Windows)**
+
 ## 🌐 Web API (HTTP Mode)
 
 When server is running in Web mode (`./start.sh 2`), the following endpoints are available:
@@ -203,6 +299,21 @@ curl -X POST http://localhost:8888/api/tools/call \
 curl -X POST http://localhost:8888/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "list_files", "arguments": {"path": "src"}}'
+
+# Brave Search (wymaga BRAVE_API_KEY)
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "brave_search", "arguments": {"query": "PHP MCP Server", "count": 3}}'
+
+# Playwright - informacje o narzędziu
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "playwright", "arguments": {"action": "check_installation"}}'
+
+# Playwright - nawigacja na stronę (z WSL-Windows integracją)
+curl -X POST http://localhost:8888/api/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "playwright", "arguments": {"action": "navigate", "url": "https://example.com", "waitFor": 3000}}'
 ```
 
 ## 🔧 Configuration
@@ -344,6 +455,37 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file"
 3. **Extensions Missing**: Install required PHP extensions (`php-json`, `php-curl`)
 4. **File Access**: Check file permissions in project directory
 5. **Port Conflicts**: Server auto-detects ports 8888, 8889, 8890
+
+### Połączenie z Claude - FAQ
+
+#### **❓ Serwer nie odpowiada na http://localhost:8889**
+**Rozwiązanie:**
+```bash
+# Sprawdź czy serwer działa
+./start.sh 4
+
+# Uruchom ponownie
+./start.sh 2
+```
+
+#### **❓ Playwright nie działa w WSL**
+**Rozwiązanie:** To normalne! Serwer ma inteligentną obsługę WSL-Windows:
+- Sprawdź instalację: `{"action": "check_installation"}`
+- Zainstaluj zależności WSL: `sudo apt-get install libnspr4 libnss3 libasound2t64`
+- Lub użyj trybu symulacji (działa automatycznie)
+
+#### **❓ Brave Search wymaga klucza API**
+**Rozwiązanie:**
+```bash
+export BRAVE_API_KEY='twój_klucz_api'
+```
+
+#### **❓ Claude nie może się połączyć**
+**Kroki diagnostyczne:**
+1. Upewnij się, że serwer działa: `./start.sh 4`
+2. Sprawdź logi: `./start.sh 5`
+3. Weryfikacja API: `curl http://localhost:8889/api/status`
+4. Zrestartuj serwer: `./start.sh 2`
 
 ### Debug Mode
 

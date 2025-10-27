@@ -12,6 +12,7 @@ use App\Tools\HelloTool;
 use App\Tools\HttpRequestTool;
 use App\Tools\JsonParseTool;
 use App\Tools\ListFilesTool;
+use App\Tools\PlaywrightTool;
 use App\Tools\ReadFileTool;
 use App\Tools\SystemInfoTool;
 use App\Tools\WriteFileTool;
@@ -39,6 +40,7 @@ class ToolRegistry implements ToolExecutorInterface
         $this->registerTool(new JsonParseTool());
         $this->registerTool(new GetWeatherTool());
         $this->registerTool(new BraveSearchTool());
+        $this->registerTool(new PlaywrightTool());
     }
 
     public function registerTool(ToolInterface $tool): void

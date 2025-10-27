@@ -45,6 +45,7 @@ return array (
       8 => 'json_parse',
       9 => 'get_weather',
       10 => 'brave_search',
+      11 => 'playwright',
     ),
     'restricted' =>
     array (
@@ -53,16 +54,16 @@ return array (
       2 => 'brave_search',
     ),
   ),
-  'mcpServers' => 
+  'mcpServers' =>
   array (
-    'Brave-search' => 
+    'Brave-search' =>
     array (
-      'mcpServers' => 
+      'mcpServers' =>
       array (
-        'brave-search' => 
+        'brave-search' =>
         array (
           'command' => 'npx',
-          'args' => 
+          'args' =>
           array (
             0 => '-y',
             1 => '@brave/brave-search-mcp-server',
@@ -72,6 +73,22 @@ return array (
           'env' =>
           array (
             'BRAVE_API_KEY' => '${BRAVE_API_KEY}',
+          ),
+        ),
+      ),
+    ),
+    'playwright' =>
+    array (
+      'mcpServers' =>
+      array (
+        'playwright' =>
+        array (
+          'command' => 'npx',
+          'args' =>
+          array (
+            0 => '@playwright/mcp@latest',
+            1 => '--isolated',
+            2 => '--storage-state=/home/mariusz/mcp-php-server/storage/playwright-storage.json',
           ),
         ),
       ),

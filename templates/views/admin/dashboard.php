@@ -102,16 +102,7 @@
         <div id="tools" class="tab-content">
             <h2>🔧 Dostępne narzędzia MCP</h2>
 
-            <div style="margin-bottom: 20px;">
-                <button onclick="ToolsManager.loadAvailableTools()" style="margin-right: 10px;">🔄 Odśwież listę</button>
-                <span id="toolsCount" style="color: #666; font-size: 14px;"></span>
-            </div>
-
-            <div id="availableTools" style="margin-bottom: 30px;">
-                <p><em>Kliknij "Odśwież listę" aby załadować dostępne narzędzia</em></p>
-            </div>
-
-            <div style="margin-top: 30px;">
+            <div style="margin-bottom: 30px;">
                 <h3>🧪 Testuj narzędzie</h3>
                 <form id="testToolForm">
                     <div class="form-group">
@@ -128,6 +119,15 @@
                     <div class="loading" id="loading_test_tool">⏳ Wykonywanie...</div>
                     <div class="result" id="result_test_tool"></div>
                 </form>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button onclick="ToolsManager.loadAvailableTools()" style="margin-right: 10px;">🔄 Odśwież listę</button>
+                <span id="toolsCount" style="color: #666; font-size: 14px;"></span>
+            </div>
+
+            <div id="availableTools">
+                <p><em>Kliknij "Odśwież listę" aby załadować dostępne narzędzia</em></p>
             </div>
         </div>
 

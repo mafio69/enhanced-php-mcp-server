@@ -25,6 +25,8 @@ class SecretService
     {
         try {
             $secrets = [];
+
+            // Load from primary storage (config/secrets.json)
             foreach ($this->secrets as $key => $data) {
                 $secrets[$key] = [
                     'name' => $key,
@@ -35,8 +37,33 @@ class SecretService
                 ];
             }
 
+            // Also try to load from SecretManagerService storage
+            try {
+                if (class_exists('App\Services\SecretManagerService')) {
+                    $secretManager = new \App\Services\SecretManagerService($this->logger);
+                    $managerSecrets = $secretManager->listSecrets();
+
+                    foreach ($managerSecrets as $key) {
+                        // Convert dots back to underscores for consistency
+                        $normalizedKey = str_replace('.', '_', $key);
+                        if (!isset($secrets[$normalizedKey])) {
+                            $secrets[$normalizedKey] = [
+                                'name' => $normalizedKey,
+                                'description' => 'Migrated from SecretManager',
+                                'created_at' => 'Unknown',
+                                'has_value' => true,
+                                'last_accessed' => null
+                            ];
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                // SecretManager integration failed, continue with primary storage
+                $this->logger->debug('SecretManager integration failed', ['error' => $e->getMessage()]);
+            }
+
             $this->logger->info('Secrets list accessed', ['count' => count($secrets)]);
-            return $secrets;
+            return array_values($secrets); // Return as indexed array for JSON compatibility
         } catch (Exception $e) {
             $this->logger->error('Failed to list secrets', ['error' => $e->getMessage()]);
             throw new Exception('Failed to list secrets: ' . $e->getMessage());
@@ -46,19 +73,35 @@ class SecretService
     public function getSecret(string $key): ?SecretDTO
     {
         try {
-            if (!$this->secretExists($key)) {
-                return null;
+            // First try to get from SecretManagerService
+            try {
+                if (class_exists('App\Services\SecretManagerService')) {
+                    $secretManager = new \App\Services\SecretManagerService($this->logger);
+                    $managerSecret = $secretManager->getSecret($key);
+
+                    if ($managerSecret !== null) {
+                        $this->logger->info('Secret accessed from SecretManager', ['key' => $key]);
+                        return new SecretDTO($key, $managerSecret, 'Retrieved from SecretManager');
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->logger->debug('SecretManager access failed', ['key' => $key, 'error' => $e->getMessage()]);
             }
 
-            $secretData = $this->secrets[$key];
-            $decryptedValue = $this->decrypt($secretData['encrypted_value']);
+            // Then try to get from primary storage (config/secrets.json)
+            if (isset($this->secrets[$key]) && !empty($this->secrets[$key]['encrypted_value'])) {
+                $secretData = $this->secrets[$key];
+                $decryptedValue = $this->decrypt($secretData['encrypted_value']);
 
-            // Update last accessed
-            $this->secrets[$key]['last_accessed'] = date('Y-m-d H:i:s');
-            $this->saveSecrets();
+                // Update last accessed
+                $this->secrets[$key]['last_accessed'] = date('Y-m-d H:i:s');
+                $this->saveSecrets();
 
-            $this->logger->info('Secret accessed', ['key' => $key]);
-            return new SecretDTO($key, $decryptedValue, $secretData['description'] ?? '');
+                $this->logger->info('Secret accessed from primary storage', ['key' => $key]);
+                return new SecretDTO($key, $decryptedValue, $secretData['description'] ?? '');
+            }
+
+            return null;
         } catch (Exception $e) {
             $this->logger->error('Failed to get secret', ['key' => $key, 'error' => $e->getMessage()]);
             throw new Exception('Failed to get secret: ' . $e->getMessage());
@@ -161,7 +204,22 @@ class SecretService
 
     private function secretExists(string $key): bool
     {
-        return isset($this->secrets[$key]) && !empty($this->secrets[$key]['encrypted_value']);
+        // Check primary storage
+        if (isset($this->secrets[$key]) && !empty($this->secrets[$key]['encrypted_value'])) {
+            return true;
+        }
+
+        // Check SecretManagerService storage
+        try {
+            if (class_exists('App\Services\SecretManagerService')) {
+                $secretManager = new \App\Services\SecretManagerService($this->logger);
+                return $secretManager->secretExists($key);
+            }
+        } catch (\Exception $e) {
+            $this->logger->debug('SecretManager check failed', ['key' => $key, 'error' => $e->getMessage()]);
+        }
+
+        return false;
     }
 
     private function loadSecrets(): void

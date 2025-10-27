@@ -32,7 +32,7 @@ class SecretController extends BaseController
                 'count' => count($secrets),
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to list secrets', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to list secrets'));
         }
     }
 
@@ -44,14 +44,14 @@ class SecretController extends BaseController
         $key = $request->getAttribute('key');
 
         if (empty($key)) {
-            return $this->errorResponse($response, 'Secret key is required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Secret key is required'));
         }
 
         try {
             $secret = $this->secretService->getSecret($key);
 
             if ($secret === null) {
-                return $this->errorResponse($response, 'Secret not found', 404);
+                return $this->errorResponse($response, \App\DTO\ErrorResponse::notFound('Secret not found'));
             }
 
             return $this->jsonResponse($response, [
@@ -64,7 +64,7 @@ class SecretController extends BaseController
                 ],
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to retrieve secret', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to retrieve secret'));
         }
     }
 
@@ -76,7 +76,7 @@ class SecretController extends BaseController
         $data = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($data['key']) || !isset($data['value'])) {
-            return $this->errorResponse($response, 'Key and value are required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Key and value are required'));
         }
 
         $key = trim($data['key']);
@@ -85,7 +85,7 @@ class SecretController extends BaseController
         $description = $data['description'] ?? '';
 
         if (empty($key) || empty($value)) {
-            return $this->errorResponse($response, 'Key and value cannot be empty', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Key and value cannot be empty'));
         }
 
         try {
@@ -99,7 +99,7 @@ class SecretController extends BaseController
                 ],
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to store secret', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to store secret'));
         }
     }
 
@@ -111,12 +111,12 @@ class SecretController extends BaseController
         $key = $request->getAttribute('key');
 
         if (empty($key)) {
-            return $this->errorResponse($response, 'Secret key is required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Secret key is required'));
         }
 
         try {
             if (!$this->secretService->checkSecret($key)) {
-                return $this->errorResponse($response, 'Secret not found', 404);
+                return $this->errorResponse($response, \App\DTO\ErrorResponse::notFound('Secret not found'));
             }
 
             $deleted = $this->secretService->deleteSecret($key);
@@ -131,10 +131,10 @@ class SecretController extends BaseController
                     ],
                 ]);
             } else {
-                return $this->errorResponse($response, 'Failed to delete secret', 500);
+                return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to delete secret'));
             }
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to delete secret', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to delete secret'));
         }
     }
 
@@ -146,7 +146,7 @@ class SecretController extends BaseController
         $key = $request->getAttribute('key');
 
         if (empty($key)) {
-            return $this->errorResponse($response, 'Secret key is required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Secret key is required'));
         }
 
         try {
@@ -159,7 +159,7 @@ class SecretController extends BaseController
                 ],
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to check secret', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to check secret'));
         }
     }
 
@@ -171,13 +171,13 @@ class SecretController extends BaseController
         $data = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($data['value'])) {
-            return $this->errorResponse($response, 'Value is required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Value is required'));
         }
 
         $value = trim($data['value']);
 
         if (empty($value)) {
-            return $this->errorResponse($response, 'Value cannot be empty', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Value cannot be empty'));
         }
 
         try {
@@ -190,7 +190,7 @@ class SecretController extends BaseController
                 ],
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to encrypt value', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to encrypt value'));
         }
     }
 
@@ -202,13 +202,13 @@ class SecretController extends BaseController
         $data = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($data['encrypted'])) {
-            return $this->errorResponse($response, 'Encrypted value is required', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Encrypted value is required'));
         }
 
         $encrypted = trim($data['encrypted']);
 
         if (empty($encrypted)) {
-            return $this->errorResponse($response, 'Encrypted value cannot be empty', 400);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::badRequest('Encrypted value cannot be empty'));
         }
 
         try {
@@ -223,8 +223,7 @@ class SecretController extends BaseController
         } catch (Exception $e) {
             return $this->errorResponse(
                 $response,
-                'Failed to decrypt value. The value may not be properly encrypted.',
-                500
+                \App\DTO\ErrorResponse::internalError('Failed to decrypt value. The value may not be properly encrypted.')
             );
         }
     }
@@ -265,7 +264,7 @@ class SecretController extends BaseController
                 'data' => $result,
             ]);
         } catch (Exception $e) {
-            return $this->errorResponse($response, 'Failed to migrate secrets', 500);
+            return $this->errorResponse($response, \App\DTO\ErrorResponse::internalError('Failed to migrate secrets'));
         }
     }
 

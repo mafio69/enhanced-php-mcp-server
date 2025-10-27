@@ -160,7 +160,8 @@ class SecretsManager {
                 }
 
                 let html = '';
-                data.data.forEach(secretKey => {
+                data.data.forEach(secret => {
+                    const secretKey = secret.name || secret.key || 'unknown';
                     html += `
                         <div class="secret-item">
                             <span class="secret-key">${secretKey}</span>
@@ -553,6 +554,9 @@ class ToolsManager {
                 break;
             case 'get_weather':
                 defaultArgs = { city: 'Warszawa' };
+                break;
+            case 'brave_search':
+                defaultArgs = { query: 'MCP PHP Server', count: 5 };
                 break;
         }
 

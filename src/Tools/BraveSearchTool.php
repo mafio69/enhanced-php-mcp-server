@@ -6,6 +6,14 @@ use App\Interfaces\ToolInterface;
 
 class BraveSearchTool implements ToolInterface
 {
+    private $secretManager;
+
+    public function __construct()
+    {
+        // Defer secret manager initialization until execution
+        $this->secretManager = null;
+    }
+
     public function execute(array $arguments = []): string
     {
         $query = $arguments['query'] ?? '';
@@ -15,9 +23,11 @@ class BraveSearchTool implements ToolInterface
             throw new \Exception("Parametr 'query' jest wymagany");
         }
 
-        $apiKey = getenv('BRAVE_API_KEY') ?: $_ENV['BRAVE_API_KEY'] ?? null;
+        // Try to get API key from multiple sources
+        $apiKey = $this->getBraveApiKey();
+
         if (!$apiKey) {
-            return "=== BRAVE SEARCH ===\n\n❌ BRAVE_API_KEY nie jest ustawiony.\n\nUstaw klucz API Brave w zmiennej środowiskowej:\nexport BRAVE_API_KEY='twój_klucz_api'";
+            return "=== BRAVE SEARCH ===\n\n❌ BRAVE_API_KEY nie jest ustawiony.\n\nMożliwości:\n1. Ustaw zmienną środowiskową: export BRAVE_API_KEY='twój_klucz_api'\n2. Dodaj klucz przez panel admina: http://localhost:8889/admin/\n3. Zapisz sekret jako 'brave-search.BRAVE_API_KEY'";
         }
 
         // Przygotowanie zapytania do Brave Search API
@@ -166,5 +176,54 @@ class BraveSearchTool implements ToolInterface
     public function isEnabled(): bool
     {
         return true; // Włączone, ale sprawdzi klucz API przy wykonaniu
+    }
+
+    /**
+     * Get Brave API key from multiple sources
+     */
+    private function getBraveApiKey(): ?string
+    {
+        // 1. Try environment variable first
+        $apiKey = getenv('BRAVE_API_KEY') ?: $_ENV['BRAVE_API_KEY'] ?? null;
+        if ($apiKey) {
+            return $apiKey;
+        }
+
+        // 2. Try reading secret directly from file storage
+        $secretsPath = __DIR__ . '/../../storage/secrets/brave-search_BRAVE_API_KEY.sec';
+        if (file_exists($secretsPath)) {
+            try {
+                // Try to read the encrypted file
+                $encryptedContent = file_get_contents($secretsPath);
+                if ($encryptedContent !== false) {
+                    // Since we can't decrypt without the full SecretManagerService,
+                    // let's try to check if there's a simpler way
+                    return $this->tryDecryptWithSimpleMethod($encryptedContent);
+                }
+            } catch (\Exception $e) {
+                // File reading failed, continue
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Simple decryption attempt - just try to detect if it's already a plain text key
+     */
+    private function tryDecryptWithSimpleMethod($content): ?string
+    {
+        // If it looks like an API key already (plain text)
+        if (is_string($content) && strlen($content) > 20 && preg_match('/^[A-Za-z0-9_\-]+$/', $content)) {
+            return $content;
+        }
+
+        // Try base64 decode in case it's simple encoding
+        $decoded = base64_decode($content);
+        if ($decoded && strlen($decoded) > 20 && preg_match('/^[A-Za-z0-9_\-]+$/', $decoded)) {
+            return $decoded;
+        }
+
+        return null;
     }
 }
