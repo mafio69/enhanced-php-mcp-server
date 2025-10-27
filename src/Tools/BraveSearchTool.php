@@ -42,8 +42,8 @@ class BraveSearchTool implements ToolInterface
             'q' => $query,
             'count' => min($count, 20), // Max 20 wyników
             'text_decorations' => 'false',
-            'search_lang' => 'pl',
-            'ui_lang' => 'pl',
+            'search_lang' => 'en',
+            'ui_lang' => 'en',
             'result_filter' => 'news,web,discussions',
             'safesearch' => 'moderate'
         ];
@@ -59,7 +59,8 @@ class BraveSearchTool implements ToolInterface
             CURLOPT_TIMEOUT => 15,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_USERAGENT => 'PHP-MCP-Server/2.1.0'
+            CURLOPT_USERAGENT => 'PHP-MCP-Server/2.1.0',
+            CURLOPT_ENCODING => 'gzip, deflate'
         ]);
 
         $response = curl_exec($ch);
@@ -72,6 +73,9 @@ class BraveSearchTool implements ToolInterface
         }
 
         if ($httpCode !== 200) {
+            if ($httpCode === 422) {
+                return "=== BRAVE SEARCH ===\n\n❌ BRAVE_API_KEY jest nieprawidłowy lub wygasł.\n\nMożliwości:\n1. Ustaw nowy klucz API: export BRAVE_API_KEY='twój_nowy_klucz_api'\n2. Dodaj klucz przez panel admina: http://localhost:8889/admin/\n3. Zapisz sekret jako 'brave-search.BRAVE_API_KEY'";
+            }
             return "=== BRAVE SEARCH ===\n\n❌ Błąd API (HTTP {$httpCode})\n\nOdpowiedź: " . substr($response, 0, 200) . "...";
         }
 
@@ -183,8 +187,8 @@ class BraveSearchTool implements ToolInterface
      */
     private function getBraveApiKey(): ?string
     {
-        // 1. Try environment variable first
-        $apiKey = getenv('BRAVE_API_KEY') ?: $_ENV['BRAVE_API_KEY'] ?? null;
+        // 1. Try $_ENV first (from .env), then getenv()
+        $apiKey = $_ENV['BRAVE_API_KEY'] ?: getenv('BRAVE_API_KEY') ?? null;
         if ($apiKey) {
             return $apiKey;
         }

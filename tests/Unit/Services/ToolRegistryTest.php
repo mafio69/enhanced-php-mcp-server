@@ -18,7 +18,7 @@ class ToolRegistryTest extends TestCase
     {
         $tools = $this->registry->getTools();
         $this->assertIsArray($tools);
-        $this->assertCount(11, $tools);
+        $this->assertCount(14, $tools); // Updated count including PlaywrightTool, GitHubTool and PHPDiagnosticsTool
     }
 
     public function testHasTool(): void

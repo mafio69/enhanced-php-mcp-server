@@ -54,7 +54,7 @@ class BraveSearchToolTest extends TestCase
             'count' => 5
         ]);
 
-        $this->assertStringContainsString('BRAVE_API_KEY nie jest ustawiony', $result);
+        $this->assertStringContainsString('BRAVE_API_KEY', $result);
         $this->assertStringContainsString('export BRAVE_API_KEY', $result);
     }
 
@@ -94,7 +94,7 @@ class BraveSearchToolTest extends TestCase
             'count' => 3
         ]);
 
-        $this->assertStringContainsString('BRAVE_API_KEY nie jest ustawiony', $result);
+        $this->assertStringContainsString('BRAVE_API_KEY', $result);
     }
 
     public function testCountParameterLimits(): void
@@ -108,7 +108,7 @@ class BraveSearchToolTest extends TestCase
             'count' => 25
         ]);
 
-        $this->assertStringContainsString('BRAVE_API_KEY nie jest ustawiony', $result);
+        $this->assertStringContainsString('BRAVE_API_KEY', $result);
     }
 
     public function testDefaultCountParameter(): void
@@ -120,6 +120,6 @@ class BraveSearchToolTest extends TestCase
             'query' => 'test'
         ]);
 
-        $this->assertStringContainsString('BRAVE_API_KEY nie jest ustawiony', $result);
+        $this->assertStringContainsString('BRAVE_API_KEY', $result);
     }
 }

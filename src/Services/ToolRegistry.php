@@ -8,9 +8,11 @@ use App\Tools\BraveSearchTool;
 use App\Tools\CalculateTool;
 use App\Tools\GetTimeTool;
 use App\Tools\GetWeatherTool;
+use App\Tools\GitHubTool;
 use App\Tools\HelloTool;
 use App\Tools\HttpRequestTool;
 use App\Tools\JsonParseTool;
+use App\Tools\PHPDiagnosticsTool;
 use App\Tools\ListFilesTool;
 use App\Tools\PlaywrightTool;
 use App\Tools\ReadFileTool;
@@ -40,6 +42,8 @@ class ToolRegistry implements ToolExecutorInterface
         $this->registerTool(new JsonParseTool());
         $this->registerTool(new GetWeatherTool());
         $this->registerTool(new BraveSearchTool());
+        $this->registerTool(new GitHubTool());
+        $this->registerTool(new PHPDiagnosticsTool());
         $this->registerTool(new PlaywrightTool());
     }
 

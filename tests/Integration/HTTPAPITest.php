@@ -97,7 +97,7 @@ class HTTPAPITest extends TestCase
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
-        $this->assertCount(11, $result['body']);
+        $this->assertCount(14, $result['body']); // Updated count including PlaywrightTool, GitHubTool and PHPDiagnosticsTool
 
         $toolNames = array_column($result['body'], 'name');
         $this->assertContains('hello', $toolNames);
@@ -105,6 +105,8 @@ class HTTPAPITest extends TestCase
         $this->assertContains('read_file', $toolNames);
         $this->assertContains('write_file', $toolNames);
         $this->assertContains('brave_search', $toolNames);
+        $this->assertContains('github', $toolNames); // Check for GitHubTool
+        $this->assertContains('playwright', $toolNames); // Check for PlaywrightTool
     }
 
     /**
@@ -265,6 +267,30 @@ class HTTPAPITest extends TestCase
         $this->assertTrue($result['body']['success']);
         $this->assertStringContainsString('=== POGODA DLA MIASTA: KRAKóW ===', $result['body']['data']);
         $this->assertStringContainsString('°C', $result['body']['data']);
+    }
+
+    public function testPlaywrightToolViaAPI()
+    {
+        $result = $this->makeRequest('POST', '/api/tools/call', [
+            'tool' => 'playwright',
+            'arguments' => ['action' => 'info']
+        ]);
+
+        $this->assertEquals(200, $result['status']);
+        $this->assertTrue($result['body']['success']);
+        $this->assertStringContainsString('PLAYWRIGHT INFORMATION', $result['body']['data']);
+    }
+
+    public function testGitHubToolViaAPI()
+    {
+        $result = $this->makeRequest('POST', '/api/tools/call', [
+            'tool' => 'github',
+            'arguments' => ['action' => 'info']
+        ]);
+
+        $this->assertEquals(200, $result['status']);
+        $this->assertTrue($result['body']['success']);
+        $this->assertStringContainsString('GITHUB TOOL', $result['body']['data']);
     }
 
     public function testUnknownToolReturnsError()

@@ -69,77 +69,12 @@ class PlaywrightTool implements ToolInterface
 
     private function getInfo(): string
     {
-        return "=== PLAYWRIGHT TOOL ===\n\n" .
-               "🎭 Playwright to narzędzie do automatyzacji przeglądarek\n" .
-               "Umożliwia: nawigację, pobieranie treści, interakcję z elementami, zrzuty ekranu\n\n" .
-               "Dostępne akcje:\n" .
-               "• check_installation - Sprawdź instalację Playwright\n" .
-               "• start_browser - Uruchom przeglądarkę\n" .
-               "• navigate - Nawiguj do URL\n" .
-               "• get_content - Pobierz treść strony\n" .
-               "• find_element - Znajdź element na stronie\n" .
-               "• click_element - Kliknij element\n" .
-               "• type_text - Wpisz tekst w polu\n" .
-               "• take_screenshot - Zrób zrzut ekranu\n\n" .
-               "Uwaga: To narzędzie wymaga zainstalowanego Playwright.\n" .
-               "Instalacja: npm install -g @playwright/test";
+        return $this->executeCommand('--action info');
     }
 
     private function checkInstallation(): string
     {
-        $result = "=== PLAYWRIGHT INSTALLATION CHECK ===\n\n";
-
-        // Check WSL environment
-        $result .= "🖥️  Environment Check:\n";
-        if (file_exists('/proc/version')) {
-            $version = file_get_contents('/proc/version');
-            if (strpos($version, 'Microsoft') !== false || strpos($version, 'WSL') !== false) {
-                $result .= "✅ Running in WSL environment\n";
-                $result .= "ℹ️  Note: Browsers running on Windows 11 host\n";
-                $result .= "ℹ️  Playwright will try to connect to Windows browsers\n\n";
-            }
-        }
-
-        // Sprawdź czy npx jest dostępne
-        $npxCheck = shell_exec('which npx 2>&1');
-        if ($npxCheck) {
-            $result .= "✅ NPX dostępny: " . trim($npxCheck) . "\n";
-        } else {
-            $result .= "❌ NPX nie jest dostępny\n";
-            $result .= "Instalacja wymagana: npm install -g npx\n";
-            return $result;
-        }
-
-        // Sprawdź czy Playwright jest zainstalowany
-        $playwrightCheck = shell_exec('npx playwright --version 2>&1');
-        if (strpos($playwrightCheck, 'Version') !== false) {
-            $result .= "✅ Playwright zainstalowany: " . trim($playwrightCheck) . "\n";
-        } else {
-            $result .= "❌ Playwright nie jest zainstalowany\n";
-            $result .= "Uruchom: npm install -g @playwright/test\n";
-            return $result;
-        }
-
-        // Check for WSL2 Windows browser connection
-        $result .= "\n🔗 WSL-Windows Integration:\n";
-        $windowsHost = shell_exec('grep nameserver /etc/resolv.conf | awk \'{print $2}\' 2>&1');
-        if ($windowsHost) {
-            $result .= "✅ Windows host detected: " . trim($windowsHost) . "\n";
-            $result .= "ℹ️  Browser connection should work via WSL2 network\n";
-        } else {
-            $result .= "⚠️  Could not detect Windows host IP\n";
-        }
-
-        // Test browser connectivity
-        $browserTest = shell_exec('npx playwright install --dry-run 2>&1');
-        if (strpos($browserTest, 'chromium') !== false) {
-            $result .= "✅ Browser engines available\n";
-        } else {
-            $result .= "❌ Browser engines not found\n";
-            $result .= "Uruchom: npx playwright install chromium\n";
-        }
-
-        return $result;
+        return $this->executeCommand('--action check_installation');
     }
 
     private function startBrowser(string $storageState = ''): string
@@ -159,125 +94,35 @@ class PlaywrightTool implements ToolInterface
 
     private function getPageContent(string $url, int $waitFor, bool $screenshot): string
     {
-        $result = "=== GETTING PAGE CONTENT ===\n\n";
-        $result .= "🌐 URL: {$url}\n";
-        $result .= "⏱️  Czekam {$waitFor}ms na załadowanie\n";
-        $result .= "📸 Zrzut ekranu: " . ($screenshot ? 'Tak' : 'Nie') . "\n\n";
-
-        // Symulacja pobierania treści
-        $result .= "📥 Pobieranie treści strony...\n";
-
-        // Symulowana treść HTML
-        $htmlContent = $this->generateSampleHtml($url);
-        $result .= "✅ Treść pobrana (pierwsze 1000 znaków):\n\n";
-        $result .= substr($htmlContent, 0, 1000);
-        if (strlen($htmlContent) > 1000) {
-            $result .= "\n... (" . (strlen($htmlContent) - 1000) . " znaków więcej)";
-        }
-
+        $command = '--action get_content --url ' . escapeshellarg($url) . ' --wait ' . $waitFor;
         if ($screenshot) {
-            $result .= "\n\n📸 Zrzut ekranu zapisany jako: screenshot_" . time() . ".png";
+            $command .= ' --screenshot true';
         }
-
-        return $result;
+        return $this->executeCommand($command);
     }
 
     private function findElement(string $url, string $selector, int $waitFor): string
     {
-        $result = "=== FINDING ELEMENT ===\n\n";
-        $result .= "🌐 URL: {$url}\n";
-        $result .= "🎯 Selector: {$selector}\n";
-        $result .= "⏱️  Czekam {$waitFor}ms\n\n";
-
-        $result .= "🔍 Wyszukiwanie elementu...\n";
-
-        // Sprawdzenie typu selectora
-        if (strpos($selector, '#') === 0) {
-            $result .= "📍 Typ: ID selector\n";
-        } elseif (strpos($selector, '.') === 0) {
-            $result .= "📍 Typ: Class selector\n";
-        } elseif (strpos($selector, '[') === 0) {
-            $result .= "📍 Typ: Attribute selector\n";
-        } else {
-            $result .= "📍 Typ: Tag selector\n";
-        }
-
-        // Symulacja znalezienia elementu
-        $result .= "✅ Element znaleziony!\n\n";
-        $result .= "Szczegóły elementu:\n";
-        $result .= "- Tag: " . $this->guessTagFromSelector($selector) . "\n";
-        $result .= "- Selector: {$selector}\n";
-        $result .= "- Widoczny: Tak\n";
-        $result .= "- Interaktywny: Tak\n";
-
-        return $result;
+        $command = '--action find_element --url ' . escapeshellarg($url) . ' --selector ' . escapeshellarg($selector) . ' --wait ' . $waitFor;
+        return $this->executeCommand($command);
     }
 
     private function clickElement(string $url, string $selector, int $waitFor): string
     {
-        $result = "=== CLICKING ELEMENT ===\n\n";
-        $result .= "🌐 URL: {$url}\n";
-        $result .= "🎯 Selector: {$selector}\n";
-        $result .= "⏱️  Czekam {$waitFor}ms\n\n";
-
-        $result .= "🔍 Wyszukiwanie elementu...\n";
-        $result .= "✅ Element znaleziony\n";
-        $result .= "🖱️  Symulacja kliknięcia...\n";
-        $result .= "✅ Element kliknięty pomyślnie\n\n";
-
-        $result .= "Akcja wykonana:\n";
-        $result .= "- Zlokalizowano element: {$selector}\n";
-        $result .= "- Sprawdzono widoczność i klikalność\n";
-        $result .= "- Wykonano kliknięcie\n";
-        $result .= "- Poczekano na ewentualną reakcję strony";
-
-        return $result;
+        $command = '--action click_element --url ' . escapeshellarg($url) . ' --selector ' . escapeshellarg($selector) . ' --wait ' . $waitFor;
+        return $this->executeCommand($command);
     }
 
     private function typeText(string $url, string $selector, string $text, int $waitFor): string
     {
-        $result = "=== TYPING TEXT ===\n\n";
-        $result .= "🌐 URL: {$url}\n";
-        $result .= "🎯 Selector: {$selector}\n";
-        $result .= "📝 Tekst: \"{$text}\"\n";
-        $result .= "⏱️  Czekam {$waitFor}ms\n\n";
-
-        $result .= "🔍 Wyszukiwanie pola tekstowego...\n";
-        $result .= "✅ Pole znalezione\n";
-        $result .= "⌨️  Wpisywanie tekstu...\n";
-        $result .= "✅ Tekst wpisany pomyślnie\n\n";
-
-        $result .= "Szczegóły operacji:\n";
-        $result .= "- Zlokalizowano element: {$selector}\n";
-        $result .= "- Wyczyszczono pole (jeśli miało zawartość)\n";
-        $result .= "- Wpisano tekst: \"{$text}\"\n";
-        $result .= "- Liczba znaków: " . strlen($text) . "\n";
-        $result .= "- Pole gotowe do dalszej interakcji";
-
-        return $result;
+        $command = '--action type_text --url ' . escapeshellarg($url) . ' --selector ' . escapeshellarg($selector) . ' --text ' . escapeshellarg($text) . ' --wait ' . $waitFor;
+        return $this->executeCommand($command);
     }
 
     private function takeScreenshot(string $url, int $waitFor): string
     {
-        $result = "=== TAKING SCREENSHOT ===\n\n";
-        $result .= "🌐 URL: {$url}\n";
-        $result .= "⏱️  Czekam {$waitFor}ms na załadowanie\n\n";
-
-        $result .= "📸 Wykonywanie zrzutu ekranu...\n";
-
-        $filename = "playwright_screenshot_" . time() . ".png";
-
-        $result .= "✅ Zrzut ekranu wykonany!\n\n";
-        $result .= "Szczegóły:\n";
-        $result .= "- Plik: {$filename}\n";
-        $result .= "- Format: PNG\n";
-        $result .= "- Rozdzielczość: pełny ekran\n";
-        $result .= "- Jakość: 100%\n";
-        $result .= "- Lokalizacja: ./storage/screenshots/\n\n";
-
-        $result .= "Uwaga: W rzeczywistym środowisku plik zostałby zapisany na dysku.";
-
-        return $result;
+        $command = '--action take_screenshot --url ' . escapeshellarg($url) . ' --wait ' . $waitFor;
+        return $this->executeCommand($command);
     }
 
     private function executeCommand(string $command): string
@@ -288,7 +133,7 @@ class PlaywrightTool implements ToolInterface
             return "❌ Playwright script not found at: {$scriptPath}";
         }
 
-        $timeout = 30; // 30 seconds timeout
+        $timeout = 60; // 60 seconds timeout for real browser operations
 
         $descriptorspec = [
             0 => ['pipe', 'r'], // stdin
@@ -355,8 +200,12 @@ class PlaywrightTool implements ToolInterface
         if ($exit_code !== 0) {
             // Check for WSL browser dependency issues in both output and error
             $allOutput = $output . $error_output;
-            if (strpos($allOutput, 'Host system is missing dependencies') !== false) {
-                return $this->handleWSLDepsError($command, $allOutput);
+            if (strpos($allOutput, 'Host system is missing dependencies') !== false ||
+                strpos($allOutput, 'libasound2t64') !== false ||
+                strpos($allOutput, 'libnspr4') !== false ||
+                strpos($allOutput, 'WARNING') !== false ||
+                $exit_code === 1) {
+                return $this->handleWSLDepsError($command, $allOutput, $exit_code);
             }
             return "❌ Playwright command failed (exit code: {$exit_code})\n\nError output:\n{$allOutput}";
         }
@@ -364,12 +213,12 @@ class PlaywrightTool implements ToolInterface
         return $output;
     }
 
-    private function handleWSLDepsError(string $command, string $error_output): string
+    private function handleWSLDepsError(string $command, string $error_output, int $exit_code = 1): string
     {
         $result = "=== WSL-Windows BROWSER INTEGRATION ===\n\n";
         $result .= "❌ WSL Browser Dependencies Missing\n\n";
 
-        // Parse the command to extract parameters for simulation
+        // Parse the command to extract parameters for better error message
         $action = $this->extractActionFromCommand($command);
 
         $result .= "🖥️  Environment: WSL2 + Windows 11\n";
@@ -377,14 +226,19 @@ class PlaywrightTool implements ToolInterface
 
         $result .= "🔧 Installation Options:\n";
         $result .= "1. Install WSL browser dependencies:\n";
-        $result .= "   sudo apt-get install libnspr4 libnss3 libasound2t64\n";
-        $result .= "   sudo npx playwright install-deps\n\n";
+        $result .= "   sudo apt-get update\n";
+        $result .= "   sudo apt-get install libnspr4 libnss3 libasound2t64 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libxss1\n";
+        $result .= "   sudo npx playwright install-deps\n";
+        $result .= "   sudo npx playwright install chromium\n\n";
 
         $result .= "2. Connect to Windows browsers (recommended):\n";
         $result .= "   - Install Playwright on Windows 11\n";
         $result .= "   - Configure WSL-Windows browser bridge\n\n";
 
-        $result .= "🎭 Simulated Result (for demonstration):\n";
+        $result .= "❌ Error details:\n";
+        $result .= $error_output . "\n\n";
+
+        $result .= "🎭 For demonstration, here's what would happen:\n";
         $result .= $this->simulateAction($action);
 
         return $result;
@@ -451,38 +305,6 @@ class PlaywrightTool implements ToolInterface
         }
     }
 
-    private function generateSampleHtml(string $url): string
-    {
-        return "<!DOCTYPE html>\n<html lang=\"pl\">\n<head>\n" .
-               "<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" .
-               "<title>Strona testowa</title>\n</head>\n<body>\n" .
-               "<header>\n<h1>Witaj na stronie!</h1>\n</header>\n" .
-               "<main>\n<section>\n<h2>Główna treść</h2>\n" .
-               "<p>To jest przykładowa treść strony dla URL: {$url}</p>\n" .
-               "<div class=\"content\">\n<p>Treść artykułu...</p>\n" .
-               "<button class=\"btn-primary\">Kliknij mnie</button>\n" .
-               "</div>\n</section>\n</main>\n" .
-               "<footer>\n<p>&copy; 2024 Testowa strona</p>\n</footer>\n" .
-               "</body>\n</html>";
-    }
-
-    private function guessTagFromSelector(string $selector): string
-    {
-        if (strpos($selector, '#') === 0) {
-            return 'div';
-        } elseif (strpos($selector, '.') === 0) {
-            return 'div';
-        } elseif (strpos($selector, 'button') !== false) {
-            return 'button';
-        } elseif (strpos($selector, 'input') !== false) {
-            return 'input';
-        } elseif (strpos($selector, 'nav') !== false) {
-            return 'nav';
-        } else {
-            return 'div';
-        }
-    }
-
     public function getName(): string
     {
         return 'playwright';
@@ -506,7 +328,7 @@ class PlaywrightTool implements ToolInterface
                 ],
                 'url' => [
                     'type' => 'string',
-                    'description' => 'URL strony (wymagany dla mostu akcji)'
+                    'description' => 'URL strony (wymagany dla większości akcji)'
                 ],
                 'selector' => [
                     'type' => 'string',
@@ -520,7 +342,7 @@ class PlaywrightTool implements ToolInterface
                     'type' => 'integer',
                     'description' => 'Czas oczekiwania w milisekundach',
                     'minimum' => 1000,
-                    'maximum' => 30000,
+                    'maximum' => 60000,
                     'default' => 5000
                 ],
                 'screenshot' => [
