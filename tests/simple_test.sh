@@ -41,7 +41,7 @@ test_api() {
 
 # Detect server port
 echo "Detecting server..."
-for port in 8888 8889 8890; do
+for port in 8794 8795 8890; do
     if curl -s "http://localhost:$port/api/status" > /dev/null 2>&1; then
         echo -e "${GREEN}✅ Found server on port $port${NC}"
         SERVER_PORT=$port

@@ -130,8 +130,8 @@
         <div class="port-selector">
             <label for="portSelect">Wybierz port serwera:</label>
             <select id="portSelect">
-                <option value="8888">Port 8888</option>
-                <option value="8889">Port 8889</option>
+                <option value="8794">Port 8794</option>
+                <option value="8795">Port 8795</option>
                 <option value="8890">Port 8890</option>
             </select>
             <button onclick="checkServerConnection()">Sprawdź połączenie</button>
@@ -175,13 +175,13 @@
     <script>
         class MCPAPITester {
             constructor() {
-                this.baseUrl = 'http://localhost:8888';
+                this.baseUrl = 'http://localhost:8794';
                 this.testResults = [];
-                this.currentPort = 8888;
+                this.currentPort = 8794;
             }
 
             async detectPort() {
-                const ports = [8888, 8889, 8890];
+                const ports = [8794, 8795, 8890];
                 for (const port of ports) {
                     try {
                         const response = await fetch(`http://localhost:${port}/api/status`, {

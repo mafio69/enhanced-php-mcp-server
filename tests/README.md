@@ -30,7 +30,7 @@ tests/
 ```
 
 The script automatically:
-- Detects running server port (8888, 8889, 8890)
+- Detects running server port (8794, 8795, 8890)
 - Runs 10 HTTP integration tests
 - Displays detailed results
 - Offers additional test options
@@ -95,7 +95,7 @@ open tests/frontend/mcp-api-tests.html
 **Execution:**
 ```bash
 # Requires running server
-./start.sh 2  # Start server on port 8888/8889
+./start.sh 2  # Start server on port 8794/8795
 ./vendor/bin/phpunit tests/Integration/HTTPAPITest.php
 ```
 
@@ -232,7 +232,7 @@ open tests/frontend/mcp-api-tests.html
 export MCP_TEST_DEBUG=1
 
 # Custom port
-export MCP_TEST_PORT=8889
+export MCP_TEST_PORT=8795
 
 # Timeout for network tests
 export MCP_TEST_TIMEOUT=10
@@ -251,8 +251,8 @@ export MCP_TEST_TIMEOUT=10
 2. **Port conflicts**
    ```bash
    # Check occupied ports
-   lsof -i :8888
-   lsof -i :8889
+   lsof -i :8794
+   lsof -i :8795
 
    # Use auto-detection
    ./tests/run_comprehensive_tests.sh
@@ -310,7 +310,7 @@ composer test                           # PHPUnit
 open tests/frontend/mcp-api-tests.html
 
 # Specific tool tests
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "hello", "arguments": {"name": "Test"}}'
 ```

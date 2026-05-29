@@ -24,5 +24,5 @@ else
 fi
 
 echo ""
-echo "🎯 Uruchom serwer web mode na porcie 8888..."
-php -S localhost:8888 index.php
+echo "🎯 Uruchom serwer web mode na porcie 8794..."
+php -S localhost:8794 index.php

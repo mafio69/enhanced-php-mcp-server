@@ -41,7 +41,7 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 # 2. Run web server (browser interface)
 ./start.sh 2
 ```
-Open http://localhost:8888 in your browser to access the API.
+Open http://localhost:8794 in your browser to access the API.
 
 ### 🎮 Interactive Menu
 ```bash
@@ -51,7 +51,7 @@ This will show a colorful menu with options to choose from.
 
 ### 🌐 Web API (for Browser)
 ```bash
-./start.sh 2      # Run web server on http://localhost:8888
+./start.sh 2      # Run web server on http://localhost:8794
 ```
 
 ### 📡 CLI Mode (for MCP Clients)
@@ -190,17 +190,17 @@ When server is running in Web mode (`./start.sh 2`), the following endpoints are
 **Tool Call Example:**
 ```bash
 # Greeting
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "hello", "arguments": {"name": "John"}}'
 
 # Calculation
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "calculate", "arguments": {"operation": "add", "a": 10, "b": 5}}'
 
 # File listing
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "list_files", "arguments": {"path": "src"}}'
 ```
@@ -343,7 +343,7 @@ echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"read_file"
 2. **Dependencies Missing**: Run `composer install`
 3. **Extensions Missing**: Install required PHP extensions (`php-json`, `php-curl`)
 4. **File Access**: Check file permissions in project directory
-5. **Port Conflicts**: Server auto-detects ports 8888, 8889, 8890
+5. **Port Conflicts**: Server auto-detects ports 8794, 8795, 8890
 
 ### Debug Mode
 

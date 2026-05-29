@@ -116,14 +116,14 @@ start_web() {
     echo -e "${BLUE}🌐 Starting MCP Server in Web mode...${NC}"
 
     if check_dependencies; then
-        # Check if port 8888 is free
-        if lsof -i :8888 &>/dev/null; then
-            echo -e "${YELLOW}⚠️  Port 8888 is already occupied${NC}"
-            echo -ne "${CYAN}Enter different port [e.g. 8889]: ${NC}"
+        # Check if port 8794 is free
+        if lsof -i :8794 &>/dev/null; then
+            echo -e "${YELLOW}⚠️  Port 8794 is already occupied${NC}"
+            echo -ne "${CYAN}Enter different port [e.g. 8795]: ${NC}"
             read -r CUSTOM_PORT
-            PORT=${CUSTOM_PORT:-8889}
+            PORT=${CUSTOM_PORT:-8795}
         else
-            PORT=8888
+            PORT=8794
         fi
 
         echo -e "${GREEN}🌍 Server available at: http://localhost:$PORT${NC}"
@@ -150,10 +150,10 @@ start_all() {
 
     # Start Web server in background
     echo -e "${BLUE}🌐 Starting Web server...${NC}"
-    PORT=8888
+    PORT=8794
     if lsof -i :$PORT &>/dev/null; then
-        echo -e "${YELLOW}⚠️  Port $PORT occupied, using 8889${NC}"
-        PORT=8889
+        echo -e "${YELLOW}⚠️  Port $PORT occupied, using 8795${NC}"
+        PORT=8795
     fi
 
     # Start web server in background
@@ -222,7 +222,7 @@ check_status() {
 
         # Check ports
         echo -e "${BLUE}🔍 Active ports:${NC}"
-        netstat -tlnp 2>/dev/null | grep ":888[0-9]" | while read line; do
+        netstat -tlnp 2>/dev/null | grep ":879[0-9]" | while read line; do
             echo -e "${CYAN}   $line${NC}"
         done
     else

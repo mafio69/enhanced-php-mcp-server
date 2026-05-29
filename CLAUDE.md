@@ -15,7 +15,7 @@ This is **MCP PHP Server v2.1.0** - an advanced PHP implementation of a Model Co
 
 # Direct mode startup
 ./start.sh 1      # CLI mode (MCP protocol via stdin/stdout)
-./start.sh 2      # HTTP mode (REST API on port 8888)
+./start.sh 2      # HTTP mode (REST API on port 8794)
 ./start.sh 3      # Both modes simultaneously
 ./start.sh 4      # Check server status
 ./start.sh 5      # View recent logs
@@ -50,7 +50,7 @@ composer test       # Full PHPUnit test suite
 ### Dual-Mode Operation
 The server automatically detects execution context:
 - **CLI Mode** (`php_sapi_name() === 'cli'`): MCP JSON-RPC protocol over stdin/stdout
-- **HTTP Mode**: REST API with Slim Framework on port 8888
+- **HTTP Mode**: REST API with Slim Framework on port 8794
 
 ### Core Components
 
@@ -124,7 +124,7 @@ When running in HTTP mode (`./start.sh 2`), the server provides these endpoints:
 
 ### Example Tool Execution via HTTP
 ```bash
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "calculate", "arguments": {"operation": "add", "a": 10, "b": 5}}'
 ```
@@ -209,7 +209,7 @@ Logs are structured with timestamps and severity levels:
 - Critical errors logged to system error log as fallback
 
 ### **Port Management**
-- Default HTTP port: 8888
-- Automatic port detection and fallback to 8889 if port is occupied
+- Default HTTP port: 8794
+- Automatic port detection and fallback to 8795 if port is occupied
 - Port configuration can be modified in `start.sh` script
 - Multiple processes can run simultaneously on different ports

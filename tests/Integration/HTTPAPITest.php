@@ -16,7 +16,7 @@ class HTTPAPITest extends TestCase
         $this->serverPort = $this->findRunningServerPort();
 
         if ($this->serverPort === null) {
-            $this->markTestSkipped('MCP Server is not running on any available port (8888, 8889, 8890)');
+            $this->markTestSkipped('MCP Server is not running on any available port (8794, 8795, 8890)');
         }
 
         $this->baseUrl = "http://localhost:{$this->serverPort}";
@@ -25,7 +25,7 @@ class HTTPAPITest extends TestCase
 
     private function findRunningServerPort(): ?int
     {
-        $ports = [8888, 8889, 8890]; // Common ports used by start.sh
+        $ports = [8794, 8795, 8890]; // Common ports used by start.sh
 
         foreach ($ports as $port) {
             if ($this->isPortAvailable($port)) {

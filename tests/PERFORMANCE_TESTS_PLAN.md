@@ -11,13 +11,13 @@ Zidentyfikowanie "cienkich gardeł" w wydajności MCP Servera poprzez kompleksow
 #### 1.1 Równoległe zapytania API
 ```bash
 # Test 100 równoległych zapytań do różnych narzędzi
-ab -n 100 -c 10 -p http://localhost:8888/api/tools/call \
+ab -n 100 -c 10 -p http://localhost:8794/api/tools/call \
   -T 'application/json' \
   -d '{"tool":"hello","arguments":{"name":"User_$(uuidgen)"}}'
 
 # Test mieszanych operacji w czasie rzeczywistym
 for i in {1..50}; do
-  curl -s -X POST http://localhost:8888/api/tools/call \
+  curl -s -X POST http://localhost:8794/api/tools/call \
     -H "Content-Type: application/json" \
     -d '{"tool":"'$(shuf -e hello calculate list_files read_file -n 1)'","arguments":{}}' &
 done
@@ -26,14 +26,14 @@ done
 #### 1.2 Streszcenie połączeń
 ```bash
 # Test 1000 równoległych połączeń
-hey -z 30s -c 100 -m POST http://localhost:8888/api/tools/call \
+hey -z 30s -c 100 -m POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool":"calculate","arguments":{"operation":"multiply","a":100,"b":100}}'
 
 # Narastające obciążenie: 10, 50, 100, 500 połączeń
 for concurrency in 10 50 100 500; do
   echo "Testing with $concurrency concurrent requests"
-  ab -n $((concurrency * 10)) -c $concurrency http://localhost:8888/api/status
+  ab -n $((concurrency * 10)) -c $concurrency http://localhost:8794/api/status
 done
 ```
 
@@ -45,10 +45,10 @@ done
 for i in {1..1000}; do
   {
     echo '{"tool":"write_file","arguments":{"path":"perf_test_'$i'.txt","content":"Performance test content '$i'"}}' | \
-      curl -s -X POST http://localhost:8888/api/tools/call \
+      curl -s -X POST http://localhost:8794/api/tools/call \
         -H "Content-Type: application/json" -d @- &
     echo '{"tool":"read_file","arguments":{"path":"composer.json"}}' | \
-      curl -s -X POST http://localhost:8888/api/tools/call \
+      curl -s -X POST http://localhost:8794/api/tools/call \
         -H "Content-Type: application/json" -d @- &
   } &
 done
@@ -64,7 +64,7 @@ large_json=$(cat <<'EOF'
 EOF
 )
 
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool":"json_parse","arguments":{"json":"'"$large_json"'"}}'
 ```
@@ -79,7 +79,7 @@ external_apis=(
 )
 
 for api in "${external_apis[@]}"; do
-  curl -X POST http://localhost:8888/api/tools/call \
+  curl -X POST http://localhost:8794/api/tools/call \
     -H "Content-Type: application/json" \
     -d '{"tool":"http_request","arguments":{"url":"'$api'","method":"GET"}}' &
 done
@@ -92,7 +92,7 @@ done
 # Zapis dużej liczby dużych plików
 for i in {1..100}; do
   large_content=$(dd if=/dev/zero bs=1024 count=100 2>/dev/null | base64 | head -c 50000)
-  curl -X POST http://localhost:8888/api/tools/call \
+  curl -X POST http://localhost:8794/api/tools/call \
     -H "Content-Type: application/json" \
     -d '{"tool":"write_file","arguments":{"path":"memory_test_'$i'.txt","content":"'$large_content'"}}' &
 done
@@ -103,7 +103,7 @@ done
 # Monitorowanie pamięci podczas testów
 while true; do
   ps aux | grep "[p]hp.*index.php" | awk '{print $6}' | paste -sd+ | bc
-  curl -s http://localhost:8888/api/status | jq '.metrics'
+  curl -s http://localhost:8794/api/status | jq '.metrics'
   sleep 2
 done &
 ```
@@ -116,7 +116,7 @@ done &
 start_time=$(date +%s%N)
 
 curl -w "%{time_total}\n" -s -o /dev/null -X POST \
-  http://localhost:8888/api/tools/call \
+  http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool":"hello","arguments":{"name":"Latency Test"}}'
 
@@ -133,7 +133,7 @@ tools=("hello" "get_time" "calculate" "system_info" "json_parse")
 for tool in "${tools[@]}"; do
   echo "Testing $tool..."
   curl -w "%{time_total}\n" -s -o /dev/null -X POST \
-    http://localhost:8888/api/tools/call \
+    http://localhost:8794/api/tools/call \
     -H "Content-Type: application/json" \
     -d "{\"tool\":\"$tool\",\"arguments\":{}}" | \
     grep -v "0.000"
@@ -152,7 +152,7 @@ for hour in {1..24}; do
   # Test przez minutę
   timeout 60s bash -c '
     for i in {1..100}; do
-      curl -s http://localhost:8888/api/status > /dev/null &
+      curl -s http://localhost:8794/api/status > /dev/null &
       sleep 0.5
     done
   '
@@ -172,7 +172,7 @@ echo "Testing for memory leaks..."
 baseline_memory=$(ps aux | grep "[p]hp.*index.php" | awk '{sum+=$6} END {print sum}')
 
 for i in {1..1000}; do
-  curl -s -X POST http://localhost:8888/api/tools/call \
+  curl -s -X POST http://localhost:8794/api/tools/call \
     -H "Content-Type: application/json" \
     -d '{"tool":"calculate","arguments":{"operation":"add","a":1,"b":1}}' > /dev/null
 

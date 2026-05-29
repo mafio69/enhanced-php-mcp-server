@@ -14,7 +14,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Zmienne globalne
-SERVER_PORT=8888
+SERVER_PORT=8794
 BASE_URL="http://localhost:$SERVER_PORT"
 TOTAL_TESTS=0
 PASSED_TESTS=0
@@ -48,7 +48,7 @@ log_warning() {
 
 # Funkcja do wykrywania portu serwera
 detect_server_port() {
-    local ports=(8888 8889 8890)
+    local ports=(8794 8795 8890)
 
     log_info "Wykrywanie działającego serwera MCP..."
 
@@ -61,7 +61,7 @@ detect_server_port() {
         fi
     done
 
-    log_error "Nie znaleziono działającego serwera MCP na portach 8888, 8889, 8890"
+    log_error "Nie znaleziono działającego serwera MCP na portach 8794, 8795, 8890"
     log_info "Uruchom serwer za pomocą: ./start.sh 2"
     return 1
 }

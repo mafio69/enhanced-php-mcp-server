@@ -109,7 +109,7 @@ composer test
 # Expected: All tests pass
 ```
 ```bash
-curl -X POST http://localhost:8888/api/tools/call \
+curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "hello", "arguments": {"name": "test"}}'
 # Expected: Tool executes correctly
@@ -162,11 +162,11 @@ composer test
 # Expected: All tests pass
 ```
 ```bash
-curl -s -H "Accept: text/html" http://localhost:8888/ | grep -q "MCP PHP Server"
+curl -s -H "Accept: text/html" http://localhost:8794/ | grep -q "MCP PHP Server"
 # Expected: Landing page loads
 ```
 ```bash
-curl -s -H "Accept: text/html" http://localhost:8889/admin/login | grep -q "Admin Panel"
+curl -s -H "Accept: text/html" http://localhost:8795/admin/login | grep -q "Admin Panel"
 # Expected: Login page loads
 ```
 
@@ -220,7 +220,7 @@ composer test
 # Expected: All tests pass
 ```
 ```bash
-curl -s http://localhost:8889/admin/system-info \
+curl -s http://localhost:8795/admin/system-info \
   -H "Authorization: Bearer valid_session" | grep -q "system"
 # Expected: System info returns correct structure
 ```
@@ -282,7 +282,7 @@ composer test
 ```
 ```bash
 # Test login flow
-curl -X POST http://localhost:8889/admin/login \
+curl -X POST http://localhost:8795/admin/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin123"}'
 # Expected: Successful login response
@@ -339,7 +339,7 @@ composer test
 # Expected: All tests pass
 ```
 ```bash
-curl -s http://localhost:8889/api/metrics | grep -q "metrics"
+curl -s http://localhost:8795/api/metrics | grep -q "metrics"
 # Expected: Metrics endpoint returns correct data
 ```
 
@@ -383,15 +383,15 @@ composer test
 ```
 ```bash
 # Test all API endpoints
-curl -s http://localhost:8889/api/status | grep -q "running"
-curl -s http://localhost:8889/api/tools | grep -q "hello"
-curl -s http://localhost:8889/api/health | grep -q "healthy"
+curl -s http://localhost:8795/api/status | grep -q "running"
+curl -s http://localhost:8795/api/tools | grep -q "hello"
+curl -s http://localhost:8795/api/health | grep -q "healthy"
 # Expected: All API endpoints respond correctly
 ```
 ```bash
 # Test admin interface
-curl -s -H "Accept: text/html" http://localhost:8889/ | grep -q "MCP PHP Server"
-curl -s -H "Accept: text/html" http://localhost:8889/admin/login | grep -q "Admin Panel"
+curl -s -H "Accept: text/html" http://localhost:8795/ | grep -q "MCP PHP Server"
+curl -s -H "Accept: text/html" http://localhost:8795/admin/login | grep -q "Admin Panel"
 # Expected: All pages load correctly
 ```
 
