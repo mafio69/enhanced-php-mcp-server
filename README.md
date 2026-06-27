@@ -5,7 +5,9 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 ## 🚀 Features
 
 - **10 Built-in Tools**: Hello, Time, Calculator, File Operations, System Info, JSON Parsing, Weather, HTTP Request
-- **Web Dashboard**: Modern web interface for tool management, testing, and monitoring
+- **Admin Panel**: Password-protected management dashboard with system info and secret management
+- **Secret Manager**: Encrypted storage (AES-256-CBC) for API keys and credentials
+- **MCP Server Management**: Dynamic addition of external MCP servers via API or CLI
 - **Security**: Path restrictions, file size limits, input validation
 - **Configuration**: Centralized config system with environment support
 - **Logging**: Comprehensive logging with configurable levels
@@ -178,14 +180,20 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"get_weathe
 When server is running in Web mode (`./start.sh 2`), the following endpoints are available:
 
 ### Basic Endpoints
-- `GET /` - Server information and available endpoints
+- `GET /` - Server information/landing page
 - `GET /api/tools` - List of available tools
 - `GET /api/status` - Server status and metrics
-- `GET /api/logs` - Recent logs
 - `GET /api/metrics` - System metrics
+- `GET /api/health` - Health check endpoint
 
 ### Tool Execution
 - `POST /api/tools/call` - Execute a tool
+
+### Log Management
+- `GET /api/logs` - Recent log entries
+- `GET /api/logs/download` - Download logs as file
+- `GET /api/logs/stats` - Log statistics
+- `DELETE /api/logs` - Clear all logs
 
 **Tool Call Example:**
 ```bash
@@ -204,6 +212,58 @@ curl -X POST http://localhost:8794/api/tools/call \
   -H "Content-Type: application/json" \
   -d '{"tool": "list_files", "arguments": {"path": "src"}}'
 ```
+
+## 🔐 Admin Panel
+
+The server includes a password-protected admin panel for management and monitoring.
+
+### Accessing the Panel
+
+```bash
+./start.sh 2                     # Start web server
+# Open http://localhost:8794/admin/login
+```
+
+**Default credentials:** `admin` / `admin123`
+
+> ⚠️ Change the default password immediately after first login. Set custom credentials via `ADMIN_USERNAME` and `ADMIN_PASSWORD` environment variables.
+
+### Auth Methods
+
+The admin panel supports two authentication methods:
+- **Cookie-based**: Login form sets an HttpOnly, SameSite=Strict cookie (8h session)
+- **Bearer token**: API requests can use `Authorization: Bearer <session_id>` header
+
+### Admin Routes
+
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/admin/login` | GET | Login page |
+| `/admin/login` | POST | Authenticate user |
+| `/admin/dashboard` | GET | Admin dashboard (requires auth) |
+| `/admin/logout` | POST | End session |
+| `/admin/user` | GET | Current user info |
+| `/admin/change-password` | POST | Change admin password |
+| `/admin/config` | GET | Auth configuration status |
+| `/admin/system-info` | GET | Detailed system information |
+
+### System Info
+
+The authenticated `/admin/system-info` endpoint returns comprehensive data:
+- **System**: OS, hostname, uptime, platform details
+- **PHP**: Version, memory limit, extensions, error reporting
+- **Server**: Software, protocol, port, SSL status
+- **MCP Server**: Name, version, debug mode, enabled tools
+- **Resources**: Memory usage (current/peak), disk space, load average
+- **Security**: Session status, open_basedir, disable_functions
+
+## 📋 Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `ADMIN_USERNAME` | `admin` | Admin panel username |
+| `ADMIN_PASSWORD` | `admin123` | Admin panel password |
+| `MCP_SECRET_KEY` | Auto-generated | AES-256-CBC encryption key for secrets |
 
 ## 🔧 Configuration
 
@@ -228,21 +288,133 @@ return [
 ];
 ```
 
+## 🔐 Secret Manager
+
+The server includes an encrypted secret storage system for sensitive data like API keys and credentials.
+
+### Overview
+
+- **Encryption**: AES-256-CBC with unique IV per value
+- **Storage**: Encrypted files in `storage/secrets/` with restricted permissions (0600)
+- **Key Management**: Encryption key from `MCP_SECRET_KEY` env var, auto-generated `storage/.secret_key` file, or newly generated on first use
+
+### Admin API Endpoints
+
+All endpoints require admin authentication (Bearer token or session cookie).
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET` | `/admin/api/secrets` | List all stored secrets (keys only) |
+| `POST` | `/admin/api/secrets` | Store a new secret |
+| `GET` | `/admin/api/secrets/{key}` | Retrieve a secret value |
+| `DELETE` | `/admin/api/secrets/{key}` | Delete a secret |
+| `GET` | `/admin/api/secrets/{key}/check` | Check if a secret exists |
+| `POST` | `/admin/api/secrets/encrypt` | Encrypt a value without storing |
+| `POST` | `/admin/api/secrets/decrypt` | Decrypt a value |
+| `POST` | `/admin/api/secrets/migrate` | Migrate secrets from config |
+
+### Examples
+
+```bash
+# Store a secret
+curl -X POST http://localhost:8794/admin/api/secrets \
+  -H "Content-Type: application/json" \
+  -d '{"key": "api.openai.key", "value": "sk-..."}'
+
+# Retrieve a secret
+curl http://localhost:8794/admin/api/secrets/api.openai.key
+
+# List all secrets
+curl http://localhost:8794/admin/api/secrets
+
+# Encrypt a value
+curl -X POST http://localhost:8794/admin/api/secrets/encrypt \
+  -H "Content-Type: application/json" \
+  -d '{"value": "my-sensitive-data"}'
+
+# Decrypt a value
+curl -X POST http://localhost:8794/admin/api/secrets/decrypt \
+  -H "Content-Type: application/json" \
+  -d '{"encrypted": "base64encrypteddata..."}'
+```
+
+### Secret Migration
+
+Run the migration endpoint to automatically detect and migrate secrets from `config/server.php`:
+
+```bash
+curl -X POST http://localhost:8794/admin/api/secrets/migrate
+```
+
+The migrator detects values matching common patterns (OpenAI `sk-*`, Google `AIza*`, long alphanumeric keys, etc.).
+
+## 🔗 MCP Server Management
+
+The server supports dynamic management of external MCP servers through the admin API and CLI.
+
+### Configuration
+
+External MCP servers can be defined in `config/server.php` under the `mcpServers` key:
+
+```php
+'mcpServers' => [
+    'Brave-search' => [
+        'mcpServers' => [
+            'brave-search' => [
+                'command' => 'npx',
+                'args' => ['-y', '@brave/brave-search-mcp-server', '--transport', 'http'],
+                'env' => [
+                    'BRAVE_API_KEY' => '${BRAVE_API_KEY}',
+                ],
+            ],
+        ],
+    ],
+],
+```
+
+### Admin API
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `POST` | `/admin/api/servers` | Add a new MCP server |
+
+### CLI Command
+
+```bash
+php index.php app:add-server <name> <ipAddress> <port>
+```
+
 ## 📁 Project Structure
 
 ```
 enhanced-php-mcp-server/
-├── config/           # Configuration files
-├── src/             # Source code
-├── tests/           # Test files (Unit, Integration, Performance)
-├── tools/           # Tool implementations (future)
-├── logs/            # Log files
-├── storage/         # Temporary storage
-├── vendor/          # Composer dependencies
-├── index.php        # Main entry point
-├── start.sh         # Start script
-├── composer.json    # Dependencies and autoloading
-└── README.md        # This file
+├── config/              # Configuration files
+│   └── server.php       # Server configuration
+├── src/                 # Source code
+│   ├── Commands/        # CLI commands (AddServerCommand)
+│   ├── Config/          # ServerConfig class
+│   ├── Controllers/     # HTTP controllers (Admin, Logs, Secret, Server, Status, Tools)
+│   ├── DTO/             # Data Transfer Objects (AddServer, Error, ServerInfo, Status, Tool)
+│   ├── Middleware/      # PSR-15 middleware (AdminAuth)
+│   ├── Routing/         # Route definitions (ApiRoutes)
+│   ├── Services/        # Business logic (AdminAuth, Monitoring, SecretManager, Server, Tool)
+│   ├── Utils/           # Helpers (ApiResponse)
+│   ├── AppContainer.php # PHP-DI container builder
+│   ├── Logger.php       # PSR-3 logger wrapper
+│   ├── MCPServer.php    # CLI mode implementation
+│   └── MCPServerHTTP.php # HTTP mode implementation
+├── templates/           # HTML templates
+│   └── views/
+│       ├── admin/       # Admin panel views (dashboard, login)
+│       └── loading.php  # Landing page
+├── tests/               # Test files (Unit, Integration, Performance)
+├── logs/                # Log files
+├── storage/             # Session & secrets storage
+├── vendor/              # Composer dependencies
+├── index.php            # Main entry point
+├── start.sh             # Start script
+├── composer.json        # Dependencies and autoloading
+└── README.md            # This file
 ```
 
 ## 🔒 Security Features
