@@ -1,0 +1,14 @@
+services:
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PORT: ${PORT:-8795}
+    container_name: mcp-php-server
+    ports:
+      - "${PORT:-8795}:${PORT:-8795}"
+    volumes:
+      - ./logs:/app/logs
+      - ./storage:/app/storage
+    restart: unless-stopped

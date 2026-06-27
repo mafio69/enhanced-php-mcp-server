@@ -1,0 +1,14 @@
+.git
+.gitignore
+vendor
+node_modules
+tests
+.php-cs-fixer.php
+*.md
+!README.md
+.env
+Dockerfile
+docker-compose.yml
+.dockerignore
+start.sh
+test.sh

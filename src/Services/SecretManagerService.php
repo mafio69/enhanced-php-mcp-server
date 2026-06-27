@@ -15,7 +15,7 @@ class SecretManagerService
     public function __construct(LoggerInterface $logger, ?string $secretsPath = null, ?string $encryptionKey = null)
     {
         $this->logger = $logger;
-        $this->secretsPath = $secretsPath ?? __DIR__.'/../../storage/secrets';
+        $this->secretsPath = $secretsPath ?? __DIR__ . '/../../storage/secrets';
         $this->encryptionKey = $encryptionKey ?? $this->getEncryptionKey();
 
         $this->initializeStorage();
@@ -27,14 +27,14 @@ class SecretManagerService
     private function initializeStorage(): void
     {
         if (!is_dir($this->secretsPath)) {
-            if (!mkdir($this->secretsPath, 0700, true)) {
+            if (!mkdir($this->secretsPath, 0o700, true)) {
                 throw new RuntimeException("Cannot create secrets directory: {$this->secretsPath}");
             }
             $this->logger->info("Created secrets directory", ['path' => $this->secretsPath]);
         }
 
         // Set restrictive permissions
-        chmod($this->secretsPath, 0700);
+        chmod($this->secretsPath, 0o700);
     }
 
     /**
@@ -52,7 +52,7 @@ class SecretManagerService
         }
 
         // Try to load from key file
-        $keyFile = __DIR__.'/../../storage/.secret_key';
+        $keyFile = __DIR__ . '/../../storage/.secret_key';
         if (file_exists($keyFile)) {
             $key = file_get_contents($keyFile);
             if ($key !== false) {
@@ -83,11 +83,11 @@ class SecretManagerService
      */
     private function saveEncryptionKey(string $key): void
     {
-        $keyFile = __DIR__.'/../../storage/.secret_key';
+        $keyFile = __DIR__ . '/../../storage/.secret_key';
         $keyDir = dirname($keyFile);
 
         if (!is_dir($keyDir)) {
-            mkdir($keyDir, 0700, true);
+            mkdir($keyDir, 0o700, true);
         }
 
         if (file_put_contents($keyFile, $key) === false) {
@@ -95,8 +95,8 @@ class SecretManagerService
         }
 
         // Restrict file permissions
-        chmod($keyFile, 0600);
-        chmod($keyDir, 0700);
+        chmod($keyFile, 0o600);
+        chmod($keyDir, 0o700);
     }
 
     /**
@@ -111,7 +111,7 @@ class SecretManagerService
             throw new RuntimeException("Failed to encrypt data");
         }
 
-        return base64_encode($iv.$encrypted);
+        return base64_encode($iv . $encrypted);
     }
 
     /**
@@ -142,13 +142,13 @@ class SecretManagerService
     public function storeSecret(string $key, string $value): void
     {
         $encryptedValue = $this->encrypt($value);
-        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
+        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
 
         if (file_put_contents($filePath, $encryptedValue) === false) {
             throw new RuntimeException("Failed to store secret: {$key}");
         }
 
-        chmod($filePath, 0600);
+        chmod($filePath, 0o600);
         $this->logger->info("Secret stored", ['key' => $key]);
     }
 
@@ -157,7 +157,7 @@ class SecretManagerService
      */
     public function getSecret(string $key): ?string
     {
-        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
+        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
 
         if (!file_exists($filePath)) {
             return null;
@@ -184,7 +184,7 @@ class SecretManagerService
      */
     public function deleteSecret(string $key): bool
     {
-        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
+        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
 
         if (file_exists($filePath)) {
             if (unlink($filePath)) {
@@ -203,7 +203,7 @@ class SecretManagerService
     public function listSecrets(): array
     {
         $secrets = [];
-        $files = glob($this->secretsPath.'/*.sec');
+        $files = glob($this->secretsPath . '/*.sec');
 
         if ($files !== false) {
             foreach ($files as $file) {
@@ -222,7 +222,7 @@ class SecretManagerService
      */
     public function secretExists(string $key): bool
     {
-        $filePath = $this->secretsPath.'/'.$this->sanitizeKey($key).'.sec';
+        $filePath = $this->secretsPath . '/' . $this->sanitizeKey($key) . '.sec';
 
         return file_exists($filePath);
     }
@@ -232,7 +232,7 @@ class SecretManagerService
      */
     private function sanitizeKey(string $key): string
     {
-        return preg_replace('/[^a-zA-Z0-9_\-]/', '_', $key);
+        return preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $key);
     }
 
     /**
@@ -311,7 +311,7 @@ class SecretManagerService
      */
     private function isEncrypted(string $value): bool
     {
-        $decoded = base64_decode($value);
+        $decoded = base64_decode($value, true);
         if ($decoded === false) {
             return false;
         }

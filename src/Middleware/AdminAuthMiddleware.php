@@ -7,8 +7,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Log\LoggerInterface;
-use Slim\Routing\RouteContext;
-
 class AdminAuthMiddleware
 {
     private AdminAuthService $authService;
@@ -36,7 +34,7 @@ class AdminAuthMiddleware
         $sessionData = $this->authService->validateSession($sessionId);
         if (!$sessionData) {
             $this->logger->warning('Admin access attempt with invalid session', [
-                'session_id' => substr($sessionId, 0, 8).'...',
+                'session_id' => substr($sessionId, 0, 8) . '...',
                 'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
                 'path' => $request->getUri()->getPath(),
             ]);
@@ -53,13 +51,14 @@ class AdminAuthMiddleware
 
     private function getSessionId(Request $request): ?string
     {
-        // Try Authorization header first (Bearer token)
         $authHeader = $request->getHeaderLine('Authorization');
         if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-            return $matches[1];
+            $token = $matches[1];
+            if ($token !== 'null' && $token !== 'undefined' && $token !== '') {
+                return $token;
+            }
         }
 
-        // Try cookie
         $cookies = $request->getCookieParams();
 
         return $cookies['admin_session'] ?? null;
@@ -67,10 +66,6 @@ class AdminAuthMiddleware
 
     private function createUnauthorizedResponse(Request $request): Response
     {
-        $routeContext = RouteContext::fromRequest($request);
-        $routeParser = $routeContext->getRouteParser();
-
-        // Check if this is an API request
         $path = $request->getUri()->getPath();
         if (str_starts_with($path, '/admin/api/')) {
             // Return JSON for API requests

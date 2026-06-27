@@ -1,29 +1,28 @@
 FROM php:8.2-cli-alpine
 
-# Install dependencies
 RUN apk add --no-cache \
     git \
     unzip \
     curl \
     wget \
     libzip-dev \
+    linux-headers \
     && docker-php-ext-install zip pcntl sockets
 
-# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Copy composer files first (cache)
 COPY composer.json composer.lock* ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copy application
 COPY . .
 
-# Create logs directory
-RUN mkdir -p logs && chmod 777 logs
+RUN mkdir -p logs storage && chmod 777 logs storage
 
-EXPOSE 8080
+ARG PORT=8795
+ENV PORT=$PORT
 
-CMD ["php", "index.php"]
+EXPOSE $PORT
+
+CMD php -S 0.0.0.0:$PORT -t /app /app/router.php

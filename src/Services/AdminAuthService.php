@@ -17,7 +17,7 @@ class AdminAuthService
         $this->logger = $logger;
         $this->adminUsername = $adminUsername ?? $_ENV['ADMIN_USERNAME'] ?? 'admin';
         $this->adminPasswordHash = $this->getAdminPasswordHash($adminPassword);
-        $this->sessionPath = __DIR__.'/../../storage/sessions';
+        $this->sessionPath = __DIR__ . '/../../storage/sessions';
 
         $this->initializeSessions();
     }
@@ -28,11 +28,11 @@ class AdminAuthService
     private function initializeSessions(): void
     {
         if (!is_dir($this->sessionPath)) {
-            if (!mkdir($this->sessionPath, 0700, true)) {
+            if (!mkdir($this->sessionPath, 0o700, true)) {
                 throw new RuntimeException("Cannot create sessions directory: {$this->sessionPath}");
             }
         }
-        chmod($this->sessionPath, 0700);
+        chmod($this->sessionPath, 0o700);
     }
 
     /**
@@ -90,13 +90,13 @@ class AdminAuthService
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
         ];
 
-        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
+        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
         if (file_put_contents($sessionFile, json_encode($sessionData)) === false) {
             throw new RuntimeException("Failed to create session file");
         }
 
-        chmod($sessionFile, 0600);
-        $this->logger->info('Admin session created', ['session_id' => substr($sessionId, 0, 8).'...']);
+        chmod($sessionFile, 0o600);
+        $this->logger->info('Admin session created', ['session_id' => substr($sessionId, 0, 8) . '...']);
 
         return $sessionId;
     }
@@ -106,7 +106,7 @@ class AdminAuthService
      */
     public function validateSession(string $sessionId): ?array
     {
-        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
+        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
 
         if (!file_exists($sessionFile)) {
             return null;
@@ -138,10 +138,10 @@ class AdminAuthService
      */
     public function deleteSession(string $sessionId): void
     {
-        $sessionFile = $this->sessionPath.'/'.$sessionId.'.sess';
+        $sessionFile = $this->sessionPath . '/' . $sessionId . '.sess';
         if (file_exists($sessionFile)) {
             unlink($sessionFile);
-            $this->logger->info('Admin session deleted', ['session_id' => substr($sessionId, 0, 8).'...']);
+            $this->logger->info('Admin session deleted', ['session_id' => substr($sessionId, 0, 8) . '...']);
         }
     }
 
@@ -153,7 +153,7 @@ class AdminAuthService
         $count = 0;
         $currentTime = time();
 
-        foreach (glob($this->sessionPath.'/*.sess') as $sessionFile) {
+        foreach (glob($this->sessionPath . '/*.sess') as $sessionFile) {
             $sessionData = json_decode(file_get_contents($sessionFile), true);
             if ($sessionData && $currentTime > $sessionData['expires_at']) {
                 unlink($sessionFile);
@@ -212,13 +212,14 @@ class AdminAuthService
      */
     public function getSessionFromRequest(): ?string
     {
-        // Try Authorization header first
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-            return $matches[1];
+            $token = $matches[1];
+            if ($token !== 'null' && $token !== 'undefined' && $token !== '') {
+                return $token;
+            }
         }
 
-        // Try cookie
         return $_COOKIE['admin_session'] ?? null;
     }
 

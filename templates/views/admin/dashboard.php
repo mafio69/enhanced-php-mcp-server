@@ -268,7 +268,7 @@
                     </div>
                     <div class="form-group">
                         <label for="secretValue">Wartość sekretu *</label>
-                        <textarea id="secretValue" name="value" placeholder="Wartość sekretna (np. klucz API)" required></textarea>
+                        <input type="password" id="secretValue" name="value" placeholder="Wartość sekretna (np. klucz API)" required>
                     </div>
                     <button type="submit">🔒 Zapisz sekret</button>
                     <div class="loading" id="loading_add_secret">⏳ Zapisywanie...</div>
@@ -373,7 +373,7 @@
             try {
                 const response = await fetch(`${API_BASE}/admin/api/secrets`, {
                     headers: {
-                        'Authorization': `Bearer ${getCookie('admin_session')}`
+                        ...getAuthHeaders()
                     }
                 });
                 const data = await response.json();
@@ -409,19 +409,83 @@
 
         async function addSecret(event) {
             event.preventDefault();
-            // Implementation similar to previous
-            showResult('result_add_secret', 'Sekret dodany pomyślnie', 'success');
+
+            const key = document.getElementById('secretKey').value.trim();
+            const value = document.getElementById('secretValue').value.trim();
+
+            if (!key || !value) {
+                showResult('result_add_secret', 'Klucz i wartość są wymagane', 'error');
+                return;
+            }
+
+            const loading = document.getElementById('loading_add_secret');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/secrets`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify({ key, value })
+                });
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                if (response.ok && data.success) {
+                    showResult('result_add_secret', 'Sekret zapisany pomyślnie', 'success');
+                    document.getElementById('addSecretForm').reset();
+                    loadSecrets();
+                } else {
+                    showResult('result_add_secret', 'Błąd: ' + (data.error?.message || data.message || 'Nieznany błąd'), 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showResult('result_add_secret', 'Błąd sieci: ' + error.message, 'error');
+            }
         }
 
         async function deleteSecret(secretKey) {
             if (!confirm(`Czy na pewno chcesz usunąć sekret "${secretKey}"?`)) return;
 
-            // Implementation
-            loadSecrets();
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/secrets/${encodeURIComponent(secretKey)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        ...getAuthHeaders()
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    loadSecrets();
+                } else {
+                    alert('Błąd: ' + (data.error?.message || data.message || 'Nie udało się usunąć sekretu'));
+                }
+            } catch (error) {
+                alert('Błąd sieci: ' + error.message);
+            }
         }
 
         async function viewSecret(secretKey) {
-            // Implementation
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/secrets/${encodeURIComponent(secretKey)}`, {
+                    headers: {
+                        ...getAuthHeaders()
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    alert(`Klucz: ${data.data.key}\n\nWartość: ${data.data.value}`);
+                } else {
+                    alert('Błąd: ' + (data.error?.message || data.message || 'Nie udało się pobrać sekretu'));
+                }
+            } catch (error) {
+                alert('Błąd sieci: ' + error.message);
+            }
         }
 
         // Server management
@@ -442,13 +506,10 @@
             const systemInfo = document.getElementById('systemInfo');
             systemInfo.innerHTML = '<p><em>Ładowanie informacji o systemie...</em></p>';
 
-            const sessionId = getCookie('admin_session');
-            console.log('Session ID:', sessionId);
-
             try {
                 const response = await fetch(`${API_BASE}/admin/system-info`, {
                     headers: {
-                        'Authorization': `Bearer ${sessionId}`
+                        ...getAuthHeaders()
                     }
                 });
                 console.log('Response status:', response.status);
@@ -569,6 +630,14 @@
             }, 3000);
         }
 
+        function getAuthHeaders() {
+            const sessionId = getCookie('admin_session');
+            if (sessionId && sessionId !== 'null' && sessionId !== 'undefined') {
+                return { 'Authorization': `Bearer ${sessionId}` };
+            }
+            return {};
+        }
+
         function getCookie(name) {
             const value = `; ${document.cookie}`;
             console.log('All cookies:', document.cookie);
@@ -587,7 +656,7 @@
                 const response = await fetch(`${API_BASE}/admin/logout`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${getCookie('admin_session')}`
+                        ...getAuthHeaders()
                     }
                 });
                 const result = await response.json();
