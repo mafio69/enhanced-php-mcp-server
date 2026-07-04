@@ -4,11 +4,11 @@ namespace App;
 
 use App\Config\ServerConfig;
 use App\Controllers\AdminController;
-use App\Controllers\SecretController;
 use App\Controllers\ToolsController;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
 use App\Services\ServerService;
+use App\Services\SystemInfoService;
 use DI\ContainerBuilder;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
@@ -17,7 +17,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
-
 use function DI\create;
 use function DI\factory;
 use function DI\get;
@@ -83,7 +82,7 @@ class AppContainer
                     get(ServerConfig::class),
                     get(LoggerInterface::class),
                     get(AdminAuthService::class),
-                    get(\App\Services\SystemInfoService::class)
+                    get(SystemInfoService::class)
                 ),
 
             App::class => factory(function (ContainerInterface $c) {

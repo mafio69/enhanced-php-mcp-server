@@ -4,6 +4,7 @@ namespace App\Routing;
 
 use App\Controllers\AdminController;
 use App\Controllers\LogsController;
+use App\Controllers\SecretController;
 use App\Controllers\ServerController;
 use App\Controllers\StatusController;
 use App\Controllers\ToolsController;
@@ -75,6 +76,15 @@ class ApiRoutes
                     $apiGroup->get('/servers', [ServerController::class, 'listServers']);
                     $apiGroup->post('/servers', [ServerController::class, 'addServer']);
                     $apiGroup->delete('/servers/{name}', [ServerController::class, 'deleteServer']);
+
+                    // Secrets management
+                    $apiGroup->get('/secrets', [SecretController::class, 'listSecrets']);
+                    $apiGroup->post('/secrets', [SecretController::class, 'storeSecret']);
+                    $apiGroup->get('/secrets/{key}', [SecretController::class, 'getSecret']);
+                    $apiGroup->delete('/secrets/{key}', [SecretController::class, 'deleteSecret']);
+                    $apiGroup->get('/secrets/{key}/check', [SecretController::class, 'checkSecret']);
+                    $apiGroup->post('/encrypt', [SecretController::class, 'encryptValue']);
+                    $apiGroup->post('/decrypt', [SecretController::class, 'decryptValue']);
                 });
             })->add(AdminAuthMiddleware::class);
         });

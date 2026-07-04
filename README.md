@@ -15,6 +15,22 @@ Advanced PHP MCP Server with comprehensive toolset and web interface. This serve
 - **Modern PHP**: Requires PHP 8.1+ with proper autoloading
 - **Comprehensive Testing**: Unit tests, integration tests, performance tests
 
+## 🐳 Suite Integration (Devbox)
+
+This MCP Server is officially integrated as the 4th core component of the [docker-fast-php-logger](https://github.com/mafio69/docker-fast-php-logger) developer suite ecosystem.
+
+When running inside the integrated Docker environment:
+- **Web Dashboard:** Automatically accessible at `http://localhost:8000`
+- **Container:** Runs automatically as the `mcp-server` Docker service
+- **Installation:** Fully managed via Composer globally within the suite (`mafio69/enhanced-php-mcp-server`)
+
+If you are using the Suite, you do **not** need to use `./start.sh`. Simply manage it via the suite script:
+```bash
+./suite start
+# or individually:
+./suite mcp:start
+```
+
 ## 📋 Requirements
 
 - PHP >= 8.1

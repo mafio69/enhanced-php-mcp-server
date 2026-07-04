@@ -37,9 +37,9 @@
     },
     "scripts": {
         "start": "php index.php",
-        "test": "phpunit -c tests/phpunit.xml",
-        "cs-fix": "php-cs-fixer fix",
-        "cs-check": "php-cs-fixer fix --dry-run --diff"
+        "test": "./vendor/bin/phpunit -c tests/phpunit.xml",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix",
+        "cs-check": "./vendor/bin/php-cs-fixer fix --dry-run --diff"
     },
     "config": {
         "sort-packages": true,
