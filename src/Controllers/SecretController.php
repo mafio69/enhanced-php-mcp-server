@@ -102,7 +102,7 @@ class SecretController extends BaseController
 
         $encrypted = $this->secretManager->encrypt($value);
 
-        return $this->jsonResponse($response, ['success' => true, 'data' => ['encrypted' => $encrypted]], 200);
+        return $this->jsonResponse($response, ['success' => true, 'data' => ['original' => $value, 'encrypted' => $encrypted]], 200);
     }
 
     public function decryptValue(Request $request, Response $response): Response

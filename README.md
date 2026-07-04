@@ -281,6 +281,8 @@ The authenticated `/admin/system-info` endpoint returns comprehensive data:
 | `ADMIN_PASSWORD` | `admin123` | Admin panel password |
 | `MCP_SECRET_KEY` | Auto-generated | AES-256-CBC encryption key for secrets |
 
+> 💡 **Note:** The `MCP_SECRET_KEY` is automatically generated on the first startup and securely saved to the `.env` file in the project root. You do not need to configure it manually unless you wish to supply your own predefined key.
+
 ## 🔧 Configuration
 
 Server configuration is managed through `config/server.php`:

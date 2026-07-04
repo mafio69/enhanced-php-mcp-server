@@ -7,6 +7,7 @@ use App\Controllers\AdminController;
 use App\Controllers\ToolsController;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
+use App\Services\SecretManagerService;
 use App\Services\ServerService;
 use App\Services\SystemInfoService;
 use DI\ContainerBuilder;
@@ -67,6 +68,21 @@ class AppContainer
 
             ToolsController::class => create(ToolsController::class)
                 ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(MCPServerHTTP::class)),
+
+            SecretManagerService::class => factory(function (ContainerInterface $c) {
+                return new SecretManagerService(
+                    $c->get(LoggerInterface::class),
+                    getenv('SECRET_STORAGE_PATH') ?: '/tmp/secrets',
+                    getenv('MCP_SECRET_KEY') ?: base64_encode(str_repeat('a', 32))
+                );
+            }),
+
+            SecretController::class => create(SecretController::class)
+                ->constructor(
+                    get(ServerConfig::class),
+                    get(LoggerInterface::class),
+                    get(SecretManagerService::class)
+                ),
 
             AdminAuthService::class => create(AdminAuthService::class)
                 ->constructor(

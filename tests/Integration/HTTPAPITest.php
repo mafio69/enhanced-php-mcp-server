@@ -494,6 +494,9 @@ class HTTPAPITest extends TestCase
 
         // List secrets (empty initially)
         $listResult = $this->makeAuthenticatedRequest('GET', '/admin/api/secrets', $token);
+        if ($listResult['status'] === 500) {
+            print_r($listResult['body']);
+        }
         $this->assertEquals(200, $listResult['status']);
         $this->assertIsArray($listResult['body']['data']);
 
@@ -532,7 +535,7 @@ class HTTPAPITest extends TestCase
         $original = 'test-value-to-encrypt';
 
         // Encrypt
-        $encryptResult = $this->makeAuthenticatedRequest('POST', '/admin/api/secrets/encrypt', $token, [
+        $encryptResult = $this->makeAuthenticatedRequest('POST', '/admin/api/encrypt', $token, [
             'value' => $original,
         ]);
         $this->assertEquals(200, $encryptResult['status']);
@@ -541,7 +544,7 @@ class HTTPAPITest extends TestCase
         $this->assertNotEmpty($encrypted);
 
         // Decrypt
-        $decryptResult = $this->makeAuthenticatedRequest('POST', '/admin/api/secrets/decrypt', $token, [
+        $decryptResult = $this->makeAuthenticatedRequest('POST', '/admin/api/decrypt', $token, [
             'encrypted' => $encrypted,
         ]);
         $this->assertEquals(200, $decryptResult['status']);

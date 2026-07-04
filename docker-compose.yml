@@ -9,6 +9,7 @@ services:
     ports:
       - "${PORT:-8795}:${PORT:-8795}"
     volumes:
+      - .:/app
       - ./logs:/app/logs
       - ./storage:/app/storage
     restart: unless-stopped
