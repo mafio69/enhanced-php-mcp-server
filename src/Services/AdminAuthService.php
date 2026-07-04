@@ -260,7 +260,7 @@ class AdminAuthService
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
             $token = $matches[1];
-            if ($token !== 'null' && $token !== 'undefined' && $token !== '') {
+            if ($token !== 'null' && $token !== 'undefined') {
                 return $token;
             }
         }

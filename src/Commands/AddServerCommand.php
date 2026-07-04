@@ -20,7 +20,7 @@ class AddServerCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Adds a new server.')
@@ -29,7 +29,7 @@ class AddServerCommand extends Command
             ->addArgument('port', InputArgument::REQUIRED, 'The port of the server.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
         $ipAddress = $input->getArgument('ipAddress');

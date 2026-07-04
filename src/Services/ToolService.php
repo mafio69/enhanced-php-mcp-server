@@ -244,7 +244,7 @@ class ToolService
         curl_setopt($ch, CURLOPT_USERAGENT, $this->config->getHttpUserAgent());
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, $this->config->areHttpRedirectsAllowed());
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 
         if ($method !== 'GET') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);

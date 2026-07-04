@@ -82,7 +82,8 @@ class Logger
         }
 
         $date = date($this->config['date_format']);
-        $contextStr = !empty($context) ? json_encode($context, JSON_UNESCAPED_UNICODE) : '';
+        $safeContext = $this->maskSecrets($context);
+        $contextStr = !empty($safeContext) ? json_encode($safeContext, JSON_UNESCAPED_UNICODE) : '';
 
         $logMessage = str_replace(
             ['{date}', '{level}', '{message}', '{context}'],
@@ -91,6 +92,26 @@ class Logger
         );
 
         $this->writeToFile($logMessage);
+    }
+
+    private function maskSecrets(array $context): array
+    {
+        $sensitiveKeys = ['password', 'secret', 'token', 'key', 'authorization'];
+
+        foreach ($context as $key => $value) {
+            if (is_array($value)) {
+                $context[$key] = $this->maskSecrets($value);
+            } elseif (is_string($key)) {
+                foreach ($sensitiveKeys as $sensitiveKey) {
+                    if (stripos($key, $sensitiveKey) !== false) {
+                        $context[$key] = '********';
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $context;
     }
 
     private function shouldLog(string $level): bool

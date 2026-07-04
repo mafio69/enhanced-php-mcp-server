@@ -8,7 +8,6 @@ use App\Controllers\SecretController;
 use App\Controllers\ToolsController;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
-use App\Services\SecretManagerService;
 use App\Services\ServerService;
 use DI\ContainerBuilder;
 use Monolog\Formatter\LineFormatter;
@@ -70,12 +69,6 @@ class AppContainer
             ToolsController::class => create(ToolsController::class)
                 ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(MCPServerHTTP::class)),
 
-            SecretManagerService::class => create(SecretManagerService::class)
-                ->constructor(get(LoggerInterface::class)),
-
-            SecretController::class => create(SecretController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(SecretManagerService::class)),
-
             AdminAuthService::class => create(AdminAuthService::class)
                 ->constructor(
                     get(LoggerInterface::class),
@@ -86,7 +79,12 @@ class AppContainer
                 ),
 
             AdminController::class => create(AdminController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(AdminAuthService::class)),
+                ->constructor(
+                    get(ServerConfig::class),
+                    get(LoggerInterface::class),
+                    get(AdminAuthService::class),
+                    get(\App\Services\SystemInfoService::class)
+                ),
 
             App::class => factory(function (ContainerInterface $c) {
                 $app = AppFactory::createFromContainer($c);

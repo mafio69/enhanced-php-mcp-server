@@ -4,7 +4,6 @@ namespace App\Routing;
 
 use App\Controllers\AdminController;
 use App\Controllers\LogsController;
-use App\Controllers\SecretController;
 use App\Controllers\ServerController;
 use App\Controllers\StatusController;
 use App\Controllers\ToolsController;
@@ -72,16 +71,6 @@ class ApiRoutes
 
                 // Admin API routes
                 $protected->group('/api', function (RouteCollectorProxy $apiGroup) {
-                    // Secret management - static routes first
-                    $apiGroup->get('/secrets', [SecretController::class, 'listSecrets']);
-                    $apiGroup->post('/secrets', [SecretController::class, 'storeSecret']);
-                    $apiGroup->post('/secrets/encrypt', [SecretController::class, 'encryptValue']);
-                    $apiGroup->post('/secrets/decrypt', [SecretController::class, 'decryptValue']);
-                    $apiGroup->post('/secrets/migrate', [SecretController::class, 'migrateSecrets']);
-                    $apiGroup->get('/secrets/{key}/check', [SecretController::class, 'checkSecret']);
-                    $apiGroup->get('/secrets/{key}', [SecretController::class, 'getSecret']);
-                    $apiGroup->delete('/secrets/{key}', [SecretController::class, 'deleteSecret']);
-
                     // Server management
                     $apiGroup->get('/servers', [ServerController::class, 'listServers']);
                     $apiGroup->post('/servers', [ServerController::class, 'addServer']);
