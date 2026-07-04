@@ -1,89 +1,513 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="/home/mariusz/mcp-php-server/tests/phpunit.xml" tests="70" assertions="211" errors="0" failures="0" skipped="0" time="1.013194">
-    <testsuite name="Unit" tests="51" assertions="133" errors="0" failures="0" skipped="0" time="0.676934">
-      <testsuite name="Tests\Unit\MCPServerHTTPTest" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" tests="27" assertions="72" errors="0" failures="0" skipped="0" time="0.670373">
-        <testcase name="testHelloToolReturnsGreeting" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="47" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.004658"/>
-        <testcase name="testGetTimeReturnsCurrentTime" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="59" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000277"/>
-        <testcase name="testCalculateToolDivisionByZero" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="90" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000099"/>
-        <testcase name="testCalculateToolUnknownOperation" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="101" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000099"/>
-        <testcase name="testListFilesWithCurrentDirectory" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="112" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.000213"/>
-        <testcase name="testListFilesWithSubdirectory" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="122" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000166"/>
-        <testcase name="testListFilesWithDefaultPath" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="130" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000147"/>
-        <testcase name="testReadFileWithValidFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="137" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.000161"/>
-        <testcase name="testReadFileWithNonExistentFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="147" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000273"/>
-        <testcase name="testSystemInfoReturnsValidInfo" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="177" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="5" time="0.000147"/>
-        <testcase name="testJsonParseWithValidJson" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="188" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="4" time="0.000108"/>
-        <testcase name="testJsonParseWithInvalidJson" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="199" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000089"/>
-        <testcase name="testGetWeatherWithValidCity" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="207" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="8" time="0.000152"/>
-        <testcase name="testGetWeatherWithEmptyCity" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="221" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000079"/>
-        <testcase name="testHttpRequestWithEmptyUrl" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="243" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000081"/>
-        <testcase name="testExecuteUnknownToolThrowsException" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="250" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000115"/>
-        <testcase name="testFileOperationSecurityPreventsPathTraversal" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="258" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000211"/>
-        <testcase name="testToolExecutionFailureIsMonitored" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="280" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000758"/>
-        <testcase name="testGetToolsReturnsAllRegisteredTools" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="27" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="13" time="0.001022"/>
-        <testcase name="testHelloToolWithDefaultName" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="53" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000096"/>
-        <testcase name="testWriteFileCreatesAndReadsFile" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="155" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="3" time="0.000329"/>
-        <testcase name="testToolExecutionIsMonitored" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="267" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="2" time="0.000135"/>
-        <testcase name="testHttpRequestWithValidUrl" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="228" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="5" time="0.660465"/>
-        <testsuite name="Tests\Unit\MCPServerHTTPTest::testCalculateTool" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.000493">
-          <testcase name="testCalculateTool with data set #0" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000206"/>
-          <testcase name="testCalculateTool with data set #1" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000101"/>
-          <testcase name="testCalculateTool with data set #2" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000088"/>
-          <testcase name="testCalculateTool with data set #3" file="/home/mariusz/mcp-php-server/tests/Unit/MCPServerHTTPTest.php" line="69" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest" assertions="1" time="0.000097"/>
+    <testsuite name="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/phpunit.xml" tests="118"
+               assertions="307" errors="0" failures="0" skipped="0" time="5.762097">
+        <testsuite name="Unit" tests="93" assertions="202" errors="0" failures="0" skipped="0" time="4.214217">
+            <testsuite name="Tests\Unit\AdminAuthMiddlewareTest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                       tests="8" assertions="10" errors="0" failures="0" skipped="0" time="0.015239">
+                <testcase name="testWebRequestWithoutAuthRedirectsToLogin"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="146" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="2" time="0.010682"/>
+                <testcase name="testApiRequestWithInvalidSessionReturns401"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="157" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.000901"/>
+                <testcase name="testBearerTokenTakesPrecedenceOverCookie"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="216" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.001361"/>
+                <testcase name="testRequestWithValidSessionPassesThrough"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="171" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.000670"/>
+                <testcase name="testCookieAuthWorks"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="198" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.000422"/>
+                <testcase name="testApiRequestWithoutAuthReturns401"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="134" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="2" time="0.000377"/>
+                <testcase name="testBearerNullTokenFallsBackToCookie"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="234" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.000442"/>
+                <testcase name="testBearerEmptyTokenFallsBackToCookie"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/AdminAuthMiddlewareTest.php"
+                          line="252" class="Tests\Unit\AdminAuthMiddlewareTest"
+                          classname="Tests.Unit.AdminAuthMiddlewareTest" assertions="1" time="0.000384"/>
+            </testsuite>
+            <testsuite name="Tests\Unit\MCPServerHTTPTest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                       tests="27" assertions="72" errors="0" failures="0" skipped="0" time="4.177693">
+                <testcase name="testHelloToolReturnsGreeting"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="48" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.001553"/>
+                <testcase name="testHelloToolWithDefaultName"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="54" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000133"/>
+                <testcase name="testGetTimeReturnsCurrentTime"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="60" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000424"/>
+                <testcase name="testCalculateToolDivisionByZero"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="91" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000127"/>
+                <testcase name="testCalculateToolUnknownOperation"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="102" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000108"/>
+                <testcase name="testListFilesWithCurrentDirectory"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="113" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="4" time="0.000248"/>
+                <testcase name="testListFilesWithSubdirectory"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="123" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000178"/>
+                <testcase name="testListFilesWithDefaultPath"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="131" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000186"/>
+                <testcase name="testReadFileWithValidFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="138" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="4" time="0.000170"/>
+                <testcase name="testReadFileWithNonExistentFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="148" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000367"/>
+                <testcase name="testWriteFileCreatesAndReadsFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="156" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="3" time="0.000398"/>
+                <testcase name="testSystemInfoReturnsValidInfo"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="178" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="5" time="0.000175"/>
+                <testcase name="testJsonParseWithValidJson"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="189" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="4" time="0.000141"/>
+                <testcase name="testJsonParseWithInvalidJson"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="200" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000123"/>
+                <testcase name="testGetWeatherWithValidCity"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="208" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="8" time="0.000169"/>
+                <testcase name="testGetWeatherWithEmptyCity"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="222" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000113"/>
+                <testcase name="testHttpRequestWithEmptyUrl"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="244" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="1" time="0.000105"/>
+                <testcase name="testExecuteUnknownToolThrowsException"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="251" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000128"/>
+                <testcase name="testFileOperationSecurityPreventsPathTraversal"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="259" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000283"/>
+                <testcase name="testToolExecutionIsMonitored"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="268" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000221"/>
+                <testcase name="testToolExecutionFailureIsMonitored"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="281" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="2" time="0.000173"/>
+                <testcase name="testGetToolsReturnsAllRegisteredTools"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="28" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="13" time="0.001308"/>
+                <testcase name="testHttpRequestWithValidUrl"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                          line="229" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                          assertions="5" time="4.170012"/>
+                <testsuite name="Tests\Unit\MCPServerHTTPTest::testCalculateTool" tests="4" assertions="4" errors="0"
+                           failures="0" skipped="0" time="0.000850">
+                    <testcase name="testCalculateTool with data set #0"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                              line="70" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                              assertions="1" time="0.000255"/>
+                    <testcase name="testCalculateTool with data set #1"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                              line="70" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                              assertions="1" time="0.000189"/>
+                    <testcase name="testCalculateTool with data set #2"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                              line="70" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                              assertions="1" time="0.000203"/>
+                    <testcase name="testCalculateTool with data set #3"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/MCPServerHTTPTest.php"
+                              line="70" class="Tests\Unit\MCPServerHTTPTest" classname="Tests.Unit.MCPServerHTTPTest"
+                              assertions="1" time="0.000203"/>
         </testsuite>
       </testsuite>
-      <testsuite name="Tests\Unit\ToolServiceTest" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" tests="24" assertions="61" errors="0" failures="0" skipped="0" time="0.006561">
-        <testcase name="testToolExecutionFailureIsLogged" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="252" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="5" time="0.003055"/>
-        <testcase name="testListFilesWithCurrentDirectory" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="109" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="4" time="0.000341"/>
-        <testsuite name="Tests\Unit\ToolServiceTest::testCalculateTool" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.000536">
-          <testcase name="testCalculateTool with data set #0" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000153"/>
-          <testcase name="testCalculateTool with data set #1" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000129"/>
-          <testcase name="testCalculateTool with data set #2" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000119"/>
-          <testcase name="testCalculateTool with data set #3" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000136"/>
+            <testsuite name="Tests\Unit\ToolServiceTest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                       tests="24" assertions="61" errors="0" failures="0" skipped="0" time="0.007683">
+                <testcase name="testListFilesWithCurrentDirectory"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="109" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="4" time="0.003141"/>
+                <testcase name="testWriteFileCreatesAndReadsFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="136" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="1" time="0.000415"/>
+                <testcase name="testReadFileWithValidFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="119" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="3" time="0.000260"/>
+                <testcase name="testToolExecutionFailureIsLogged"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="252" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="5" time="0.000597"/>
+                <testsuite name="Tests\Unit\ToolServiceTest::testCalculateTool" tests="4" assertions="4" errors="0"
+                           failures="0" skipped="0" time="0.000737">
+                    <testcase name="testCalculateTool with data set #0"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                              line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                              assertions="1" time="0.000210"/>
+                    <testcase name="testCalculateTool with data set #1"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                              line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                              assertions="1" time="0.000188"/>
+                    <testcase name="testCalculateTool with data set #2"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                              line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                              assertions="1" time="0.000172"/>
+                    <testcase name="testCalculateTool with data set #3"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                              line="66" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                              assertions="1" time="0.000167"/>
         </testsuite>
-        <testcase name="testHelloToolReturnsGreeting" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="28" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="4" time="0.000128"/>
-        <testcase name="testHelloToolWithDefaultName" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="40" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000095"/>
-        <testcase name="testGetTimeReturnsCurrentTime" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="46" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000130"/>
-        <testcase name="testGetTimeWithCustomFormat" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="53" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000133"/>
-        <testcase name="testCalculateToolDivisionByZero" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="87" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000111"/>
-        <testcase name="testCalculateToolUnknownOperation" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="98" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000110"/>
-        <testcase name="testReadFileWithValidFile" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="119" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="3" time="0.000183"/>
-        <testcase name="testReadFileWithNonExistentFile" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="128" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000132"/>
-        <testcase name="testWriteFileCreatesAndReadsFile" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="136" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="1" time="0.000275"/>
-        <testcase name="testSystemInfoReturnsValidInfo" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="152" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="5" time="0.000198"/>
-        <testcase name="testJsonParseWithValidJson" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="163" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="4" time="0.000138"/>
-        <testcase name="testJsonParseWithInvalidJson" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="174" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000119"/>
-        <testcase name="testGetWeatherWithValidCity" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="183" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="7" time="0.000283"/>
-        <testcase name="testGetWeatherWithEmptyCity" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="196" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000132"/>
-        <testcase name="testExecuteUnknownToolThrowsException" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="204" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000099"/>
-        <testcase name="testExecuteDisabledToolThrowsException" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="212" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000095"/>
-        <testcase name="testFileOperationSecurityPreventsPathTraversal" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="229" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="2" time="0.000122"/>
-        <testcase name="testToolExecutionIsLogged" file="/home/mariusz/mcp-php-server/tests/Unit/ToolServiceTest.php" line="238" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest" assertions="5" time="0.000146"/>
+                <testcase name="testHelloToolReturnsGreeting"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="28" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="4" time="0.000171"/>
+                <testcase name="testHelloToolWithDefaultName"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="40" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="1" time="0.000147"/>
+                <testcase name="testGetTimeReturnsCurrentTime"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="46" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000150"/>
+                <testcase name="testGetTimeWithCustomFormat"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="53" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000183"/>
+                <testcase name="testCalculateToolDivisionByZero"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="87" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="1" time="0.000151"/>
+                <testcase name="testCalculateToolUnknownOperation"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="98" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="1" time="0.000140"/>
+                <testcase name="testReadFileWithNonExistentFile"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="128" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000181"/>
+                <testcase name="testSystemInfoReturnsValidInfo"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="152" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="5" time="0.000167"/>
+                <testcase name="testJsonParseWithValidJson"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="163" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="4" time="0.000150"/>
+                <testcase name="testJsonParseWithInvalidJson"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="174" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000139"/>
+                <testcase name="testGetWeatherWithValidCity"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="183" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="7" time="0.000241"/>
+                <testcase name="testGetWeatherWithEmptyCity"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="196" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000135"/>
+                <testcase name="testExecuteUnknownToolThrowsException"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="204" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000126"/>
+                <testcase name="testExecuteDisabledToolThrowsException"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="212" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000109"/>
+                <testcase name="testFileOperationSecurityPreventsPathTraversal"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="229" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="2" time="0.000167"/>
+                <testcase name="testToolExecutionIsLogged"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/ToolServiceTest.php"
+                          line="238" class="Tests\Unit\ToolServiceTest" classname="Tests.Unit.ToolServiceTest"
+                          assertions="5" time="0.000175"/>
       </testsuite>
-    </testsuite>
-    <testsuite name="Integration" tests="19" assertions="78" errors="0" failures="0" skipped="0" time="0.336261">
-      <testsuite name="Tests\Integration\HTTPAPITest" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" tests="19" assertions="78" errors="0" failures="0" skipped="0" time="0.336261">
-        <testcase name="testRootEndpointReturnsServerInfo" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="81" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.013810"/>
-        <testcase name="testStatusEndpointReturnsServerStatus" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="113" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="6" time="0.013950"/>
-        <testcase name="testHelloToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="128" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="5" time="0.014238"/>
-        <testcase name="testGetTimeToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="145" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.013803"/>
-        <testcase name="testMetricsEndpointReturnsData" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="295" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.014787"/>
-        <testcase name="testToolsEndpointReturnsListOfTools" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="94" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="8" time="0.014272"/>
-        <testcase name="testCalculateToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="160" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.014628"/>
-        <testcase name="testListFilesToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="177" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="5" time="0.016204"/>
-        <testcase name="testSystemInfoToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="230" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.015633"/>
-        <testcase name="testUnknownToolReturnsError" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="270" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.016645"/>
-        <testcase name="testFileSecurityPreventsPathTraversal" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="283" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.017532"/>
-        <testcase name="testLogsEndpointReturnsData" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="305" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.016299"/>
-        <testcase name="testGetWeatherToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="257" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.014565"/>
-        <testcase name="testJsonParseToolViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="243" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="4" time="0.017104"/>
-        <testcase name="testReadWriteFileWorkflowViaAPI" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="191" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="6" time="0.032982"/>
-        <testsuite name="Tests\Integration\HTTPAPITest::testToolParameterValidation" tests="4" assertions="12" errors="0" failures="0" skipped="0" time="0.089808">
-          <testcase name="testToolParameterValidation with data set &quot;calculate missing operation&quot;" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="318" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.014953"/>
-          <testcase name="testToolParameterValidation with data set &quot;read file empty path&quot;" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="318" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.014979"/>
-          <testcase name="testToolParameterValidation with data set &quot;write file empty path&quot;" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="318" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.029308"/>
-          <testcase name="testToolParameterValidation with data set &quot;get weather empty city&quot;" file="/home/mariusz/mcp-php-server/tests/Integration/HTTPAPITest.php" line="318" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest" assertions="3" time="0.030568"/>
+            <testsuite name="Tests\Unit\SecretManagerServiceTest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                       tests="16" assertions="27" errors="0" failures="0" skipped="0" time="0.004686">
+                <testcase name="testProcessConfigurationEncryptsSecrets"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="147" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000970"/>
+                <testcase name="testEncryptDecryptRoundtrip"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="54" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000229"/>
+                <testcase name="testEncryptProducesDifferentOutputEachTime"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="62" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000191"/>
+                <testcase name="testDecryptWithInvalidDataThrowsException"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="70" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000178"/>
+                <testcase name="testGetNonExistentSecretReturnsNull"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="84" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000254"/>
+                <testcase name="testDeleteNonExistentSecretReturnsFalse"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="106" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000200"/>
+                <testcase name="testListSecretsReturnsEmptyArrayWhenNoSecrets"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="112" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000197"/>
+                <testcase name="testSecretExists"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="132" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000292"/>
+                <testcase name="testSanitizeKeyWithSpecialCharacters"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="139" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000290"/>
+                <testcase name="testDecryptConfigurationRestoresValues"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="160" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000228"/>
+                <testcase name="testEncryptedDataIsBase64Encoded"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="174" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000228"/>
+                <testcase name="testGetSecretWithCorruptedFileThrowsException"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="180" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000357"/>
+                <testcase name="testStoreAndGetSecret"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="77" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000239"/>
+                <testcase name="testStoreOverwritesExistingSecret"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="90" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="1" time="0.000254"/>
+                <testcase name="testDeleteExistingSecretReturnsTrue"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="98" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="2" time="0.000203"/>
+                <testcase name="testListSecretsReturnsStoredKeys"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretManagerServiceTest.php"
+                          line="119" class="Tests\Unit\SecretManagerServiceTest"
+                          classname="Tests.Unit.SecretManagerServiceTest" assertions="4" time="0.000377"/>
+            </testsuite>
+            <testsuite name="Tests\Unit\SecretControllerTest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                       tests="18" assertions="32" errors="0" failures="0" skipped="0" time="0.008916">
+                <testcase name="testStoreSecretSuccess"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="102" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="3" time="0.002280"/>
+                <testcase name="testStoreSecretMissingFields"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="118" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000698"/>
+                <testcase name="testStoreSecretEmptyFields"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="130" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000515"/>
+                <testcase name="testStoreSecretHandlesServiceError"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="140" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000755"/>
+                <testcase name="testGetSecretFound"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="153" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="4" time="0.000464"/>
+                <testcase name="testGetSecretNotFound"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="171" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000357"/>
+                <testcase name="testGetSecretMissingKey"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="185" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000372"/>
+                <testcase name="testDeleteSecretMissingKey"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="222" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000346"/>
+                <testcase name="testCheckSecretExists"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="232" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000563"/>
+                <testcase name="testCheckSecretNotExists"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="246" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000470"/>
+                <testcase name="testEncryptValueSuccess"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="259" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000348"/>
+                <testcase name="testEncryptValueMissingField"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="275" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000242"/>
+                <testcase name="testDecryptValueSuccess"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="285" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000247"/>
+                <testcase name="testDecryptValueMissingField"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="301" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000224"/>
+                <testcase name="testListSecretsHandlesError"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="87" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000243"/>
+                <testcase name="testDeleteSecretSuccess"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="195" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="2" time="0.000284"/>
+                <testcase name="testDeleteSecretNotFound"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="210" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="1" time="0.000257"/>
+                <testcase name="testListSecretsReturnsKeys"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Unit/SecretControllerTest.php"
+                          line="70" class="Tests\Unit\SecretControllerTest" classname="Tests.Unit.SecretControllerTest"
+                          assertions="4" time="0.000252"/>
+            </testsuite>
+        </testsuite>
+        <testsuite name="Integration" tests="25" assertions="105" errors="0" failures="0" skipped="0" time="1.547880">
+            <testsuite name="Tests\Integration\HTTPAPITest"
+                       file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                       tests="25" assertions="105" errors="0" failures="0" skipped="0" time="1.547880">
+                <testcase name="testAdminLoginSuccess"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="443" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="3" time="0.127658"/>
+                <testcase name="testRootEndpointReturnsServerInfo"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="82" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.001928"/>
+                <testcase name="testHelloToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="129" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="5" time="0.001834"/>
+                <testcase name="testGetTimeToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="146" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="3" time="0.001627"/>
+                <testcase name="testJsonParseToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="244" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.001561"/>
+                <testcase name="testUnknownToolReturnsError"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="271" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.001805"/>
+                <testcase name="testFileSecurityPreventsPathTraversal"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="284" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="3" time="0.001956"/>
+                <testcase name="testMetricsEndpointReturnsData"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="296" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="3" time="0.002164"/>
+                <testcase name="testToolsEndpointReturnsListOfTools"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="95" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="8" time="0.002507"/>
+                <testcase name="testStatusEndpointReturnsServerStatus"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="114" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="6" time="0.002114"/>
+                <testcase name="testCalculateToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="161" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="3" time="0.002386"/>
+                <testcase name="testSystemInfoToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="231" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.002590"/>
+                <testcase name="testGetWeatherToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="258" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.001779"/>
+                <testcase name="testLogsEndpointReturnsData"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="306" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="4" time="0.001455"/>
+                <testcase name="testListFilesToolViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="178" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="5" time="0.001609"/>
+                <testcase name="testReadWriteFileWorkflowViaAPI"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="192" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="6" time="0.003533"/>
+                <testcase name="testAdminApiRequiresAuth"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="466" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="2" time="0.064915"/>
+                <testcase name="testAdminDashboardRequiresAuth"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="474" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="1" time="0.066768"/>
+                <testcase name="testAdminLoginWithInvalidCredentials"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="455" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="2" time="0.132346"/>
+                <testcase name="testAdminEncryptDecryptFlow"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="527" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="7" time="0.419089"/>
+                <testcase name="testAdminSecretsFullFlow"
+                          file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                          line="490" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                          assertions="12" time="0.697752"/>
+                <testsuite name="Tests\Integration\HTTPAPITest::testToolParameterValidation" tests="4" assertions="12"
+                           errors="0" failures="0" skipped="0" time="0.008504">
+                    <testcase name="testToolParameterValidation with data set &quot;calculate missing operation&quot;"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                              line="319" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                              assertions="3" time="0.002311"/>
+                    <testcase name="testToolParameterValidation with data set &quot;read file empty path&quot;"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                              line="319" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                              assertions="3" time="0.002606"/>
+                    <testcase name="testToolParameterValidation with data set &quot;write file empty path&quot;"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                              line="319" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                              assertions="3" time="0.001896"/>
+                    <testcase name="testToolParameterValidation with data set &quot;get weather empty city&quot;"
+                              file="/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/tests/Integration/HTTPAPITest.php"
+                              line="319" class="Tests\Integration\HTTPAPITest" classname="Tests.Integration.HTTPAPITest"
+                              assertions="3" time="0.001692"/>
         </testsuite>
       </testsuite>
     </testsuite>

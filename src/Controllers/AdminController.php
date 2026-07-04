@@ -8,6 +8,7 @@ use App\Services\AdminAuthService;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 class AdminController extends BaseController
 {
@@ -66,7 +67,7 @@ class AdminController extends BaseController
             // Set cookie
             $response = $response->withHeader(
                 'Set-Cookie',
-                "admin_session={$sessionId}; Path=/; HttpOnly; SameSite=Strict; Max-Age=28800"
+                "admin_session={$sessionId}; Path=/; SameSite=Strict; Max-Age=28800"
             );
 
             return $this->jsonResponse($response, [
@@ -476,7 +477,7 @@ class AdminController extends BaseController
     private function renderTemplate(string $templatePath, array $variables = []): string
     {
         if (!file_exists($templatePath)) {
-            throw new \RuntimeException("Template file not found: {$templatePath}");
+            throw new RuntimeException("Template file not found: {$templatePath}");
         }
 
         // Extract variables for use in template

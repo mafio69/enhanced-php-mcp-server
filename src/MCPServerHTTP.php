@@ -155,6 +155,7 @@ class MCPServerHTTP
                         return "Nieznana operacja: $op";
                 }
 
+            // no break
             case 'list_files':
                 $path = $arguments['path'] ?? '.';
                 $basePath = dirname(__DIR__); // Katalog główny projektu (poprawna ścieżka)
@@ -268,7 +269,7 @@ class MCPServerHTTP
 
                 $dir = dirname($fullPath);
                 if (!is_dir($dir)) {
-                    mkdir($dir, 0755, true);
+                    mkdir($dir, 0o755, true);
                 }
 
                 $bytes = file_put_contents($fullPath, $content);
@@ -276,15 +277,15 @@ class MCPServerHTTP
                 return "Zapisano plik: $path\nZapisano bajtów: $bytes";
 
             case 'system_info':
-                return "=== INFORMACJE O SYSTEMIE ===\n\n".
-                    "System operacyjny: ".PHP_OS."\n".
-                    "Wersja PHP: ".PHP_VERSION."\n".
-                    "Architektura: ".php_uname('m')."\n".
-                    "Hostname: ".gethostname()."\n".
-                    "Pamięć limit: ".ini_get('memory_limit')."\n".
-                    "Maksymalny czas wykonania: ".ini_get('max_execution_time')."s\n".
-                    "Katalog roboczy: ".getcwd()."\n".
-                    "Załadowane rozszerzenia: ".implode(', ', get_loaded_extensions());
+                return "=== INFORMACJE O SYSTEMIE ===\n\n"
+                    ."System operacyjny: ".PHP_OS."\n"
+                    ."Wersja PHP: ".PHP_VERSION."\n"
+                    ."Architektura: ".php_uname('m')."\n"
+                    ."Hostname: ".gethostname()."\n"
+                    ."Pamięć limit: ".ini_get('memory_limit')."\n"
+                    ."Maksymalny czas wykonania: ".ini_get('max_execution_time')."s\n"
+                    ."Katalog roboczy: ".getcwd()."\n"
+                    ."Załadowane rozszerzenia: ".implode(', ', get_loaded_extensions());
 
             case 'json_parse':
                 try {
@@ -292,11 +293,11 @@ class MCPServerHTTP
                     $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
                     $pretty = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
-                    return "=== SPARSOWANY JSON ===\n\n".
-                        "Typ główny: ".gettype($data)."\n".
-                        (is_array($data) ? "Liczba elementów: ".count($data)."\n" : "").
-                        "\nSformatowany JSON:\n---\n".
-                        $pretty;
+                    return "=== SPARSOWANY JSON ===\n\n"
+                        ."Typ główny: ".gettype($data)."\n"
+                        .(is_array($data) ? "Liczba elementów: ".count($data)."\n" : "")
+                        ."\nSformatowany JSON:\n---\n"
+                        .$pretty;
                 } catch (JsonException $e) {
                     return "Błąd parsowania JSON:\n".$e->getMessage();
                 }
@@ -361,13 +362,13 @@ class MCPServerHTTP
                         return "Błąd HTTP: $error";
                     }
 
-                    return "=== ODPOWIEDŹ HTTP ===\n\n".
-                        "URL: $url\n".
-                        "Metoda: $method\n".
-                        "Status: $httpCode\n".
-                        "Rozmiar odpowiedzi: ".strlen($response)." bajtów\n\n".
-                        "Treść odpowiedzi:\n---\n".
-                        substr($response, 0, 5000).(strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
+                    return "=== ODPOWIEDŹ HTTP ===\n\n"
+                        ."URL: $url\n"
+                        ."Metoda: $method\n"
+                        ."Status: $httpCode\n"
+                        ."Rozmiar odpowiedzi: ".strlen($response)." bajtów\n\n"
+                        ."Treść odpowiedzi:\n---\n"
+                        .substr($response, 0, 5000).(strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
                 } catch (Exception $e) {
                     return "Błąd wykonania zapytania HTTP: ".$e->getMessage();
                 }
@@ -385,13 +386,13 @@ class MCPServerHTTP
                 $humidity = rand(30, 90);
                 $windSpeed = rand(0, 30);
 
-                return "=== POGODA DLA MIASTA: ".strtoupper($city)." ===\n\n".
-                    "Stan pogody: $condition\n".
-                    "Temperatura: {$temp}°C\n".
-                    "Wilgotność: {$humidity}%\n".
-                    "Prędkość wiatru: {$windSpeed} km/h\n".
-                    "Data aktualizacji: ".date('Y-m-d H:i:s')."\n\n".
-                    "*Uwaga: Dane symulowane - w prawdziwej implementacji użyto by zewnętrznego API pogodowego";
+                return "=== POGODA DLA MIASTA: ".strtoupper($city)." ===\n\n"
+                    ."Stan pogody: $condition\n"
+                    ."Temperatura: {$temp}°C\n"
+                    ."Wilgotność: {$humidity}%\n"
+                    ."Prędkość wiatru: {$windSpeed} km/h\n"
+                    ."Data aktualizacji: ".date('Y-m-d H:i:s')."\n\n"
+                    ."*Uwaga: Dane symulowane - w prawdziwej implementacji użyto by zewnętrznego API pogodowego";
 
             default:
                 throw new Exception("Nieznane narzędzie: $name");
@@ -449,4 +450,3 @@ class MCPServerHTTP
         return ['tools' => array_values($this->tools)];
     }
 }
-

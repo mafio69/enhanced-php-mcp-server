@@ -39,3 +39,4 @@ temp/
 # MCP specific
 storage/
 *.pid
+/.php-cs-fixer.cache

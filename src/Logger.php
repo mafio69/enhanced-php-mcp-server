@@ -28,7 +28,7 @@ class Logger
         // Upewnij się, że katalog logów istnieje
         $logDir = dirname($this->logFile);
         if (!is_dir($logDir)) {
-            mkdir($logDir, 0755, true);
+            mkdir($logDir, 0o755, true);
         }
 
         // Rotacja logów jeśli plik jest za duży

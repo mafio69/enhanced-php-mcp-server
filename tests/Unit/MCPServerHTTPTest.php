@@ -4,10 +4,9 @@ namespace Tests\Unit;
 
 use App\MCPServerHTTP;
 use App\Services\MonitoringService;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use ReflectionClass;
-use function PHPUnit\Framework\assertStringContainsString;
 
 class MCPServerHTTPTest extends TestCase
 {
@@ -36,7 +35,9 @@ class MCPServerHTTPTest extends TestCase
         $expectedTools = [
             'hello', 'get_time', 'calculate', 'list_files',
             'read_file', 'write_file', 'system_info',
-            'json_parse', 'http_request', 'get_weather'
+            'json_parse',
+            'http_request',
+            'get_weather',
         ];
 
         foreach ($expectedTools as $toolName) {
@@ -71,7 +72,7 @@ class MCPServerHTTPTest extends TestCase
         $result = $this->server->executeTool('calculate', [
             'operation' => $operation,
             'a' => $a,
-            'b' => $b
+            'b' => $b,
         ]);
 
         $this->assertEquals("Wynik: $expected", $result);
@@ -92,7 +93,7 @@ class MCPServerHTTPTest extends TestCase
         $result = $this->server->executeTool('calculate', [
             'operation' => 'divide',
             'a' => 10,
-            'b' => 0
+            'b' => 0,
         ]);
 
         $this->assertEquals('Błąd: Dzielenie przez zero', $result);
@@ -103,7 +104,7 @@ class MCPServerHTTPTest extends TestCase
         $result = $this->server->executeTool('calculate', [
             'operation' => 'unknown',
             'a' => 1,
-            'b' => 2
+            'b' => 2,
         ]);
 
         $this->assertEquals('Nieznana operacja: unknown', $result);
@@ -146,7 +147,7 @@ class MCPServerHTTPTest extends TestCase
 
     public function testReadFileWithNonExistentFile()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Dostęp do pliku zabroniony! Ścieżka wykracza poza dozwolony katalog.');
 
         $this->server->executeTool('read_file', ['path' => 'non_existent_file.txt']);
@@ -160,7 +161,7 @@ class MCPServerHTTPTest extends TestCase
         // Write file
         $writeResult = $this->server->executeTool('write_file', [
             'path' => $testFile,
-            'content' => $testContent
+            'content' => $testContent,
         ]);
 
         $this->assertStringContainsString("Zapisano plik: $testFile", $writeResult);
@@ -230,7 +231,7 @@ class MCPServerHTTPTest extends TestCase
         // Test with a simple public API
         $result = $this->server->executeTool('http_request', [
             'url' => 'https://httpbin.org/json',
-            'method' => 'GET'
+            'method' => 'GET',
         ]);
 
         $this->assertStringContainsString('=== ODPOWIEDŹ HTTP ===', $result);
@@ -249,7 +250,7 @@ class MCPServerHTTPTest extends TestCase
 
     public function testExecuteUnknownToolThrowsException()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessage('Nieznane narzędzie: unknown_tool');
 
         $this->server->executeTool('unknown_tool', []);
@@ -257,7 +258,7 @@ class MCPServerHTTPTest extends TestCase
 
     public function testFileOperationSecurityPreventsPathTraversal()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         $this->expectExceptionMessageMatches('/Dostęp (do pliku|do katalogu) zabroniony!/');
 
         // Try to access files outside project directory
@@ -289,7 +290,7 @@ class MCPServerHTTPTest extends TestCase
 
         try {
             $this->server->executeTool('unknown_tool', []);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Expected exception
         }
     }
