@@ -58,7 +58,7 @@ abstract class BaseController
         $contentType = $request->getHeaderLine('Content-Type');
 
         if (strpos($contentType, 'application/json') !== false) {
-            return (array)json_decode($request->getBody()->getContents(), true) ?: [];
+            return (array) json_decode($request->getBody()->getContents(), true) ?: [];
         }
 
         return [];

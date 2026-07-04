@@ -261,7 +261,7 @@ class SecretController extends BaseController
             $errors = [];
 
             // Get current server configuration
-            $configPath = __DIR__.'/../../config/server.php';
+            $configPath = __DIR__ . '/../../config/server.php';
             $serverConfig = require $configPath;
 
             // Process MCP servers configuration
@@ -278,7 +278,7 @@ class SecretController extends BaseController
                                             $this->secretManager->storeSecret($secretKey, $envValue);
                                             $migrated[] = $secretKey;
                                         } catch (Exception $e) {
-                                            $errors[] = "Failed to migrate {$secretKey}: ".$e->getMessage();
+                                            $errors[] = "Failed to migrate {$secretKey}: " . $e->getMessage();
                                         }
                                     }
                                 }

@@ -92,9 +92,9 @@ class ToolService
         try {
             $date = new DateTime('now', new DateTimeZone($timezone));
 
-            return "Current time: ".$date->format($format)." ($timezone)";
+            return "Current time: " . $date->format($format) . " ($timezone)";
         } catch (Exception $e) {
-            return "Current time: ".date($format);
+            return "Current time: " . date($format);
         }
     }
 
@@ -108,14 +108,14 @@ class ToolService
             return "Error: Both arguments must be numbers";
         }
 
-        $a = (float)$a;
-        $b = (float)$b;
+        $a = (float) $a;
+        $b = (float) $b;
 
         return match ($operation) {
-            'add' => "Result: ".($a + $b),
-            'subtract' => "Result: ".($a - $b),
-            'multiply' => "Result: ".($a * $b),
-            'divide' => $b != 0 ? "Result: ".($a / $b) : "Error: Division by zero",
+            'add' => "Result: " . ($a + $b),
+            'subtract' => "Result: " . ($a - $b),
+            'multiply' => "Result: " . ($a * $b),
+            'divide' => $b != 0 ? "Result: " . ($a / $b) : "Error: Division by zero",
             default => "Unknown operation: $operation"
         };
     }
@@ -130,7 +130,7 @@ class ToolService
         }
 
         $result = "Files in directory: $path\n";
-        $result .= str_repeat("=", 50)."\n";
+        $result .= str_repeat("=", 50) . "\n";
 
         $items = scandir($fullPath);
         foreach ($items as $item) {
@@ -138,9 +138,9 @@ class ToolService
                 continue;
             }
 
-            $itemPath = $fullPath.'/'.$item;
+            $itemPath = $fullPath . '/' . $item;
             $type = is_dir($itemPath) ? '[DIR]' : '[FILE]';
-            $size = is_file($itemPath) ? ' ('.$this->formatBytes(filesize($itemPath)).')' : '';
+            $size = is_file($itemPath) ? ' (' . $this->formatBytes(filesize($itemPath)) . ')' : '';
             $modified = date('Y-m-d H:i:s', filemtime($itemPath));
 
             $result .= sprintf("%-10s %-30s %s %s\n", $type, $item, $modified, $size);
@@ -172,10 +172,10 @@ class ToolService
         }
 
         $result = "File: $path\n";
-        $result .= str_repeat("=", 50)."\n";
-        $result .= "Size: ".$this->formatBytes(strlen($content))."\n";
-        $result .= "Modified: ".date('Y-m-d H:i:s', filemtime($fullPath))."\n";
-        $result .= str_repeat("-", 50)."\n";
+        $result .= str_repeat("=", 50) . "\n";
+        $result .= "Size: " . $this->formatBytes(strlen($content)) . "\n";
+        $result .= "Modified: " . date('Y-m-d H:i:s', filemtime($fullPath)) . "\n";
+        $result .= str_repeat("-", 50) . "\n";
         $result .= $content;
 
         return $result;
@@ -195,7 +195,7 @@ class ToolService
         // Check file size limit
         if (strlen($content) > $this->config->getMaxFileSize()) {
             throw new ValidationException(
-                "Content too large. Maximum size: ".$this->formatBytes($this->config->getMaxFileSize())
+                "Content too large. Maximum size: " . $this->formatBytes($this->config->getMaxFileSize())
             );
         }
 
@@ -210,14 +210,14 @@ class ToolService
     private function executeSystemInfo(array $args): string
     {
         $info = "=== SYSTEM INFORMATION ===\n";
-        $info .= "Operating System: ".php_uname()."\n";
-        $info .= "PHP Version: ".PHP_VERSION."\n";
-        $info .= "Architecture: ".(PHP_INT_SIZE * 8)."-bit\n";
-        $info .= "Hostname: ".gethostname()."\n";
-        $info .= "Memory Usage: ".$this->formatBytes(memory_get_usage(true))."\n";
-        $info .= "Peak Memory: ".$this->formatBytes(memory_get_peak_usage(true))."\n";
-        $info .= "Server Software: ".($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown')."\n";
-        $info .= "Document Root: ".($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown')."\n";
+        $info .= "Operating System: " . php_uname() . "\n";
+        $info .= "PHP Version: " . PHP_VERSION . "\n";
+        $info .= "Architecture: " . (PHP_INT_SIZE * 8) . "-bit\n";
+        $info .= "Hostname: " . gethostname() . "\n";
+        $info .= "Memory Usage: " . $this->formatBytes(memory_get_usage(true)) . "\n";
+        $info .= "Peak Memory: " . $this->formatBytes(memory_get_peak_usage(true)) . "\n";
+        $info .= "Server Software: " . ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown') . "\n";
+        $info .= "Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'Unknown') . "\n";
 
         return $info;
     }
@@ -271,8 +271,8 @@ class ToolService
         $result .= "URL: $url\n";
         $result .= "Method: $method\n";
         $result .= "Status: $httpCode\n";
-        $result .= "Response Size: ".$this->formatBytes(strlen($response))."\n";
-        $result .= str_repeat("-", 50)."\n";
+        $result .= "Response Size: " . $this->formatBytes(strlen($response)) . "\n";
+        $result .= str_repeat("-", 50) . "\n";
         $result .= $response;
 
         return $result;
@@ -287,18 +287,18 @@ class ToolService
 
         $decoded = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new JsonParseException("JSON parsing error: ".json_last_error_msg());
+            throw new JsonParseException("JSON parsing error: " . json_last_error_msg());
         }
 
         $result = "=== PARSED JSON ===\n";
-        $result .= "Root type: ".gettype($decoded)."\n";
+        $result .= "Root type: " . gettype($decoded) . "\n";
 
         if (is_array($decoded)) {
-            $result .= "Element count: ".count($decoded)."\n";
-            $result .= str_repeat("-", 50)."\n";
+            $result .= "Element count: " . count($decoded) . "\n";
+            $result .= str_repeat("-", 50) . "\n";
             $result .= json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         } else {
-            $result .= str_repeat("-", 50)."\n";
+            $result .= str_repeat("-", 50) . "\n";
             $result .= json_encode($decoded, JSON_UNESCAPED_UNICODE);
         }
 
@@ -319,12 +319,12 @@ class ToolService
         $humidity = rand(30, 90);
         $windSpeed = rand(0, 25);
 
-        $result = "=== WEATHER FOR: ".strtoupper($city)." ===\n";
+        $result = "=== WEATHER FOR: " . strtoupper($city) . " ===\n";
         $result .= "Weather condition: $condition\n";
         $result .= "Temperature: $temperature °C\n";
         $result .= "Humidity: $humidity%\n";
         $result .= "Wind speed: $windSpeed km/h\n";
-        $result .= "Last updated: ".date('Y-m-d H:i:s')."\n";
+        $result .= "Last updated: " . date('Y-m-d H:i:s') . "\n";
         $result .= "\nNote: This is simulated weather data for demonstration purposes.";
 
         return $result;
@@ -336,7 +336,7 @@ class ToolService
         $path = str_replace(['../', '..\\'], '', $path);
 
         // Get absolute path
-        $fullPath = realpath(__DIR__.'/../../'.$path);
+        $fullPath = realpath(__DIR__ . '/../../' . $path);
 
         if ($fullPath === false) {
             // Try relative to current directory
@@ -372,6 +372,6 @@ class ToolService
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision).' '.$units[$i];
+        return round($bytes, $precision) . ' ' . $units[$i];
     }
 }

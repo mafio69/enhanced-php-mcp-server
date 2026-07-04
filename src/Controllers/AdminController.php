@@ -287,16 +287,16 @@ class AdminController extends BaseController
         $platform = PHP_OS;
 
         if (str_starts_with($platform, 'WIN')) {
-            return 'Windows '.php_uname('r');
+            return 'Windows ' . php_uname('r');
         } elseif (str_starts_with($platform, 'Darwin')) {
-            return 'macOS '.php_uname('r');
+            return 'macOS ' . php_uname('r');
         } elseif (str_starts_with($platform, 'Linux')) {
             $distro = $this->getLinuxDistro();
 
-            return 'Linux '.($distro ?: php_uname('r'));
+            return 'Linux ' . ($distro ?: php_uname('r'));
         }
 
-        return $platform.' '.php_uname('r');
+        return $platform . ' ' . php_uname('r');
     }
 
     /**
@@ -448,7 +448,7 @@ class AdminController extends BaseController
         if (function_exists('shell_exec')) {
             $count = shell_exec('ps aux | wc -l');
             if ($count !== null) {
-                return (int)trim($count);
+                return (int) trim($count);
             }
         }
 
@@ -468,7 +468,7 @@ class AdminController extends BaseController
             $unitIndex++;
         }
 
-        return round($bytes, 2).' '.$units[$unitIndex];
+        return round($bytes, 2) . ' ' . $units[$unitIndex];
     }
 
     /**

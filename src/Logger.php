@@ -14,7 +14,7 @@ class Logger
     public function __construct(array $config = [])
     {
         $this->config = array_merge([
-            'file' => __DIR__.'/../logs/server.log',
+            'file' => __DIR__ . '/../logs/server.log',
             'level' => 'info',
             'max_size' => 10 * 1024 * 1024, // 10MB
             'backup_count' => 5,
@@ -86,7 +86,7 @@ class Logger
 
         $logMessage = str_replace(
             ['{date}', '{level}', '{message}', '{context}'],
-            [$date, strtoupper($level), (string)$message, $contextStr],
+            [$date, strtoupper($level), (string) $message, $contextStr],
             $this->config['log_format']
         );
 
@@ -114,7 +114,7 @@ class Logger
 
     private function writeToFile(string $message): void
     {
-        file_put_contents($this->logFile, $message.PHP_EOL, FILE_APPEND | LOCK_EX);
+        file_put_contents($this->logFile, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
     private function rotateIfNeeded(): void
@@ -129,8 +129,8 @@ class Logger
 
         // Usuń najstarsze logi
         for ($i = $this->config['backup_count']; $i > 0; $i--) {
-            $oldFile = $this->logFile.'.'.$i;
-            $newFile = $this->logFile.'.'.($i + 1);
+            $oldFile = $this->logFile . '.' . $i;
+            $newFile = $this->logFile . '.' . ($i + 1);
 
             if (file_exists($oldFile)) {
                 if ($i === $this->config['backup_count']) {
@@ -142,7 +142,7 @@ class Logger
         }
 
         // Przesuń obecny log
-        rename($this->logFile, $this->logFile.'.1');
+        rename($this->logFile, $this->logFile . '.1');
     }
 
     public function getLogPath(): string

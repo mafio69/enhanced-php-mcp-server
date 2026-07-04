@@ -110,7 +110,7 @@ class SecretManagerServiceTest extends TestCase
     public function testProcessConfigurationEncryptsSecrets(): void
     {
         $config = [
-            'api_key' => 'sk-'.str_repeat('a', 40),
+            'api_key' => 'sk-' . str_repeat('a', 40),
             'normal' => 'just a string',
         ];
 
@@ -123,7 +123,7 @@ class SecretManagerServiceTest extends TestCase
     public function testDecryptConfigurationRestoresValues(): void
     {
         $config = [
-            'api_key' => 'sk-'.str_repeat('a', 40),
+            'api_key' => 'sk-' . str_repeat('a', 40),
             'normal' => 'just a string',
         ];
 
@@ -143,7 +143,7 @@ class SecretManagerServiceTest extends TestCase
     public function testGetSecretWithCorruptedFileThrowsException(): void
     {
         $this->service->storeSecret('corrupt', 'value');
-        $filePath = $this->tempDir.'/corrupt.sec';
+        $filePath = $this->tempDir . '/corrupt.sec';
         file_put_contents($filePath, 'not-valid-base64-encoded-data');
 
         $this->expectException(RuntimeException::class);
@@ -155,7 +155,7 @@ class SecretManagerServiceTest extends TestCase
     protected function setUp(): void
     {
         $this->encryptionKey = base64_encode(str_repeat('a', 32));
-        $this->tempDir = sys_get_temp_dir().'/secret_test_'.uniqid();
+        $this->tempDir = sys_get_temp_dir() . '/secret_test_' . uniqid();
 
         $this->loggerMock = $this->createMock(LoggerInterface::class);
 
@@ -180,7 +180,7 @@ class SecretManagerServiceTest extends TestCase
             if ($item === '.' || $item === '..') {
                 continue;
             }
-            $path = $dir.'/'.$item;
+            $path = $dir . '/' . $item;
             if (is_dir($path)) {
                 $this->removeDirectory($path);
             } else {

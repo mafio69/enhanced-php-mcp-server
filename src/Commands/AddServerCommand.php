@@ -33,7 +33,7 @@ class AddServerCommand extends Command
     {
         $name = $input->getArgument('name');
         $ipAddress = $input->getArgument('ipAddress');
-        $port = (int)$input->getArgument('port');
+        $port = (int) $input->getArgument('port');
 
         $serverData = [
             'name' => $name,

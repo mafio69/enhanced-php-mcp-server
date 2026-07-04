@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use React\EventLoop\Loop;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
+
 use const STDIN;
 use const STDOUT;
 
@@ -74,7 +75,7 @@ class MCPServer
                     return $this->createResponse($id, [
                         'protocolVersion' => '2024-11-05',
                         'capabilities' => [
-                            'tools' => (object)[],
+                            'tools' => (object) [],
                         ],
                         'serverInfo' => $this->serverInfo,
                     ]);
@@ -146,7 +147,7 @@ class MCPServer
             case 'get_time':
                 $now = new DateTime();
 
-                return "Aktualny czas: ".$now->format('Y-m-d H:i:s');
+                return "Aktualny czas: " . $now->format('Y-m-d H:i:s');
 
             default:
                 throw new Exception("Nieznane narzędzie: $name");
@@ -194,16 +195,16 @@ class MCPServer
 
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     $errorResponse = $this->createErrorResponse(null, 'Parse error');
-                    $output->write(json_encode($errorResponse)."\n");
+                    $output->write(json_encode($errorResponse) . "\n");
                     continue;
                 }
 
                 try {
                     $response = $this->handleRequest($request);
-                    $output->write(json_encode($response)."\n");
+                    $output->write(json_encode($response) . "\n");
                 } catch (Exception $e) {
                     $errorResponse = $this->createErrorResponse($request['id'] ?? null, $e->getMessage());
-                    $output->write(json_encode($errorResponse)."\n");
+                    $output->write(json_encode($errorResponse) . "\n");
                 }
             }
         });

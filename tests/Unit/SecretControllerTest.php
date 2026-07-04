@@ -68,7 +68,7 @@ class SecretControllerTest extends TestCase
 
     private function getResponseBody(Response $response): array
     {
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
 
         return json_decode($body, true) ?? [];
     }

@@ -131,7 +131,7 @@ class MCPServerHTTP
                 return "Cześć, $userName! Miło Cię poznać.";
 
             case 'get_time':
-                return "Aktualny czas: ".date('Y-m-d H:i:s');
+                return "Aktualny czas: " . date('Y-m-d H:i:s');
 
             case 'calculate':
                 $a = floatval($arguments['a'] ?? 0);
@@ -140,22 +140,22 @@ class MCPServerHTTP
 
                 switch ($op) {
                     case 'add':
-                        return "Wynik: ".($a + $b);
+                        return "Wynik: " . ($a + $b);
                     case 'subtract':
-                        return "Wynik: ".($a - $b);
+                        return "Wynik: " . ($a - $b);
                     case 'multiply':
-                        return "Wynik: ".($a * $b);
+                        return "Wynik: " . ($a * $b);
                     case 'divide':
                         if ($b == 0) {
                             return "Błąd: Dzielenie przez zero";
                         }
 
-                        return "Wynik: ".($a / $b);
+                        return "Wynik: " . ($a / $b);
                     default:
                         return "Nieznana operacja: $op";
                 }
 
-            // no break
+                // no break
             case 'list_files':
                 $path = $arguments['path'] ?? '.';
                 $basePath = dirname(__DIR__); // Katalog główny projektu (poprawna ścieżka)
@@ -163,13 +163,13 @@ class MCPServerHTTP
                 // Obsługa ścieżek z ~ (home directory)
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath.substr($path, 1);
+                    $fullPath = $homePath . substr($path, 1);
                 } elseif (realpath($path)) {
                     // Ścieżka absolutna - użyj bezpośrednio
                     $fullPath = realpath($path);
                 } else {
                     // Ścieżka względna - połącz z basePath
-                    $fullPath = realpath($basePath.'/'.ltrim($path, './'));
+                    $fullPath = realpath($basePath . '/' . ltrim($path, './'));
                 }
 
                 // Debug info
@@ -195,13 +195,13 @@ class MCPServerHTTP
                         continue;
                     }
 
-                    $filePath = $fullPath.'/'.$file;
+                    $filePath = $fullPath . '/' . $file;
                     $type = is_dir($filePath) ? '[DIR]' : '[FILE]';
                     $size = is_file($filePath) ? filesize($filePath) : 0;
 
                     $result .= "$type $file";
                     if (is_file($filePath)) {
-                        $result .= " (".number_format($size)." bajtów)";
+                        $result .= " (" . number_format($size) . " bajtów)";
                     }
                     $result .= "\n";
                 }
@@ -219,13 +219,13 @@ class MCPServerHTTP
                 // Obsługa ścieżek z ~
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath.substr($path, 1);
+                    $fullPath = $homePath . substr($path, 1);
                 } elseif (realpath($path)) {
                     // Ścieżka absolutna - użyj bezpośrednio
                     $fullPath = realpath($path);
                 } else {
                     // Ścieżka względna - połącz z basePath
-                    $fullPath = realpath($basePath.'/'.ltrim($path, './'));
+                    $fullPath = realpath($basePath . '/' . ltrim($path, './'));
                 }
 
                 if (!$fullPath || !str_starts_with($fullPath, $basePath)) {
@@ -239,7 +239,7 @@ class MCPServerHTTP
                 $content = file_get_contents($fullPath);
                 $size = filesize($fullPath);
 
-                return "Plik: $path\nRozmiar: $size bajtów\nZawartość:\n---\n".$content;
+                return "Plik: $path\nRozmiar: $size bajtów\nZawartość:\n---\n" . $content;
 
             case 'write_file':
                 $path = $arguments['path'] ?? '';
@@ -253,10 +253,10 @@ class MCPServerHTTP
                 // Obsługa ścieżek z ~
                 if (str_starts_with($path, '~/')) {
                     $homePath = getenv('HOME') ?: getenv('USERPROFILE');
-                    $fullPath = $homePath.substr($path, 1);
+                    $fullPath = $homePath . substr($path, 1);
                 } else {
                     // Ścieżka względna lub absolutna
-                    $fullPath = $basePath.'/'.ltrim($path, './');
+                    $fullPath = $basePath . '/' . ltrim($path, './');
                 }
 
                 // Normalizuj ścieżkę i sprawdź bezpieczeństwo
@@ -278,14 +278,14 @@ class MCPServerHTTP
 
             case 'system_info':
                 return "=== INFORMACJE O SYSTEMIE ===\n\n"
-                    ."System operacyjny: ".PHP_OS."\n"
-                    ."Wersja PHP: ".PHP_VERSION."\n"
-                    ."Architektura: ".php_uname('m')."\n"
-                    ."Hostname: ".gethostname()."\n"
-                    ."Pamięć limit: ".ini_get('memory_limit')."\n"
-                    ."Maksymalny czas wykonania: ".ini_get('max_execution_time')."s\n"
-                    ."Katalog roboczy: ".getcwd()."\n"
-                    ."Załadowane rozszerzenia: ".implode(', ', get_loaded_extensions());
+                    . "System operacyjny: " . PHP_OS . "\n"
+                    . "Wersja PHP: " . PHP_VERSION . "\n"
+                    . "Architektura: " . php_uname('m') . "\n"
+                    . "Hostname: " . gethostname() . "\n"
+                    . "Pamięć limit: " . ini_get('memory_limit') . "\n"
+                    . "Maksymalny czas wykonania: " . ini_get('max_execution_time') . "s\n"
+                    . "Katalog roboczy: " . getcwd() . "\n"
+                    . "Załadowane rozszerzenia: " . implode(', ', get_loaded_extensions());
 
             case 'json_parse':
                 try {
@@ -294,12 +294,12 @@ class MCPServerHTTP
                     $pretty = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
                     return "=== SPARSOWANY JSON ===\n\n"
-                        ."Typ główny: ".gettype($data)."\n"
-                        .(is_array($data) ? "Liczba elementów: ".count($data)."\n" : "")
-                        ."\nSformatowany JSON:\n---\n"
-                        .$pretty;
+                        . "Typ główny: " . gettype($data) . "\n"
+                        . (is_array($data) ? "Liczba elementów: " . count($data) . "\n" : "")
+                        . "\nSformatowany JSON:\n---\n"
+                        . $pretty;
                 } catch (JsonException $e) {
-                    return "Błąd parsowania JSON:\n".$e->getMessage();
+                    return "Błąd parsowania JSON:\n" . $e->getMessage();
                 }
 
             case 'http_request':
@@ -363,14 +363,14 @@ class MCPServerHTTP
                     }
 
                     return "=== ODPOWIEDŹ HTTP ===\n\n"
-                        ."URL: $url\n"
-                        ."Metoda: $method\n"
-                        ."Status: $httpCode\n"
-                        ."Rozmiar odpowiedzi: ".strlen($response)." bajtów\n\n"
-                        ."Treść odpowiedzi:\n---\n"
-                        .substr($response, 0, 5000).(strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
+                        . "URL: $url\n"
+                        . "Metoda: $method\n"
+                        . "Status: $httpCode\n"
+                        . "Rozmiar odpowiedzi: " . strlen($response) . " bajtów\n\n"
+                        . "Treść odpowiedzi:\n---\n"
+                        . substr($response, 0, 5000) . (strlen($response) > 5000 ? "\n\n... (obcięte)" : "");
                 } catch (Exception $e) {
-                    return "Błąd wykonania zapytania HTTP: ".$e->getMessage();
+                    return "Błąd wykonania zapytania HTTP: " . $e->getMessage();
                 }
 
             case 'get_weather':
@@ -386,13 +386,13 @@ class MCPServerHTTP
                 $humidity = rand(30, 90);
                 $windSpeed = rand(0, 30);
 
-                return "=== POGODA DLA MIASTA: ".strtoupper($city)." ===\n\n"
-                    ."Stan pogody: $condition\n"
-                    ."Temperatura: {$temp}°C\n"
-                    ."Wilgotność: {$humidity}%\n"
-                    ."Prędkość wiatru: {$windSpeed} km/h\n"
-                    ."Data aktualizacji: ".date('Y-m-d H:i:s')."\n\n"
-                    ."*Uwaga: Dane symulowane - w prawdziwej implementacji użyto by zewnętrznego API pogodowego";
+                return "=== POGODA DLA MIASTA: " . strtoupper($city) . " ===\n\n"
+                    . "Stan pogody: $condition\n"
+                    . "Temperatura: {$temp}°C\n"
+                    . "Wilgotność: {$humidity}%\n"
+                    . "Prędkość wiatru: {$windSpeed} km/h\n"
+                    . "Data aktualizacji: " . date('Y-m-d H:i:s') . "\n\n"
+                    . "*Uwaga: Dane symulowane - w prawdziwej implementacji użyto by zewnętrznego API pogodowego";
 
             default:
                 throw new Exception("Nieznane narzędzie: $name");

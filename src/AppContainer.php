@@ -18,6 +18,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
+
 use function DI\create;
 use function DI\factory;
 use function DI\get;
@@ -32,7 +33,7 @@ class AppContainer
         $builder->useAutowiring(true);
         $builder->useAttributes(true);
 
-        $config = require __DIR__.'/../config/server.php';
+        $config = require __DIR__ . '/../config/server.php';
 
         $definitions = [
             'config' => $config,
