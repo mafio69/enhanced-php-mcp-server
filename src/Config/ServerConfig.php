@@ -22,6 +22,14 @@ class ServerConfig
         $this->saveConfig();
     }
 
+    public function deleteMcpServer(string $name): void
+    {
+        if (isset($this->config['mcpServers'][$name])) {
+            unset($this->config['mcpServers'][$name]);
+            $this->saveConfig();
+        }
+    }
+
     private function saveConfig(): void
     {
         $configAsString = "<?php\n\nreturn " . var_export($this->config, true) . ";\n";

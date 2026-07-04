@@ -83,7 +83,9 @@ class ApiRoutes
                     $apiGroup->delete('/secrets/{key}', [SecretController::class, 'deleteSecret']);
 
                     // Server management
+                    $apiGroup->get('/servers', [ServerController::class, 'listServers']);
                     $apiGroup->post('/servers', [ServerController::class, 'addServer']);
+                    $apiGroup->delete('/servers/{name}', [ServerController::class, 'deleteServer']);
                 });
             })->add(AdminAuthMiddleware::class);
         });
