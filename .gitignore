@@ -40,3 +40,8 @@ temp/
 storage/
 *.pid
 /.php-cs-fixer.cache
+
+# Playwright E2E and Node.js
+node_modules/
+playwright-report/
+test-results/
