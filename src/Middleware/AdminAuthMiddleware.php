@@ -68,26 +68,25 @@ class AdminAuthMiddleware
     private function createUnauthorizedResponse(Request $request): Response
     {
         $path = $request->getUri()->getPath();
-        if (str_starts_with($path, '/admin/api/')) {
-            // Return JSON for API requests
+        
+        // Zwróć przekierowanie (302) do ekranu logowania TYLKO dla żądań wejścia na główny widok HTML
+        if ($path === '/admin/dashboard' || $path === '/admin' || $path === '/admin/') {
             $response = new \Slim\Psr7\Response();
-            $response->getBody()->write(json_encode([
-                'success' => false,
-                'error' => [
-                    'message' => 'Authentication required',
-                    'code' => 'AUTH_REQUIRED',
-                ],
-            ]));
-
-            return $response
-                ->withStatus(401)
-                ->withHeader('Content-Type', 'application/json');
+            return $response->withHeader('Location', '/admin/login')->withStatus(302);
         }
 
-        // Redirect to login for web requests
+        // Zwracaj zawsze JSON (401) dla zapytań system-info, change-password oraz całego /admin/api/
         $response = new \Slim\Psr7\Response();
-        $response = $response->withHeader('Location', '/admin/login')->withStatus(302);
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'error' => [
+                'message' => 'Wymagana autoryzacja',
+                'code' => 'AUTH_REQUIRED',
+            ],
+        ]));
 
-        return $response;
+        return $response
+            ->withStatus(401)
+            ->withHeader('Content-Type', 'application/json');
     }
 }
