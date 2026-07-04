@@ -4,6 +4,12 @@ namespace Tests\Unit;
 
 use App\Config\ServerConfig;
 use App\Services\ToolService;
+use App\Exceptions\ToolNotFoundException;
+use App\Exceptions\ToolDisabledException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\FileNotFoundException;
+use App\Exceptions\JsonParseException;
+use App\Exceptions\PathTraversalException;
 use Exception;
 use Monolog\Handler\TestHandler;
 use Monolog\Logger;
@@ -128,8 +134,8 @@ class ToolServiceTest extends TestCase
 
     public function testReadFileWithNonExistentFile()
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessageMatches('/Invalid path|File not found/');
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/Invalid path/');
 
         $this->toolService->executeTool('read_file', ['path' => 'non_existent_file.txt']);
     }
@@ -174,7 +180,7 @@ class ToolServiceTest extends TestCase
 
     public function testJsonParseWithInvalidJson()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(JsonParseException::class);
         $this->expectExceptionMessage('JSON parsing error:');
 
         $invalidJson = '{"name": "test", "value":}';
@@ -196,7 +202,7 @@ class ToolServiceTest extends TestCase
 
     public function testGetWeatherWithEmptyCity()
     {
-        $this->expectException(Exception::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('City name is required');
 
         $this->toolService->executeTool('get_weather', ['city' => '']);
@@ -204,8 +210,8 @@ class ToolServiceTest extends TestCase
 
     public function testExecuteUnknownToolThrowsException()
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessageMatches('/Unknown tool|not enabled/');
+        $this->expectException(ToolNotFoundException::class);
+        $this->expectExceptionMessageMatches('/Unknown tool/');
 
         $this->toolService->executeTool('unknown_tool', []);
     }
@@ -221,7 +227,7 @@ class ToolServiceTest extends TestCase
         $config = new ServerConfig($configArray);
         $toolService = new ToolService($config, $this->logger);
 
-        $this->expectException(Exception::class);
+        $this->expectException(ToolDisabledException::class);
         $this->expectExceptionMessage("Tool 'calculate' is not enabled");
 
         $toolService->executeTool('calculate', ['operation' => 'add', 'a' => 1, 'b' => 1]);
@@ -229,10 +235,19 @@ class ToolServiceTest extends TestCase
 
     public function testFileOperationSecurityPreventsPathTraversal()
     {
-        $this->expectException(Exception::class);
-        $this->expectExceptionMessageMatches('/Access denied!|Invalid path:/');
+        $this->expectException(PathTraversalException::class);
+        $this->expectExceptionMessageMatches('/Access denied!/');
 
-        // Try to access files outside project directory
+        // Try to access files outside project directory (absolute path)
+        $this->toolService->executeTool('read_file', ['path' => '/etc/passwd']);
+    }
+
+    public function testFileOperationSecurityPreventsInvalidPathTraversal()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/Invalid path:/');
+
+        // Try to access files outside project directory using relative path traversal (stripped to invalid path)
         $this->toolService->executeTool('read_file', ['path' => '../../../etc/passwd']);
     }
 

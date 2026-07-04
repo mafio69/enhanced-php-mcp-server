@@ -3,6 +3,15 @@
 namespace App\Services;
 
 use App\Config\ServerConfig;
+use App\Exceptions\ToolNotFoundException;
+use App\Exceptions\ToolDisabledException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\DirectoryNotFoundException;
+use App\Exceptions\FileNotFoundException;
+use App\Exceptions\FileAccessException;
+use App\Exceptions\HttpRequestException;
+use App\Exceptions\JsonParseException;
+use App\Exceptions\PathTraversalException;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -21,31 +30,30 @@ class ToolService
 
     public function executeTool(string $toolName, array $arguments = []): string
     {
+        $knownTools = [
+            'hello',
+            'get_time',
+            'calculate',
+            'list_files',
+            'read_file',
+            'write_file',
+            'system_info',
+            'http_request',
+            'json_parse',
+            'get_weather',
+        ];
+
+        if (!in_array($toolName, $knownTools)) {
+            throw new ToolNotFoundException("Unknown tool: $toolName");
+        }
+
         if (!$this->config->isToolEnabled($toolName)) {
-            throw new Exception("Tool '$toolName' is not enabled");
+            throw new ToolDisabledException("Tool '$toolName' is not enabled");
         }
 
         $this->logger->info("Executing tool: $toolName", ['arguments' => $arguments]);
 
         try {
-            // First check if tool is known
-            $knownTools = [
-                'hello',
-                'get_time',
-                'calculate',
-                'list_files',
-                'read_file',
-                'write_file',
-                'system_info',
-                'http_request',
-                'json_parse',
-                'get_weather',
-            ];
-
-            if (!in_array($toolName, $knownTools)) {
-                throw new Exception("Unknown tool: $toolName");
-            }
-
             $result = match ($toolName) {
                 'hello' => $this->executeHello($arguments),
                 'get_time' => $this->executeGetTime($arguments),
@@ -118,7 +126,7 @@ class ToolService
         $fullPath = $this->validatePath($path);
 
         if (!is_dir($fullPath)) {
-            throw new Exception("Directory not found: $path");
+            throw new DirectoryNotFoundException("Directory not found: $path");
         }
 
         $result = "Files in directory: $path\n";
@@ -145,22 +153,22 @@ class ToolService
     {
         $path = $args['path'] ?? '';
         if (empty($path)) {
-            throw new Exception("File path is required");
+            throw new ValidationException("File path is required");
         }
 
         $fullPath = $this->validatePath($path);
 
         if (!file_exists($fullPath)) {
-            throw new Exception("File not found: $path");
+            throw new FileNotFoundException("File not found: $path");
         }
 
         if (!is_readable($fullPath)) {
-            throw new Exception("Cannot read file: $path");
+            throw new FileAccessException("Cannot read file: $path");
         }
 
         $content = file_get_contents($fullPath);
         if ($content === false) {
-            throw new Exception("Failed to read file: $path");
+            throw new FileAccessException("Failed to read file: $path");
         }
 
         $result = "File: $path\n";
@@ -179,21 +187,21 @@ class ToolService
         $content = $args['content'] ?? '';
 
         if (empty($path)) {
-            throw new Exception("File path is required");
+            throw new ValidationException("File path is required");
         }
 
         $fullPath = $this->validatePath($path);
 
         // Check file size limit
         if (strlen($content) > $this->config->getMaxFileSize()) {
-            throw new Exception(
+            throw new ValidationException(
                 "Content too large. Maximum size: ".$this->formatBytes($this->config->getMaxFileSize())
             );
         }
 
         $bytesWritten = file_put_contents($fullPath, $content);
         if ($bytesWritten === false) {
-            throw new Exception("Failed to write file: $path");
+            throw new FileAccessException("Failed to write file: $path");
         }
 
         return "File saved: $path\nBytes written: $bytesWritten";
@@ -222,11 +230,11 @@ class ToolService
         $data = $args['data'] ?? null;
 
         if (empty($url)) {
-            throw new Exception("URL is required");
+            throw new ValidationException("URL is required");
         }
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new Exception("Invalid URL: $url");
+            throw new ValidationException("Invalid URL: $url");
         }
 
         $ch = curl_init();
@@ -256,7 +264,7 @@ class ToolService
         curl_close($ch);
 
         if ($response === false || !empty($error)) {
-            throw new Exception("HTTP request failed: $error");
+            throw new HttpRequestException("HTTP request failed: $error");
         }
 
         $result = "=== HTTP RESPONSE ===\n";
@@ -274,12 +282,12 @@ class ToolService
     {
         $json = $args['json'] ?? '';
         if (empty($json)) {
-            throw new Exception("JSON string is required");
+            throw new ValidationException("JSON string is required");
         }
 
         $decoded = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception("JSON parsing error: ".json_last_error_msg());
+            throw new JsonParseException("JSON parsing error: ".json_last_error_msg());
         }
 
         $result = "=== PARSED JSON ===\n";
@@ -301,7 +309,7 @@ class ToolService
     {
         $city = $args['city'] ?? '';
         if (empty($city)) {
-            throw new Exception("City name is required");
+            throw new ValidationException("City name is required");
         }
 
         // Mock weather data for demo purposes
@@ -313,7 +321,7 @@ class ToolService
 
         $result = "=== WEATHER FOR: ".strtoupper($city)." ===\n";
         $result .= "Weather condition: $condition\n";
-        $result .= "Temperature: $temperature°C\n";
+        $result .= "Temperature: $temperature °C\n";
         $result .= "Humidity: $humidity%\n";
         $result .= "Wind speed: $windSpeed km/h\n";
         $result .= "Last updated: ".date('Y-m-d H:i:s')."\n";
@@ -336,7 +344,7 @@ class ToolService
         }
 
         if ($fullPath === false) {
-            throw new Exception("Invalid path: $path");
+            throw new ValidationException("Invalid path: $path");
         }
 
         // Check if path is within allowed directories
@@ -350,7 +358,7 @@ class ToolService
         }
 
         if (!$allowed) {
-            throw new Exception("Access denied! Path is outside allowed directory.");
+            throw new PathTraversalException("Access denied! Path is outside allowed directory.");
         }
 
         return $fullPath;
