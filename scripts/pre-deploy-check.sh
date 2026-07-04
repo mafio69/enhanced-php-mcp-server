@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Pre-deployment verification script for MCP PHP Server
 # Run this script before deploying to production

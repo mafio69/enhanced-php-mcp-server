@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Prosty test bez interaktywnej pętli
 echo "🚀 Test MCP PHP Server"

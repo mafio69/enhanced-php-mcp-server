@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Kompleksowy skrypt testowy dla MCP PHP Server
 # Autor: Claude Code Assistant
@@ -113,7 +113,8 @@ run_test() {
 # Funkcje testowe
 
 test_server_connection() {
-    local response=$(make_api_request "GET" "/api/status")
+    local response
+    response=$(make_api_request "GET" "/api/status")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
@@ -130,7 +131,8 @@ test_server_connection() {
 }
 
 test_tools_endpoint() {
-    local response=$(make_api_request "GET" "/api/tools")
+    local response
+    response=$(make_api_request "GET" "/api/tools")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
@@ -151,12 +153,13 @@ test_tools_endpoint() {
 
 test_hello_tool() {
     local data='{"tool": "hello", "arguments": {"name": "Bash Test"}}'
-    local response=$(make_api_request "POST" "/api/tools/call" "$data")
+    local response
+    response=$(make_api_request "POST" "/api/tools/call" "$data")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
         local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-        local result=$(echo "$response" | jq -r '.result // ""' 2>/dev/null)
+        local result=$(echo "$response" | jq -r '.data // ""' 2>/dev/null)
 
         if [[ "$success" == "true" && "$result" == *"Bash Test"* ]]; then
             echo "  ✅ Narzędzie hello działa poprawnie"
@@ -181,12 +184,13 @@ test_calculate_tool() {
     local all_passed=true
 
     for i in "${!operations[@]}"; do
-        local response=$(make_api_request "POST" "/api/tools/call" "${operations[$i]}")
+        local response
+        response=$(make_api_request "POST" "/api/tools/call" "${operations[$i]}")
         local status=$?
 
         if [[ $status -eq 200 ]]; then
             local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-            local result=$(echo "$response" | jq -r '.result // ""' 2>/dev/null)
+            local result=$(echo "$response" | jq -r '.data // ""' 2>/dev/null)
 
             if [[ "$success" == "true" && "$result" == *"${expected_results[$i]}"* ]]; then
                 echo "  ✅ Operacja $(echo "${operations[$i]}" | jq -r '.arguments.operation'): $result"
@@ -215,7 +219,8 @@ test_file_operations() {
 
     # Test zapisu pliku
     local write_data="{\"tool\": \"write_file\", \"arguments\": {\"path\": \"$test_file\", \"content\": \"$test_content\"}}"
-    local write_response=$(make_api_request "POST" "/api/tools/call" "$write_data")
+    local write_response
+    write_response=$(make_api_request "POST" "/api/tools/call" "$write_data")
     local write_status=$?
 
     if [[ $write_status -ne 200 ]]; then
@@ -225,7 +230,7 @@ test_file_operations() {
 
     local write_success=$(echo "$write_response" | jq -r '.success // false' 2>/dev/null)
     if [[ "$write_success" != "true" ]]; then
-        echo "  ❌ Zapis pliku nie powiódł się: $(echo "$write_response" | jq -r '.error // "")"
+        echo "  ❌ Zapis pliku nie powiódł się: $(echo "$write_response" | jq -r '.error // ""')"
         return 1
     fi
 
@@ -233,7 +238,8 @@ test_file_operations() {
 
     # Test odczytu pliku
     local read_data="{\"tool\": \"read_file\", \"arguments\": {\"path\": \"$test_file\"}}"
-    local read_response=$(make_api_request "POST" "/api/tools/call" "$read_data")
+    local read_response
+    read_response=$(make_api_request "POST" "/api/tools/call" "$read_data")
     local read_status=$?
 
     if [[ $read_status -ne 200 ]]; then
@@ -242,7 +248,7 @@ test_file_operations() {
     fi
 
     local read_success=$(echo "$read_response" | jq -r '.success // false' 2>/dev/null)
-    local read_result=$(echo "$read_response" | jq -r '.result // ""' 2>/dev/null)
+    local read_result=$(echo "$read_response" | jq -r '.data // ""' 2>/dev/null)
 
     if [[ "$read_success" != "true" || "$read_result" != *"$test_content"* ]]; then
         echo "  ❌ Odczyt pliku nie powiódł się lub zawartość nie zgadza się"
@@ -259,12 +265,13 @@ test_file_operations() {
 
 test_list_files() {
     local data='{"tool": "list_files", "arguments": {"path": "."}}'
-    local response=$(make_api_request "POST" "/api/tools/call" "$data")
+    local response
+    response=$(make_api_request "POST" "/api/tools/call" "$data")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
         local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-        local result=$(echo "$response" | jq -r '.result // ""' 2>/dev/null)
+        local result=$(echo "$response" | jq -r '.data // ""' 2>/dev/null)
 
         if [[ "$success" == "true" && "$result" == *"Pliki w katalogu:"* && "$result" == *"composer.json"* ]]; then
             echo "  ✅ Listowanie plików działa poprawnie"
@@ -292,7 +299,8 @@ test_security_features() {
 
     for path in "${malicious_paths[@]}"; do
         local data="{\"tool\": \"read_file\", \"arguments\": {\"path\": \"$path\"}}"
-        local response=$(make_api_request "POST" "/api/tools/call" "$data")
+        local response
+        response=$(make_api_request "POST" "/api/tools/call" "$data")
         local status=$?
 
         if [[ $status -eq 200 ]]; then
@@ -319,30 +327,32 @@ test_security_features() {
 
 test_unknown_tool() {
     local data='{"tool": "nonexistent_tool_xyz", "arguments": {}}'
-    local response=$(make_api_request "POST" "/api/tools/call" "$data")
+    local response
+    response=$(make_api_request "POST" "/api/tools/call" "$data")
     local status=$?
 
-    if [[ $status -eq 200 ]]; then
+    if [[ $status -ne 200 ]]; then
         local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-        if [[ "$success" == "false" ]]; then
-            echo "  ✅ Nieznane narzędzie poprawnie zwróciło błąd"
+        if [[ "$success" == "false" || "$success" == "null" ]]; then
+            echo "  ✅ Nieznane narzędzie poprawnie zwróciło błąd API"
             return 0
         fi
     fi
 
-    echo "  ❌ Nieznane narzędzie powinno zwrócić błąd"
+    echo "  ❌ Nieznane narzędzie powinno zwrócić błąd HTTP 400/500"
     return 1
 }
 
 test_json_operations() {
-    local test_json='{"test": "value", "number": 42, "boolean": true}'
+    local test_json='{\"test\": \"value\", \"number\": 42, \"boolean\": true}'
     local data="{\"tool\": \"json_parse\", \"arguments\": {\"json\": \"$test_json\"}}"
-    local response=$(make_api_request "POST" "/api/tools/call" "$data")
+    local response
+    response=$(make_api_request "POST" "/api/tools/call" "$data")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
         local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-        local result=$(echo "$response" | jq -r '.result // ""' 2>/dev/null)
+        local result=$(echo "$response" | jq -r '.data // ""' 2>/dev/null)
 
         if [[ "$success" == "true" && "$result" == *"SPARSOWANY JSON"* && "$result" == *"test"* ]]; then
             echo "  ✅ Parsowanie JSON działa poprawnie"
@@ -356,12 +366,13 @@ test_json_operations() {
 
 test_weather_tool() {
     local data='{"tool": "get_weather", "arguments": {"city": "Test City"}}'
-    local response=$(make_api_request "POST" "/api/tools/call" "$data")
+    local response
+    response=$(make_api_request "POST" "/api/tools/call" "$data")
     local status=$?
 
     if [[ $status -eq 200 ]]; then
         local success=$(echo "$response" | jq -r '.success // false' 2>/dev/null)
-        local result=$(echo "$response" | jq -r '.result // ""' 2>/dev/null)
+        local result=$(echo "$response" | jq -r '.data // ""' 2>/dev/null)
 
         if [[ "$success" == "true" && "$result" == *"POGODA DLA MIASTA: TEST CITY"* && "$result" == *"°C"* ]]; then
             echo "  ✅ Narzędzie pogodowe działa poprawnie"

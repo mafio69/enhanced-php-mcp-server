@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Simple test script for MCP PHP Server
 # Colors
