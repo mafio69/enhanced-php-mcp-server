@@ -1,35 +1,29 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
-/**
- * Zobacz https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests/e2e',
-  /* Uruchom testy równolegle */
-  fullyParallel: true,
-  /* Nie uruchamiaj testu na nowo gdy wyskoczy error (chyba że w CI) */
+  fullyParallel: false,
   retries: process.env.CI ? 2 : 0,
-  /* Ograniczenie workerów (ze względu na to, że PHP server może być 1-wątkowy lokalnie) */
-  workers: 1,
-  /* Raporter pokazujący wyniki w terminalu i tworzący raport HTML */
+  workers: 1, // Ważne: PHP wbudowany webserver obsługuje domyślnie jedno żądanie na raz
   reporter: 'html',
-  /* Konfiguracja głównego środowiska przeglądarki */
   use: {
-    /* Główny adres testowanego serwera WWW */
-    baseURL: 'http://localhost:8795',
-    /* Zapisywanie tzw. trace'ów (zrzutów pełnego stanu) przy każdym niepowodzeniu. */
+    baseURL: 'http://localhost:8799',
     trace: 'on-first-retry',
-    /* Uruchamianie w trybie bez okien (headless), odpowiednie dla AI */
     headless: true,
-    /* Wymiary ekranu typowego desktopa */
     viewport: { width: 1280, height: 720 },
   },
-
-  /* Konfiguracja konkretnej przeglądarki (w tym wypadku tylko stabilne Chromium) */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  webServer: {
+    // Uruchamia z wyizolowaną pamięcią hasła testowego admina!
+    command: 'ADMIN_USERNAME="testadmin" ADMIN_PASSWORD="testpassword" ADMIN_PASSWORD_FILE="storage/.test_admin_password" php -S 127.0.0.1:8799 index.php',
+    url: 'http://127.0.0.1:8799',
+    reuseExistingServer: !process.env.CI,
+    timeout: 10000,
+  },
 });
