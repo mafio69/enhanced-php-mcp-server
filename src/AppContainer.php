@@ -79,10 +79,10 @@ class AppContainer
             AdminAuthService::class => create(AdminAuthService::class)
                 ->constructor(
                     get(LoggerInterface::class),
-                    $_ENV['ADMIN_USERNAME'] ?? null,
-                    $_ENV['ADMIN_PASSWORD'] ?? null,
-                    $_ENV['ADMIN_SESSION_PATH'] ?? null,
-                    $_ENV['ADMIN_PASSWORD_FILE'] ?? null
+                    getenv('ADMIN_USERNAME') ?: null,
+                    getenv('ADMIN_PASSWORD') ?: null,
+                    getenv('ADMIN_SESSION_PATH') ?: null,
+                    getenv('ADMIN_PASSWORD_FILE') ?: null
                 ),
 
             AdminController::class => create(AdminController::class)

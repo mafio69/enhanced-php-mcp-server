@@ -14,29 +14,30 @@ test.describe('Zarządzanie Panelem Administratora', () => {
   });
 
   test('umożliwia nawigację po zakładkach panelu', async ({ page }) => {
-    // Zakładka serwerów (domyślna)
-    await expect(page.locator('#serversTab')).toBeVisible();
-
-    // Przejście do Sekretów
-    await page.getByText('Sekrety', { exact: true }).click();
-    await expect(page.locator('#secretsTab')).toBeVisible();
-    await expect(page.locator('#serversTab')).not.toBeVisible();
+    // Jawne kliknięcie zakładki serwerów
+    await page.getByText('🖥️ Serwery', { exact: true }).click();
+    await expect(page.locator('#servers')).toBeVisible();
 
     // Przejście do Ustawień
-    await page.getByText('Ustawienia', { exact: true }).click();
-    await expect(page.locator('#settingsTab')).toBeVisible();
+    await page.getByText('⚙️ Ustawienia', { exact: true }).click();
+    await expect(page.locator('#settings')).toBeVisible();
+    await expect(page.locator('#servers')).not.toBeVisible();
   });
 
   test('umożliwia dodanie i usunięcie serwera MCP', async ({ page }) => {
-    // Wypełniamy formularz dodawania nowego serwera
+    await page.getByText('🖥️ Serwery', { exact: true }).click();
+
+    // Wypełniamy formularz dodawania nowego serwera (format JSON)
     await page.locator('#serverName').fill('test_playwright_mcp');
-    await page.locator('#serverCommand').fill('node');
-    await page.locator('#serverArgs').fill('index.js');
+    await page.locator('#serverJson').fill(`{
+      "command": "node",
+      "args": ["index.js"]
+    }`);
     await page.getByRole('button', { name: 'Dodaj serwer' }).click();
     
     // Weryfikacja powiadomienia o sukcesie
     const resultDiv = page.locator('#result_add_server');
-    await expect(resultDiv).toBeVisible();
+    await expect(resultDiv).toBeVisible({ timeout: 5000 });
     await expect(resultDiv).toContainText('pomyślnie');
     
     // Sprawdzenie czy serwer pojawił się na liście
@@ -46,26 +47,25 @@ test.describe('Zarządzanie Panelem Administratora', () => {
     // Automatycznie akceptujemy "confirm" podczas usuwania
     page.on('dialog', dialog => dialog.accept());
     
-    // Kliknięcie w kosz (usuń)
-    await page.locator('#serversList').getByTitle('Usuń serwer').click();
+    // Kliknięcie w kosz (usuń) - filtrując po wierszu z tekstem
+    await page.locator('#serversList').locator('div').filter({ hasText: 'test_playwright_mcp' }).getByTitle('Usuń serwer').click();
     
     // Upewnienie się, że serwer zniknął z listy
     await expect(serversList).not.toContainText('test_playwright_mcp');
   });
 
   test('pozwala zmienić hasło administratora w ustawieniach', async ({ page }) => {
-    await page.getByText('Ustawienia', { exact: true }).click();
+    await page.getByText('⚙️ Ustawienia', { exact: true }).click();
     
     // Zmiana testowego hasła na inne
     await page.locator('#oldPassword').fill('testpassword');
     await page.locator('#newPassword').fill('newtestpassword');
-    await page.locator('#confirmPassword').fill('newtestpassword');
     
     await page.getByRole('button', { name: 'Zmień hasło' }).click();
 
     // Weryfikacja komunikatu
     const resultDiv = page.locator('#result_change_password');
-    await expect(resultDiv).toBeVisible();
+    await expect(resultDiv).toBeVisible({ timeout: 5000 });
     await expect(resultDiv).toContainText('Hasło zmienione pomyślnie');
   });
 
