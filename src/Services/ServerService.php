@@ -25,4 +25,14 @@ class ServerService
             'config' => $serverConfig,
         ];
     }
+
+    public function getServers(): array
+    {
+        return $this->config->getMcpServers();
+    }
+
+    public function deleteServer(string $name): void
+    {
+        $this->config->deleteMcpServer($name);
+    }
 }

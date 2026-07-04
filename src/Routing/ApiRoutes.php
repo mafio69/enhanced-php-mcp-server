@@ -4,10 +4,10 @@ namespace App\Routing;
 
 use App\Controllers\AdminController;
 use App\Controllers\LogsController;
-use App\Controllers\SecretController;
 use App\Controllers\ServerController;
 use App\Controllers\StatusController;
 use App\Controllers\ToolsController;
+use App\Middleware\AdminAuthMiddleware;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -54,42 +54,41 @@ class ApiRoutes
 
         });
 
-        // Admin routes (all routes)
+        // Admin routes - login public, rest protected
         $app->group('/admin', function (RouteCollectorProxy $group) {
+            // Public routes
             $group->get('/login', [AdminController::class, 'loginPage']);
             $group->post('/login', [AdminController::class, 'login']);
-            $group->get('/dashboard', [AdminController::class, 'dashboard']);
-            $group->post('/logout', [AdminController::class, 'logout']);
-            $group->get('/user', [AdminController::class, 'getCurrentUser']);
-            $group->post('/change-password', [AdminController::class, 'changePassword']);
-            $group->get('/config', [AdminController::class, 'getConfig']);
-            $group->get('/system-info', [AdminController::class, 'getSystemInfo']);
 
-            // Admin API routes
-            $group->group('/api', function (RouteCollectorProxy $apiGroup) {
-                // Secret management
-                $apiGroup->get('/secrets', [SecretController::class, 'listSecrets']);
-                $apiGroup->post('/secrets', [SecretController::class, 'storeSecret']);
-                $apiGroup->get('/secrets/{key}', [SecretController::class, 'getSecret']);
-                $apiGroup->delete('/secrets/{key}', [SecretController::class, 'deleteSecret']);
-                $apiGroup->get('/secrets/{key}/check', [SecretController::class, 'checkSecret']);
-                $apiGroup->post('/secrets/encrypt', [SecretController::class, 'encryptValue']);
-                $apiGroup->post('/secrets/decrypt', [SecretController::class, 'decryptValue']);
-                $apiGroup->post('/secrets/migrate', [SecretController::class, 'migrateSecrets']);
+            // Protected routes
+            $group->group('', function (RouteCollectorProxy $protected) {
+                $protected->get('/dashboard', [AdminController::class, 'dashboard']);
+                $protected->post('/logout', [AdminController::class, 'logout']);
+                $protected->get('/user', [AdminController::class, 'getCurrentUser']);
+                $protected->post('/change-password', [AdminController::class, 'changePassword']);
+                $protected->get('/config', [AdminController::class, 'getConfig']);
+                $protected->get('/system-info', [AdminController::class, 'getSystemInfo']);
 
-                // Server management
-                $apiGroup->post('/servers', [ServerController::class, 'addServer']);
-            });
+                // Admin API routes
+                $protected->group('/api', function (RouteCollectorProxy $apiGroup) {
+                    // Server management
+                    $apiGroup->get('/servers', [ServerController::class, 'listServers']);
+                    $apiGroup->post('/servers', [ServerController::class, 'addServer']);
+                    $apiGroup->delete('/servers/{name}', [ServerController::class, 'deleteServer']);
+                });
+            })->add(AdminAuthMiddleware::class);
         });
 
         // Catch-all dla nieznalezionych tras API
-        $app->map(['GET', 'POST', 'PUT', 'DELETE'],
+        $app->map(
+            ['GET', 'POST', 'PUT', 'DELETE'],
             '/api/{routes:.+}',
             function (Request $request, Response $response) {
                 $data = ['error' => 'Not Found', 'message' => 'The requested API endpoint does not exist.'];
                 $response->getBody()->write(json_encode($data, JSON_PRETTY_PRINT));
 
                 return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
-            });
+            }
+        );
     }
 }

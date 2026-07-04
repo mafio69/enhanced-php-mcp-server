@@ -14,7 +14,7 @@ class Logger
     public function __construct(array $config = [])
     {
         $this->config = array_merge([
-            'file' => __DIR__.'/../logs/server.log',
+            'file' => __DIR__ . '/../logs/server.log',
             'level' => 'info',
             'max_size' => 10 * 1024 * 1024, // 10MB
             'backup_count' => 5,
@@ -28,7 +28,7 @@ class Logger
         // Upewnij się, że katalog logów istnieje
         $logDir = dirname($this->logFile);
         if (!is_dir($logDir)) {
-            mkdir($logDir, 0755, true);
+            mkdir($logDir, 0o755, true);
         }
 
         // Rotacja logów jeśli plik jest za duży
@@ -82,15 +82,36 @@ class Logger
         }
 
         $date = date($this->config['date_format']);
-        $contextStr = !empty($context) ? json_encode($context, JSON_UNESCAPED_UNICODE) : '';
+        $safeContext = $this->maskSecrets($context);
+        $contextStr = !empty($safeContext) ? json_encode($safeContext, JSON_UNESCAPED_UNICODE) : '';
 
         $logMessage = str_replace(
             ['{date}', '{level}', '{message}', '{context}'],
-            [$date, strtoupper($level), (string)$message, $contextStr],
+            [$date, strtoupper($level), (string) $message, $contextStr],
             $this->config['log_format']
         );
 
         $this->writeToFile($logMessage);
+    }
+
+    private function maskSecrets(array $context): array
+    {
+        $sensitiveKeys = ['password', 'secret', 'token', 'key', 'authorization'];
+
+        foreach ($context as $key => $value) {
+            if (is_array($value)) {
+                $context[$key] = $this->maskSecrets($value);
+            } elseif (is_string($key)) {
+                foreach ($sensitiveKeys as $sensitiveKey) {
+                    if (stripos($key, $sensitiveKey) !== false) {
+                        $context[$key] = '********';
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $context;
     }
 
     private function shouldLog(string $level): bool
@@ -114,7 +135,7 @@ class Logger
 
     private function writeToFile(string $message): void
     {
-        file_put_contents($this->logFile, $message.PHP_EOL, FILE_APPEND | LOCK_EX);
+        file_put_contents($this->logFile, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
     private function rotateIfNeeded(): void
@@ -129,8 +150,8 @@ class Logger
 
         // Usuń najstarsze logi
         for ($i = $this->config['backup_count']; $i > 0; $i--) {
-            $oldFile = $this->logFile.'.'.$i;
-            $newFile = $this->logFile.'.'.($i + 1);
+            $oldFile = $this->logFile . '.' . $i;
+            $newFile = $this->logFile . '.' . ($i + 1);
 
             if (file_exists($oldFile)) {
                 if ($i === $this->config['backup_count']) {
@@ -142,7 +163,7 @@ class Logger
         }
 
         // Przesuń obecny log
-        rename($this->logFile, $this->logFile.'.1');
+        rename($this->logFile, $this->logFile . '.1');
     }
 
     public function getLogPath(): string

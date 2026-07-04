@@ -9,7 +9,7 @@ class ServerConfig
 
     public function __construct(?array $config = null)
     {
-        $this->configFile = __DIR__.'/../../config/server.php';
+        $this->configFile = __DIR__ . '/../../config/server.php';
         $this->config = $config ?? require $this->configFile;
     }
 
@@ -22,9 +22,17 @@ class ServerConfig
         $this->saveConfig();
     }
 
+    public function deleteMcpServer(string $name): void
+    {
+        if (isset($this->config['mcpServers'][$name])) {
+            unset($this->config['mcpServers'][$name]);
+            $this->saveConfig();
+        }
+    }
+
     private function saveConfig(): void
     {
-        $configAsString = "<?php\n\nreturn ".var_export($this->config, true).";\n";
+        $configAsString = "<?php\n\nreturn " . var_export($this->config, true) . ";\n";
         file_put_contents($this->configFile, $configAsString);
         if (function_exists('opcache_invalidate')) {
             opcache_invalidate($this->configFile, true);
@@ -63,7 +71,7 @@ class ServerConfig
 
     public function getLogFile(): string
     {
-        return $this->config['logging']['file'] ?? __DIR__.'/../../logs/server.log';
+        return $this->config['logging']['file'] ?? __DIR__ . '/../../logs/server.log';
     }
 
     public function getLogLevel(): string
@@ -78,7 +86,7 @@ class ServerConfig
 
     public function getAllowedPaths(): array
     {
-        return $this->config['security']['allowed_paths'] ?? [__DIR__.'/../..'];
+        return $this->config['security']['allowed_paths'] ?? [__DIR__ . '/../..'];
     }
 
     public function getMaxFileSize(): int

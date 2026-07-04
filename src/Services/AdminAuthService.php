@@ -11,15 +11,58 @@ class AdminAuthService
     private string $adminUsername;
     private string $adminPasswordHash;
     private string $sessionPath;
+    private string $passwordFile;
 
-    public function __construct(LoggerInterface $logger, ?string $adminUsername = null, ?string $adminPassword = null)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        ?string $adminUsername = null,
+        ?string $adminPassword = null,
+        ?string $sessionPath = null,
+        ?string $passwordFile = null
+    ) {
         $this->logger = $logger;
         $this->adminUsername = $adminUsername ?? $_ENV['ADMIN_USERNAME'] ?? 'admin';
-        $this->adminPasswordHash = $this->getAdminPasswordHash($adminPassword);
-        $this->sessionPath = __DIR__ . '/../../storage/sessions';
+        $this->sessionPath = $sessionPath ?? __DIR__ . '/../../storage/sessions';
+        $this->passwordFile = $passwordFile ?? __DIR__ . '/../../storage/.admin_password';
+
+        $this->adminPasswordHash = $this->loadOrInitAdminPasswordHash($adminPassword);
 
         $this->initializeSessions();
+    }
+
+    /**
+     * Load password hash from storage file or initialize and save it
+     */
+    private function loadOrInitAdminPasswordHash(?string $adminPassword): string
+    {
+        if (file_exists($this->passwordFile)) {
+            $hash = file_get_contents($this->passwordFile);
+            if ($hash !== false && !empty(trim($hash))) {
+                return trim($hash);
+            }
+        }
+
+        $hash = $this->getAdminPasswordHash($adminPassword);
+        $this->savePasswordHash($hash);
+        
+        return $hash;
+    }
+
+    /**
+     * Save password hash to secure file
+     */
+    private function savePasswordHash(string $hash): void
+    {
+        $dir = dirname($this->passwordFile);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o700, true);
+        }
+
+        if (file_put_contents($this->passwordFile, $hash) === false) {
+            throw new RuntimeException("Cannot save admin password hash to: {$this->passwordFile}");
+        }
+
+        chmod($this->passwordFile, 0o600);
     }
 
     /**
@@ -201,7 +244,9 @@ class AdminAuthService
             return false;
         }
 
-        $this->adminPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $this->savePasswordHash($newHash);
+        $this->adminPasswordHash = $newHash;
         $this->logger->info('Admin password changed');
 
         return true;
@@ -215,7 +260,7 @@ class AdminAuthService
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
         if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
             $token = $matches[1];
-            if ($token !== 'null' && $token !== 'undefined' && $token !== '') {
+            if ($token !== 'null' && $token !== 'undefined') {
                 return $token;
             }
         }

@@ -8,7 +8,6 @@ use App\Controllers\SecretController;
 use App\Controllers\ToolsController;
 use App\Routing\ApiRoutes;
 use App\Services\AdminAuthService;
-use App\Services\SecretManagerService;
 use App\Services\ServerService;
 use DI\ContainerBuilder;
 use Monolog\Formatter\LineFormatter;
@@ -18,6 +17,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
 use Slim\Factory\AppFactory;
+
 use function DI\create;
 use function DI\factory;
 use function DI\get;
@@ -32,7 +32,7 @@ class AppContainer
         $builder->useAutowiring(true);
         $builder->useAttributes(true);
 
-        $config = require __DIR__.'/../config/server.php';
+        $config = require __DIR__ . '/../config/server.php';
 
         $definitions = [
             'config' => $config,
@@ -69,17 +69,22 @@ class AppContainer
             ToolsController::class => create(ToolsController::class)
                 ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(MCPServerHTTP::class)),
 
-            SecretManagerService::class => create(SecretManagerService::class)
-                ->constructor(get(LoggerInterface::class)),
-
-            SecretController::class => create(SecretController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(SecretManagerService::class)),
-
             AdminAuthService::class => create(AdminAuthService::class)
-                ->constructor(get(LoggerInterface::class)),
+                ->constructor(
+                    get(LoggerInterface::class),
+                    getenv('ADMIN_USERNAME') ?: null,
+                    getenv('ADMIN_PASSWORD') ?: null,
+                    getenv('ADMIN_SESSION_PATH') ?: null,
+                    getenv('ADMIN_PASSWORD_FILE') ?: null
+                ),
 
             AdminController::class => create(AdminController::class)
-                ->constructor(get(ServerConfig::class), get(LoggerInterface::class), get(AdminAuthService::class)),
+                ->constructor(
+                    get(ServerConfig::class),
+                    get(LoggerInterface::class),
+                    get(AdminAuthService::class),
+                    get(\App\Services\SystemInfoService::class)
+                ),
 
             App::class => factory(function (ContainerInterface $c) {
                 $app = AppFactory::createFromContainer($c);

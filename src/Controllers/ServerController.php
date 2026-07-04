@@ -41,4 +41,48 @@ class ServerController extends BaseController
 
         return $this->successResponse($response, $server);
     }
+
+    public function listServers(Request $request, Response $response): Response
+    {
+        try {
+            $servers = $this->serverService->getServers();
+            return $this->successResponse($response, $servers);
+        } catch (\Exception $e) {
+            return $this->errorResponse(
+                $response,
+                new ErrorResponse(
+                    'Failed to retrieve servers: ' . $e->getMessage(),
+                    500
+                )
+            );
+        }
+    }
+
+    public function deleteServer(Request $request, Response $response, array $args): Response
+    {
+        $name = $args['name'] ?? '';
+
+        if (empty($name)) {
+            return $this->errorResponse(
+                $response,
+                new ErrorResponse(
+                    'Server name is required',
+                    400
+                )
+            );
+        }
+
+        try {
+            $this->serverService->deleteServer($name);
+            return $this->successResponse($response, ['message' => 'Server deleted successfully']);
+        } catch (\Exception $e) {
+            return $this->errorResponse(
+                $response,
+                new ErrorResponse(
+                    'Failed to delete server: ' . $e->getMessage(),
+                    500
+                )
+            );
+        }
+    }
 }

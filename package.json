@@ -1,0 +1,21 @@
+{
+  "name": "enhanced-php-mcp-server",
+  "version": "1.0.0",
+  "description": "Advanced PHP MCP Server with comprehensive toolset and web interface. This server communicates via standard input/output using JSON-based protocol and provides a rich set of remotely callable tools with a modern web dashboard for management and testing.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.0",
+    "typescript": "^6.0.3"
+  }
+}

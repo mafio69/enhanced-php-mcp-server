@@ -32,7 +32,7 @@ class MonitoringService
 
     public function recordTiming(string $name, float $duration, array $tags = []): void
     {
-        $key = $this->buildKey($name.'_timing', $tags);
+        $key = $this->buildKey($name . '_timing', $tags);
 
         if (!isset($this->metrics[$key])) {
             $this->metrics[$key] = [];
@@ -80,7 +80,7 @@ class MonitoringService
         $this->incrementCounter('http_requests', [
             'method' => $method,
             'endpoint' => $endpoint,
-            'status_code' => (string)$statusCode,
+            'status_code' => (string) $statusCode,
         ]);
 
         $this->recordTiming('http_request_duration', $duration, [
@@ -159,7 +159,7 @@ class MonitoringService
             )
         );
 
-        return $name.'['.$tagString.']';
+        return $name . '[' . $tagString . ']';
     }
 
     private function formatBytes(int $bytes): string
@@ -172,23 +172,23 @@ class MonitoringService
             $unitIndex++;
         }
 
-        return round($bytes, 2).' '.$units[$unitIndex];
+        return round($bytes, 2) . ' ' . $units[$unitIndex];
     }
 
     private function formatDuration(float $seconds): string
     {
         if ($seconds < 60) {
-            return round($seconds, 2).'s';
+            return round($seconds, 2) . 's';
         } elseif ($seconds < 3600) {
             $minutes = floor($seconds / 60);
             $remainingSeconds = $seconds % 60;
 
-            return $minutes.'m '.round($remainingSeconds, 2).'s';
+            return $minutes . 'm ' . round($remainingSeconds, 2) . 's';
         } else {
             $hours = floor($seconds / 3600);
             $remainingMinutes = floor(($seconds % 3600) / 60);
 
-            return $hours.'h '.$remainingMinutes.'m';
+            return $hours . 'h ' . $remainingMinutes . 'm';
         }
     }
 }

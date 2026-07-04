@@ -311,6 +311,14 @@
                     <div class="result" id="result_add_server"></div>
                 </form>
             </div>
+
+            <div>
+                <h3>Skonfigurowane serwery MCP</h3>
+                <button onclick="loadServers()">🔄 Odśwież listę</button>
+                <div id="serversList" class="secrets-list">
+                    <p><em>Kliknij "Odśwież listę" aby załadować skonfigurowane serwery</em></p>
+                </div>
+            </div>
         </div>
 
         <!-- Settings Tab -->
@@ -363,6 +371,8 @@
             // Load tab-specific data
             if (tabName === 'secrets') {
                 loadSecrets();
+            } else if (tabName === 'servers') {
+                loadServers();
             } else if (tabName === 'settings') {
                 loadSystemInfo();
             }
@@ -489,17 +499,199 @@
         }
 
         // Server management
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function loadServers() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/servers`, {
+                    headers: {
+                        ...getAuthHeaders()
+                    }
+                });
+                const data = await response.json();
+
+                const serversList = document.getElementById('serversList');
+
+                if (response.ok && data.success) {
+                    const servers = data.data;
+                    const serverNames = Object.keys(servers);
+
+                    if (serverNames.length === 0) {
+                        serversList.innerHTML = '<p><em>Brak skonfigurowanych serwerów</em></p>';
+                        return;
+                    }
+
+                    let html = '';
+                    serverNames.forEach(name => {
+                        const config = servers[name];
+                        const commandStr = config.command + (config.args ? ' ' + config.args.join(' ') : '');
+                        html += `
+                            <div class="secret-item">
+                                <div>
+                                    <span class="secret-key" style="font-weight: bold; margin-right: 10px;">${name}</span>
+                                    <code style="font-size: 13px; color: #495057;">${escapeHtml(commandStr)}</code>
+                                </div>
+                                <div>
+                                    <button onclick="viewServer('${name}')" style="margin-right: 5px;" title="Zobacz szczegóły">👁️</button>
+                                    <button onclick="deleteServer('${name}')" class="danger" title="Usuń serwer">🗑️</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    serversList.innerHTML = html;
+                } else {
+                    serversList.innerHTML = '<div class="result error">Błąd: ' + (data.error?.message || data.message) + '</div>';
+                }
+            } catch (error) {
+                document.getElementById('serversList').innerHTML = '<div class="result error">Błąd sieci: ' + error.message + '</div>';
+            }
+        }
+
+        let loadedServersCache = {};
+
+        async function loadServersAndCache() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/servers`, {
+                    headers: {
+                        ...getAuthHeaders()
+                    }
+                });
+                const data = await response.json();
+                if (response.ok && data.success) {
+                    loadedServersCache = data.data;
+                }
+            } catch (error) {
+                console.error('Error caching servers:', error);
+            }
+        }
+
+        async function viewServer(name) {
+            await loadServersAndCache();
+            const config = loadedServersCache[name];
+            if (config) {
+                alert(`Serwer: ${name}\n\nKonfiguracja:\n${JSON.stringify(config, null, 4)}`);
+            } else {
+                alert(`Nie znaleziono konfiguracji dla serwera "${name}"`);
+            }
+        }
+
+        async function deleteServer(name) {
+            if (!confirm(`Czy na pewno chcesz usunąć serwer MCP "${name}"?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/servers/${encodeURIComponent(name)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        ...getAuthHeaders()
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    loadServers();
+                } else {
+                    alert('Błąd: ' + (data.error?.message || data.message || 'Nie udało się usunąć serwera'));
+                }
+            } catch (error) {
+                alert('Błąd sieci: ' + error.message);
+            }
+        }
+
         async function addServer(event) {
             event.preventDefault();
-            // Implementation similar to previous
-            showResult('result_add_server', 'Serwer dodany pomyślnie', 'success');
+
+            const name = document.getElementById('serverName').value.trim();
+            const json_config = document.getElementById('serverJson').value.trim();
+
+            if (!name || !json_config) {
+                showResult('result_add_server', 'Nazwa i konfiguracja JSON są wymagane', 'error');
+                return;
+            }
+
+            try {
+                JSON.parse(json_config);
+            } catch (e) {
+                showResult('result_add_server', 'Niepoprawny format JSON: ' + e.message, 'error');
+                return;
+            }
+
+            const loading = document.getElementById('loading_add_server');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/api/servers`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify({ name, json_config })
+                });
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                if (response.ok && data.success) {
+                    showResult('result_add_server', 'Serwer dodany pomyślnie', 'success');
+                    document.getElementById('addServerForm').reset();
+                    loadServers();
+                } else {
+                    showResult('result_add_server', 'Błąd: ' + (data.error?.message || data.message || 'Nieznany błąd'), 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showResult('result_add_server', 'Błąd sieci: ' + error.message, 'error');
+            }
         }
 
         // Settings
         async function changePassword(event) {
             event.preventDefault();
-            // Implementation
-            showResult('result_change_password', 'Hasło zmienione pomyślnie', 'success');
+
+            const oldPassword = document.getElementById('oldPassword').value.trim();
+            const newPassword = document.getElementById('newPassword').value.trim();
+
+            if (!oldPassword || !newPassword) {
+                showResult('result_change_password', 'Oba pola są wymagane', 'error');
+                return;
+            }
+
+            const loading = document.getElementById('loading_change_password');
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/change-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    },
+                    body: JSON.stringify({
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    })
+                });
+                const data = await response.json();
+
+                loading.style.display = 'none';
+
+                if (response.ok && data.success) {
+                    showResult('result_change_password', 'Hasło zmienione pomyślnie', 'success');
+                    document.getElementById('changePasswordForm').reset();
+                } else {
+                    showResult('result_change_password', 'Błąd: ' + (data.error?.message || data.message || 'Nieznany błąd'), 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showResult('result_change_password', 'Błąd sieci: ' + error.message, 'error');
+            }
         }
 
         async function loadSystemInfo() {

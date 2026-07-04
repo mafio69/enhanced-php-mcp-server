@@ -4,8 +4,15 @@ namespace Tests\Unit;
 
 use App\Config\ServerConfig;
 use App\Services\ToolService;
-use Monolog\Logger;
+use App\Exceptions\ToolNotFoundException;
+use App\Exceptions\ToolDisabledException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\FileNotFoundException;
+use App\Exceptions\JsonParseException;
+use App\Exceptions\PathTraversalException;
+use Exception;
 use Monolog\Handler\TestHandler;
+use Monolog\Logger;
 use PHPUnit\Framework\TestCase;
 
 class ToolServiceTest extends TestCase
@@ -54,7 +61,7 @@ class ToolServiceTest extends TestCase
     {
         $result = $this->toolService->executeTool('get_time', [
             'format' => 'Y-m-d',
-            'timezone' => 'UTC'
+            'timezone' => 'UTC',
         ]);
         $this->assertStringContainsString('Current time:', $result);
         $this->assertMatchesRegularExpression('/\d{4}-\d{2}-\d{2}/', $result);
@@ -68,7 +75,7 @@ class ToolServiceTest extends TestCase
         $result = $this->toolService->executeTool('calculate', [
             'operation' => $operation,
             'a' => $a,
-            'b' => $b
+            'b' => $b,
         ]);
 
         $this->assertEquals("Result: $expected", $result);
@@ -89,7 +96,7 @@ class ToolServiceTest extends TestCase
         $result = $this->toolService->executeTool('calculate', [
             'operation' => 'divide',
             'a' => 10,
-            'b' => 0
+            'b' => 0,
         ]);
 
         $this->assertEquals('Error: Division by zero', $result);
@@ -100,7 +107,7 @@ class ToolServiceTest extends TestCase
         $result = $this->toolService->executeTool('calculate', [
             'operation' => 'unknown',
             'a' => 1,
-            'b' => 2
+            'b' => 2,
         ]);
 
         $this->assertEquals('Unknown operation: unknown', $result);
@@ -127,8 +134,8 @@ class ToolServiceTest extends TestCase
 
     public function testReadFileWithNonExistentFile()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessageMatches('/Invalid path|File not found/');
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/Invalid path/');
 
         $this->toolService->executeTool('read_file', ['path' => 'non_existent_file.txt']);
     }
@@ -173,7 +180,7 @@ class ToolServiceTest extends TestCase
 
     public function testJsonParseWithInvalidJson()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(JsonParseException::class);
         $this->expectExceptionMessage('JSON parsing error:');
 
         $invalidJson = '{"name": "test", "value":}';
@@ -195,7 +202,7 @@ class ToolServiceTest extends TestCase
 
     public function testGetWeatherWithEmptyCity()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('City name is required');
 
         $this->toolService->executeTool('get_weather', ['city' => '']);
@@ -203,8 +210,8 @@ class ToolServiceTest extends TestCase
 
     public function testExecuteUnknownToolThrowsException()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessageMatches('/Unknown tool|not enabled/');
+        $this->expectException(ToolNotFoundException::class);
+        $this->expectExceptionMessageMatches('/Unknown tool/');
 
         $this->toolService->executeTool('unknown_tool', []);
     }
@@ -214,13 +221,13 @@ class ToolServiceTest extends TestCase
         // Create a config with limited tools
         $configArray = [
             'tools' => [
-                'enabled' => ['hello'] // Only hello enabled
-            ]
+                'enabled' => ['hello'], // Only hello enabled
+            ],
         ];
         $config = new ServerConfig($configArray);
         $toolService = new ToolService($config, $this->logger);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ToolDisabledException::class);
         $this->expectExceptionMessage("Tool 'calculate' is not enabled");
 
         $toolService->executeTool('calculate', ['operation' => 'add', 'a' => 1, 'b' => 1]);
@@ -228,10 +235,19 @@ class ToolServiceTest extends TestCase
 
     public function testFileOperationSecurityPreventsPathTraversal()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessageMatches('/Access denied!|Invalid path:/');
+        $this->expectException(PathTraversalException::class);
+        $this->expectExceptionMessageMatches('/Access denied!/');
 
-        // Try to access files outside project directory
+        // Try to access files outside project directory (absolute path)
+        $this->toolService->executeTool('read_file', ['path' => '/etc/passwd']);
+    }
+
+    public function testFileOperationSecurityPreventsInvalidPathTraversal()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessageMatches('/Invalid path:/');
+
+        // Try to access files outside project directory using relative path traversal (stripped to invalid path)
         $this->toolService->executeTool('read_file', ['path' => '../../../etc/passwd']);
     }
 
@@ -253,7 +269,7 @@ class ToolServiceTest extends TestCase
     {
         try {
             $this->toolService->executeTool('read_file', ['path' => '']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Expected exception - File path is required
         }
 
