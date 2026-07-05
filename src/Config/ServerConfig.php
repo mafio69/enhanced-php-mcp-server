@@ -72,7 +72,7 @@ class ServerConfig
     public function getLogFile(): string
     {
         $logFile = $this->config['logging']['file'] ?? '';
-        if (empty($logFile) || str_contains($logFile, '/home/mariusz/')) {
+        if (empty($logFile)) {
             return __DIR__ . '/../../logs/server.log';
         }
         return $logFile;
