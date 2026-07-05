@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Upewnijmy się, że uruchamiamy skrypt z katalogu głównego
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 
 echo "=================================================="
 echo "      URUCHAMIANIE TESTÓW JEDNOSTKOWYCH (PHP)     "
