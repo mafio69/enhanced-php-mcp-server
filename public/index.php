@@ -2,9 +2,14 @@
 
 if (PHP_SAPI === 'cli-server') {
     $url  = parse_url($_SERVER['REQUEST_URI']);
-    $file = __DIR__ . $url['path'];
-    if (is_file($file)) {
-        return false;
+    $path = $url['path'] ?? '';
+
+    if ($path !== '') {
+        $file = realpath(__DIR__ . $path);
+        // Guard against Path Traversal escaping the public/ directory
+        if ($file !== false && str_starts_with($file, __DIR__) && is_file($file)) {
+            return false;
+        }
     }
 }
 
