@@ -72,7 +72,7 @@ class AppContainer
             SecretManagerService::class => factory(function (ContainerInterface $c) {
                 return new SecretManagerService(
                     $c->get(LoggerInterface::class),
-                    getenv('SECRET_STORAGE_PATH') ?: '/tmp/secrets',
+                    getenv('SECRET_STORAGE_PATH') ?: __DIR__ . '/../storage/secrets.json',
                     getenv('MCP_SECRET_KEY') ?: base64_encode(str_repeat('a', 32))
                 );
             }),

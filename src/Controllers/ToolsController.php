@@ -28,7 +28,7 @@ class ToolsController extends BaseController
     {
         $tools = $this->httpServer->getTools();
 
-        return $this->jsonResponse($response, ['tools' => $tools]);
+        return $this->jsonResponse($response, $tools);
     }
 
     public function executeTool(Request $request, Response $response): Response

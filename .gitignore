@@ -45,3 +45,8 @@ storage/
 node_modules/
 playwright-report/
 test-results/
+.local/
+
+# PHPUnit
+tests/test-results.xml
+tests/.phpunit.cache/

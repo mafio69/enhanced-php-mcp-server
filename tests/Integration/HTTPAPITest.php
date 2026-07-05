@@ -67,7 +67,6 @@ class HTTPAPITest extends TestCase
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
-        curl_close($ch);
 
         if ($error) {
             throw new Exception("cURL Error: $error");
@@ -99,9 +98,9 @@ class HTTPAPITest extends TestCase
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
         $this->assertArrayHasKey('tools', $result['body']);
-        $this->assertCount(10, $result['body']['tools']['tools']);
+        $this->assertCount(10, $result['body']['tools']);
 
-        $toolNames = array_column($result['body']['tools']['tools'], 'name');
+        $toolNames = array_column($result['body']['tools'], 'name');
         $this->assertContains('hello', $toolNames);
         $this->assertContains('list_files', $toolNames);
         $this->assertContains('read_file', $toolNames);
@@ -396,7 +395,6 @@ class HTTPAPITest extends TestCase
         $response = curl_exec($ch);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers = substr($response, 0, $headerSize);
-        curl_close($ch);
 
         preg_match('/admin_session=([^;]+)/', $headers, $matches);
 
@@ -428,7 +426,6 @@ class HTTPAPITest extends TestCase
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
-        curl_close($ch);
 
         if ($error) {
             throw new Exception("cURL Error: $error");
@@ -482,7 +479,6 @@ class HTTPAPITest extends TestCase
         ]);
         curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         $this->assertSame(302, $httpCode, 'Dashboard should redirect to login when not authenticated');
     }

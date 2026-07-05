@@ -530,8 +530,14 @@
 
                     let html = '';
                     serverNames.forEach(name => {
-                        const config = servers[name];
-                        const commandStr = config.command + (config.args ? ' ' + config.args.join(' ') : '');
+                        let config = servers[name];
+                        if (config && config.mcpServers) {
+                            const innerKeys = Object.keys(config.mcpServers);
+                            if (innerKeys.length > 0) {
+                                config = config.mcpServers[innerKeys[0]];
+                            }
+                        }
+                        const commandStr = config.command ? (config.command + (config.args ? ' ' + config.args.join(' ') : '')) : 'undefined';
                         html += `
                             <div class="secret-item">
                                 <div>

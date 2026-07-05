@@ -549,6 +549,29 @@ The server includes built-in monitoring:
 
 Access via `/api/status` or `/api/metrics` endpoints.
 
+## 📝 Changelog
+
+### v2.1.0 (Current)
+
+**Security & Encryption:**
+- Fixed IV separator collision bug in `SecretManagerService` - IV is now base64-encoded to prevent collision with `::` separator in random binary data
+- Backward compatibility maintained: old encrypted secrets (raw binary IV) continue to work
+- New encrypted secrets use base64-encoded IV format
+
+**Infrastructure:**
+- Removed deprecated `public/router.php` - static file handling moved to `public/index.php`
+- Updated Dockerfile to use `public/index.php` directly
+- Fixed `curl_close()` resource leak in HTTP client tool
+
+**Configuration:**
+- Removed hardcoded developer paths from `ServerConfig::getLogFile()`
+- Improved `getAllowedPaths()` to always include project root
+
+**Testing:**
+- Consolidated test scripts into single `tests.sh`
+- Removed obsolete test scripts (`test.sh`, `tests/simple_test.sh`, `tests/run_comprehensive_tests.sh`)
+- Fixed E2E test configuration for Playwright
+
 ## 📄 License
 
 MIT License - see LICENSE file for details.

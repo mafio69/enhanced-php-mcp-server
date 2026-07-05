@@ -388,9 +388,9 @@
                     const response = await fetch('/api/tools');
                     const data = await response.json();
 
-                    if (response.ok && data.tools && data.tools.tools) {
+                    if (response.ok && data.tools) {
                         grid.innerHTML = '';
-                        data.tools.tools.forEach(tool => {
+                        data.tools.forEach(tool => {
                             const toolElement = document.createElement('div');
                             toolElement.className = 'tool-item';
                             toolElement.innerHTML = `

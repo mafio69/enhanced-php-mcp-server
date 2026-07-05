@@ -33,7 +33,8 @@ class SecretManagerService
         $iv = openssl_random_pseudo_bytes($ivLength);
         $encrypted = openssl_encrypt($value, 'aes-256-cbc', base64_decode($this->encryptionKey), 0, $iv);
 
-        return base64_encode($iv.'::'.$encrypted);
+        // Base64 encode IV to prevent collision with '::' separator in random binary data
+        return base64_encode(base64_encode($iv).'::'.$encrypted);
     }
 
     private function getFilePath(string $key): string
@@ -69,10 +70,18 @@ class SecretManagerService
             throw new RuntimeException('Invalid encrypted data format');
         }
 
-        [$iv, $ciphertext] = $parts;
+        [$ivData, $ciphertext] = $parts;
         $ivLength = openssl_cipher_iv_length('aes-256-cbc');
 
-        if (strlen($iv) !== $ivLength) {
+        // Backward compatibility: old format stored raw binary IV (16 bytes).
+        // New format stores base64 encoded IV (24 bytes).
+        if (strlen($ivData) === $ivLength) {
+            $iv = $ivData;
+        } else {
+            $iv = base64_decode($ivData, true);
+        }
+
+        if ($iv === false || strlen($iv) !== $ivLength) {
             throw new RuntimeException('Invalid encrypted data format');
         }
 
