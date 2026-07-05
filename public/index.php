@@ -1,5 +1,13 @@
 <?php
 
+if (PHP_SAPI === 'cli-server') {
+    $url  = parse_url($_SERVER['REQUEST_URI']);
+    $file = __DIR__ . $url['path'];
+    if (is_file($file)) {
+        return false;
+    }
+}
+
 // Zaciągamy instancję kontenera z bezpiecznego, niewidocznego dla świata pliku bootstrap
 $container = require_once dirname(__DIR__) . '/bootstrap/app.php';
 

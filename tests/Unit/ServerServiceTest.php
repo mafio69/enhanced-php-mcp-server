@@ -33,7 +33,6 @@ class ServerServiceTest extends TestCase
         // Set private property configFile via reflection to use temp file
         $reflection = new \ReflectionClass(ServerConfig::class);
         $property = $reflection->getProperty('configFile');
-        $property->setAccessible(true);
         $property->setValue($this->config, $this->tempConfigFile);
 
         $this->service = new ServerService($this->config);

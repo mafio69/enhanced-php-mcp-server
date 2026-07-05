@@ -129,10 +129,8 @@ start_web() {
         echo -e "${GREEN}🌍 Server available at: http://localhost:$PORT${NC}"
         echo -e "${GREEN}📊 API Dashboard: http://localhost:$PORT/api/status${NC}"
         echo -e "${YELLOW}Ctrl+C to stop${NC}"
-        echo ""
-
-        # Start PHP server in background and show logs
-        php -S localhost:"$PORT" -t public public/router.php
+        echo "🌐 Uruchamianie wbudowanego serwera PHP na porcie $PORT..."
+        php -S localhost:"$PORT" -t public public/index.php
     else
         echo -e "${RED}❌ Cannot start server - check dependencies${NC}"
     fi
@@ -157,10 +155,11 @@ start_all() {
     fi
 
     # Start web server in background
-    php -S localhost:"$PORT" -t public public/router.php > logs/web_server.log 2>&1 &
+    echo "🌐 Uruchamianie wbudowanego serwera PHP w tle na porcie $PORT..."
+    php -S localhost:"$PORT" -t public public/index.php > logs/web_server.log 2>&1 &
     WEB_PID=$!
 
-    echo -e "${GREEN}✅ Web server started (PID: $WEB_PID) at http://localhost:$PORT${NC}"
+    echo -e "${GREEN}✅ Serwer Web uruchomiony (PID: $WEB_PID) at http://localhost:$PORT${NC}"
     echo ""
 
     # Wait a moment for web server to start

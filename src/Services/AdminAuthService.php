@@ -21,7 +21,7 @@ class AdminAuthService
         ?string $passwordFile = null
     ) {
         $this->logger = $logger;
-        $this->adminUsername = $adminUsername ?? $_ENV['ADMIN_USERNAME'] ?? 'admin';
+        $this->adminUsername = $adminUsername ?? getenv('ADMIN_USERNAME') ?: 'admin';
         $this->sessionPath = $sessionPath ?? __DIR__ . '/../../storage/sessions';
         $this->passwordFile = $passwordFile ?? __DIR__ . '/../../storage/.admin_password';
 
@@ -88,7 +88,7 @@ class AdminAuthService
         }
 
         // Try to get from environment
-        $password = $_ENV['ADMIN_PASSWORD'] ?? null;
+        $password = getenv('ADMIN_PASSWORD');
         if ($password) {
             return password_hash($password, PASSWORD_DEFAULT);
         }

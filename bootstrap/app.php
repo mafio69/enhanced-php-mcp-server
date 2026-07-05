@@ -20,7 +20,11 @@ if (file_exists($envPath)) {
         if (str_starts_with(trim($line), '#')) continue;
         if (str_contains($line, '=')) {
             [$name, $value] = explode('=', $line, 2);
-            putenv(trim($name) . '=' . trim($value));
+            $envName = trim($name);
+            $envValue = trim($value);
+            if (getenv($envName) === false) {
+                putenv($envName . '=' . $envValue);
+            }
         }
     }
 }

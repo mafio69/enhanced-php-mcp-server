@@ -71,7 +71,11 @@ class ServerConfig
 
     public function getLogFile(): string
     {
-        return $this->config['logging']['file'] ?? __DIR__ . '/../../logs/server.log';
+        $logFile = $this->config['logging']['file'] ?? '';
+        if (empty($logFile) || str_contains($logFile, '/home/mariusz/')) {
+            return __DIR__ . '/../../logs/server.log';
+        }
+        return $logFile;
     }
 
     public function getLogLevel(): string
@@ -86,7 +90,13 @@ class ServerConfig
 
     public function getAllowedPaths(): array
     {
-        return $this->config['security']['allowed_paths'] ?? [__DIR__ . '/../..'];
+        $paths = $this->config['security']['allowed_paths'] ?? [];
+        $projectRoot = realpath(__DIR__ . '/../..') ?: __DIR__ . '/../..';
+        
+        // Zawsze zezwalaj na katalog główny projektu, niezależnie od statycznego configu
+        $paths[] = $projectRoot;
+        
+        return array_unique($paths);
     }
 
     public function getMaxFileSize(): int
