@@ -47,6 +47,26 @@ class HTTPAPITest extends TestCase
         return false;
     }
 
+    private static ?string $cachedAdminToken = null;
+
+    /**
+     * /api/* routes (other than /api/health) now require an authenticated admin
+     * session, since they expose file read/write and command-style tools.
+     */
+    private function makeApiRequest(string $method, string $endpoint, array $data = []): array
+    {
+        return $this->makeAuthenticatedRequest($method, $endpoint, $this->getAdminToken(), $data);
+    }
+
+    private function getAdminToken(): string
+    {
+        if (self::$cachedAdminToken === null) {
+            self::$cachedAdminToken = $this->adminLogin();
+        }
+
+        return self::$cachedAdminToken;
+    }
+
     private function makeRequest(string $method, string $endpoint, array $data = []): array
     {
         $url = $this->baseUrl . $endpoint;
@@ -93,7 +113,7 @@ class HTTPAPITest extends TestCase
      */
     public function testToolsEndpointReturnsListOfTools()
     {
-        $result = $this->makeRequest('GET', '/api/tools');
+        $result = $this->makeApiRequest('GET', '/api/tools');
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
@@ -112,7 +132,7 @@ class HTTPAPITest extends TestCase
      */
     public function testStatusEndpointReturnsServerStatus()
     {
-        $result = $this->makeRequest('GET', '/api/status');
+        $result = $this->makeApiRequest('GET', '/api/status');
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
@@ -127,7 +147,7 @@ class HTTPAPITest extends TestCase
      */
     public function testHelloToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'hello',
             'arguments' => ['name' => 'Test User'],
         ]);
@@ -144,7 +164,7 @@ class HTTPAPITest extends TestCase
      */
     public function testGetTimeToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'get_time',
             'arguments' => [],
         ]);
@@ -159,7 +179,7 @@ class HTTPAPITest extends TestCase
      */
     public function testCalculateToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'calculate',
             'arguments' => [
                 'operation' => 'add',
@@ -176,7 +196,7 @@ class HTTPAPITest extends TestCase
 
     public function testListFilesToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'list_files',
             'arguments' => ['path' => '.'],
         ]);
@@ -195,7 +215,7 @@ class HTTPAPITest extends TestCase
 
         try {
             // Write file
-            $writeResult = $this->makeRequest('POST', '/api/tools/call', [
+            $writeResult = $this->makeApiRequest('POST', '/api/tools/call', [
                 'tool' => 'write_file',
                 'arguments' => [
                     'path' => $testFile,
@@ -208,7 +228,7 @@ class HTTPAPITest extends TestCase
             $this->assertStringContainsString($testFile, $writeResult['body']['data']);
 
             // Read file back
-            $readResult = $this->makeRequest('POST', '/api/tools/call', [
+            $readResult = $this->makeApiRequest('POST', '/api/tools/call', [
                 'tool' => 'read_file',
                 'arguments' => ['path' => $testFile],
             ]);
@@ -229,7 +249,7 @@ class HTTPAPITest extends TestCase
      */
     public function testSystemInfoToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'system_info',
             'arguments' => [],
         ]);
@@ -243,7 +263,7 @@ class HTTPAPITest extends TestCase
     public function testJsonParseToolViaAPI()
     {
         $jsonData = '{"test": "value", "number": 42}';
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'json_parse',
             'arguments' => ['json' => $jsonData],
         ]);
@@ -256,7 +276,7 @@ class HTTPAPITest extends TestCase
 
     public function testGetWeatherToolViaAPI()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'get_weather',
             'arguments' => ['city' => 'Kraków'],
         ]);
@@ -269,7 +289,7 @@ class HTTPAPITest extends TestCase
 
     public function testUnknownToolReturnsError()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'nonexistent_tool',
             'arguments' => [],
         ]);
@@ -282,7 +302,7 @@ class HTTPAPITest extends TestCase
 
     public function testFileSecurityPreventsPathTraversal()
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => 'read_file',
             'arguments' => ['path' => '../../../etc/passwd'],
         ]);
@@ -294,7 +314,7 @@ class HTTPAPITest extends TestCase
 
     public function testMetricsEndpointReturnsData()
     {
-        $result = $this->makeRequest('GET', '/api/metrics');
+        $result = $this->makeApiRequest('GET', '/api/metrics');
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
@@ -304,7 +324,7 @@ class HTTPAPITest extends TestCase
 
     public function testLogsEndpointReturnsData()
     {
-        $result = $this->makeRequest('GET', '/api/logs');
+        $result = $this->makeApiRequest('GET', '/api/logs');
 
         $this->assertEquals(200, $result['status']);
         $this->assertIsArray($result['body']);
@@ -317,7 +337,7 @@ class HTTPAPITest extends TestCase
      */
     public function testToolParameterValidation($tool, $arguments, $expectedError)
     {
-        $result = $this->makeRequest('POST', '/api/tools/call', [
+        $result = $this->makeApiRequest('POST', '/api/tools/call', [
             'tool' => $tool,
             'arguments' => $arguments,
         ]);

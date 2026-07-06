@@ -106,7 +106,8 @@ class AppContainer
                 ApiRoutes::register($app);
                 $app->addBodyParsingMiddleware();
                 $app->addRoutingMiddleware();
-                $app->addErrorMiddleware(true, true, true, $c->get(LoggerInterface::class));
+                $displayErrorDetails = $c->get(ServerConfig::class)->isDebugMode();
+                $app->addErrorMiddleware($displayErrorDetails, true, true, $c->get(LoggerInterface::class));
 
                 return $app;
             }),

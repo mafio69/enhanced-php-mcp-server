@@ -40,19 +40,23 @@ class ApiRoutes
 
         // Grupa tras API
         $app->group('/api', function (RouteCollectorProxy $group) {
-            // --- Przywrócone trasy dla narzędzi ---
-            $group->get('/tools', [ToolsController::class, 'listTools']);
-            $group->post('/tools/call', [ToolsController::class, 'executeTool']);
-
-            $group->get('/status', [StatusController::class, 'getServerStatus']);
-            $group->get('/metrics', [StatusController::class, 'getMetrics']);
+            // Publiczny healthcheck (np. dla Dockera) - bez danych wrażliwych
             $group->get('/health', [StatusController::class, 'getHealth']);
 
-            $group->get('/logs', [LogsController::class, 'getLogs']);
-            $group->delete('/logs', [LogsController::class, 'clearLogs']);
-            $group->get('/logs/download', [LogsController::class, 'downloadLogs']);
-            $group->get('/logs/stats', [LogsController::class, 'getLogStats']);
+            // Reszta API wymaga zalogowanego admina - narzędzia dają odczyt/zapis
+            // plików i wykonywanie poleceń, więc nie mogą być publiczne.
+            $group->group('', function (RouteCollectorProxy $protected) {
+                $protected->get('/tools', [ToolsController::class, 'listTools']);
+                $protected->post('/tools/call', [ToolsController::class, 'executeTool']);
 
+                $protected->get('/status', [StatusController::class, 'getServerStatus']);
+                $protected->get('/metrics', [StatusController::class, 'getMetrics']);
+
+                $protected->get('/logs', [LogsController::class, 'getLogs']);
+                $protected->delete('/logs', [LogsController::class, 'clearLogs']);
+                $protected->get('/logs/download', [LogsController::class, 'downloadLogs']);
+                $protected->get('/logs/stats', [LogsController::class, 'getLogStats']);
+            })->add(AdminAuthMiddleware::class);
         });
 
         // Admin routes - login public, rest protected
