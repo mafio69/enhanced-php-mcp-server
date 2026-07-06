@@ -8,19 +8,23 @@ return array (
     'description' => 'Professional PHP MCP Server with multiple tools and Slim Framework',
   ),
   'debug' => false,
-  'logging' => 
+  'logging' =>
   array (
     'enabled' => true,
-    'file' => '/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/config/../logs/server.log',
+    // Left empty on purpose: ServerConfig::getLogFile() falls back to
+    // __DIR__ . '/../../logs/server.log' when this is blank, so the tracked
+    // config stays portable instead of baking in a machine-specific path.
+    'file' => '',
     'level' => 'info',
     'max_files' => 5,
   ),
-  'security' => 
+  'security' =>
   array (
-    'allowed_paths' => 
+    // Left empty on purpose: ServerConfig::getAllowedPaths() always unions in
+    // the project root computed at runtime via realpath(__DIR__ . '/../..'),
+    // so no absolute path needs to be hardcoded here.
+    'allowed_paths' =>
     array (
-      0 => '/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/config/..',
-      1 => '/home/mariusz/PhpstormProjects/enhanced-php-mcp-server/config/../storage',
     ),
     'max_file_size' => 10485760,
   ),
