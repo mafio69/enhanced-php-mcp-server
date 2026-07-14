@@ -1,6 +1,10 @@
 <?php
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+// Standalone install: pakiet ma własny vendor/. Zainstalowany jako zależność
+// Composera: autoload żyje trzy poziomy wyżej, w vendor/autoload.php hosta.
+$standaloneAutoload = dirname(__DIR__) . '/vendor/autoload.php';
+$hostAutoload = dirname(__DIR__, 3) . '/autoload.php';
+require_once file_exists($standaloneAutoload) ? $standaloneAutoload : $hostAutoload;
 
 use App\AppContainer;
 use Psr\Container\ContainerExceptionInterface;
@@ -9,7 +13,12 @@ use Psr\Container\NotFoundExceptionInterface;
 // Mini-parser .env z automatycznym generowaniem klucza
 $envPath = dirname(__DIR__) . '/.env';
 
-if (!file_exists($envPath) || !str_contains(file_get_contents($envPath), 'MCP_SECRET_KEY=')) {
+// Jeśli MCP_SECRET_KEY już jest w środowisku (np. wstrzyknięty przez hosta jako
+// zależność), nie próbuj dopisywać go do lokalnego .env — ten katalog bywa
+// tylko do odczytu, gdy pakiet leży w cudzym vendor/.
+if (getenv('MCP_SECRET_KEY') === false
+    && (!file_exists($envPath) || !str_contains(file_get_contents($envPath), 'MCP_SECRET_KEY='))
+) {
     $newKey = base64_encode(random_bytes(32));
     file_put_contents($envPath, "MCP_SECRET_KEY={$newKey}\n", FILE_APPEND);
 }
