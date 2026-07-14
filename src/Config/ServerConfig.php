@@ -71,6 +71,14 @@ class ServerConfig
 
     public function getLogFile(): string
     {
+        // Pozwala hostowi (gdy pakiet leży w cudzym vendor/, bez prawa zapisu do
+        // własnego katalogu) wskazać zapisywalną lokalizację, tak jak
+        // SECRET_STORAGE_PATH/ADMIN_SESSION_PATH w AppContainer.
+        $envFile = getenv('MCP_LOG_FILE');
+        if ($envFile !== false && $envFile !== '') {
+            return $envFile;
+        }
+
         $logFile = $this->config['logging']['file'] ?? '';
         if (empty($logFile)) {
             return __DIR__ . '/../../logs/server.log';

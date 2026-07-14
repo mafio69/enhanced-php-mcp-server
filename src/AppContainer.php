@@ -42,7 +42,7 @@ class AppContainer
                 $config = $c->get('config');
                 $logger = new Logger('mcp-server');
                 $fileHandler = new RotatingFileHandler(
-                    $config['logging']['file'],
+                    $c->get(ServerConfig::class)->getLogFile(),
                     $config['logging']['max_files'] ?? 5,
                     $config['logging']['level'] ?? Logger::INFO
                 );
